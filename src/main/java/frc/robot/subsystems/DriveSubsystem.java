@@ -38,7 +38,7 @@ public class DriveSubsystem extends SubsystemBase {
     double leftSpeed = leftLimiter.calculate(left);
     double rightSpeed = rightLimiter.calculate(right);
 
-    if (Math.abs(leftSpeed) < 0.05 && Math.abs(rightSpeed) < 0.05) {
+    if (Math.abs(left) < 0.06 && Math.abs(right) < 0.06) {
       leftSpeed = 0;
       rightSpeed = 0;
 

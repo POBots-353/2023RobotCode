@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -11,7 +12,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,14 +30,13 @@ public class DriveSubsystem extends SubsystemBase {
   private RelativeEncoder frontLeftEncoder = frontLeftMotor.getEncoder();
   private RelativeEncoder frontRightEncoder = frontRightMotor.getEncoder();
 
-  private SparkMaxPIDController frontLeftPIDController = frontLeftMotor.getPIDController();
-  private SparkMaxPIDController backLeftPIDController = backLeftMotor.getPIDController();
-  private SparkMaxPIDController frontRightPIDController = frontRightMotor.getPIDController();
-
-  private DifferentialDrive differentialDrive = new DifferentialDrive(leftMotors, rightMotors);
+  private SparkMaxPIDController leftPIDController = frontLeftMotor.getPIDController();
+  private SparkMaxPIDController rightPIDController = frontRightMotor.getPIDController();
 
   private SlewRateLimiter leftLimiter = new SlewRateLimiter(3.53);
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
+
+  private AHRS navx = new AHRS(I2C.Port.kMXP);
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -53,14 +53,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    rightMotors.setInverted(true);
+    // rightMotors.setInverted(true);
 
     // backLeftMotor.follow(frontLeftMotor);
     // backRightMotor.follow(frontRightMotor);
 
-    initializePID(frontLeftPIDController);
-    initializePID(backLeftPIDController);
-    initializePID(frontRightPIDController);
+    initializePID(leftPIDController);
+    // initializePID(backLeftPIDController);
+    initializePID(rightPIDController);
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -80,26 +80,40 @@ public class DriveSubsystem extends SubsystemBase {
     double leftSpeed = leftLimiter.calculate(left);
     double rightSpeed = rightLimiter.calculate(right);
 
-    if (Math.abs(left) < 0.06 && Math.abs(right) < 0.06) {
+    if (Math.abs(leftSpeed) < 0.06) {
       leftSpeed = 0;
-      rightSpeed = 0;
-
       leftLimiter.reset(0);
+    }
+
+    if (Math.abs(rightSpeed) < 0.06) {
+      rightSpeed = 0;
       rightLimiter.reset(0);
     }
 
-    differentialDrive.tankDrive(leftSpeed, rightSpeed);
+    leftMotors.set(leftSpeed);
+    rightMotors.set(-rightSpeed);
+  }
+
+  public void arcadeDrive(double forward, double turn) {
+    if (Math.abs(forward) < 0.06) {
+      forward = 0;
+    }
+
+    if (Math.abs(turn) < 0.06) {
+      turn = 0;
+    }
+
+    double leftSpeed = forward + turn;
+
+    double rightSpeed = forward - turn;
+
+    leftMotors.set(leftSpeed);
+    rightMotors.set(-rightSpeed);
   }
 
   public void autoDrive(double meters) {
-    SmartDashboard.putNumber("Desired Encoder Distance", convertDistanceToEncoder(meters));
-    // leftPIDController.setReference(convertDistanceToEncoder(meters),
-    // ControlType.kSmartMotion);
-    // rightPIDController.setReference(-convertDistanceToEncoder(meters),
-    // ControlType.kSmartMotion);
-    frontLeftPIDController.setReference(20, ControlType.kSmartMotion);
-    backLeftPIDController.setReference(20, ControlType.kSmartMotion);
-    // rightPIDController.setReference(-500, ControlType.kSmartMotion);
+    leftPIDController.setReference(convertDistanceToEncoder(meters), ControlType.kSmartMotion);
+    rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
   }
 
   public void resetEncoders() {
@@ -112,7 +126,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double convertDistanceToEncoder(double meters) {
-    return (meters / DriveConstants.wheelCircumference) * 42 / 12;
+    return 2 * (meters / DriveConstants.wheelCircumference) * 42 / 10.7;
   }
 
   @Override
@@ -120,5 +134,11 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Left Encoder Position", frontLeftEncoder.getPosition());
     SmartDashboard.putNumber("Left Encoder Velocity", frontLeftEncoder.getVelocity());
+    SmartDashboard.putNumber("Gyro Yaw:", navx.getYaw());
+    SmartDashboard.putNumber("Gyro Pitch:", navx.getPitch());
+    SmartDashboard.putNumber("Gyro Roll:", navx.getRoll());
+
+    SmartDashboard.putNumber("Gyro X Displacement", navx.getDisplacementX());
+    SmartDashboard.putNumber("Gyro Y Velocity", navx.getVelocityY());
   }
 }

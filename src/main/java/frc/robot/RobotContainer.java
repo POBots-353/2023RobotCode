@@ -5,12 +5,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -42,7 +44,10 @@ public class RobotContainer {
     configureBindings();
 
     driveSubsystem.setDefaultCommand(
-        new TankDriveCommand(driverController::getLeftY, driverController::getRightY, driveSubsystem));
+        new ArcadeDriveCommand(driverController::getLeftY, driverController::getRightX, driveSubsystem));
+    // driveSubsystem.setDefaultCommand(
+    // new TankDriveCommand(driverController::getLeftY, driverController::getRightY,
+    // driveSubsystem));
   }
 
   /**

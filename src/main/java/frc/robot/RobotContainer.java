@@ -9,9 +9,13 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -28,18 +32,19 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  private final ElementTransitSubsystem transitSubsystem = new ElementTransitSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
-
+  public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-
+    
     driveSubsystem.setDefaultCommand(
         new TankDriveCommand(driverController::getLeftY, driverController::getRightY, driveSubsystem));
   }
@@ -63,11 +68,14 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
-
+    Trigger motorIntake = new JoystickButton(operatorStick, 6);
+    
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
     // cancelling on release.
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
+    motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
   }
 
   /**

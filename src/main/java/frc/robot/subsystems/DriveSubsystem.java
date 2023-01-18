@@ -126,7 +126,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double convertDistanceToEncoder(double meters) {
-    return 2 * (meters / DriveConstants.wheelCircumference) * 42 / 10.7;
+    return 2 * (meters / DriveConstants.wheelCircumference) * 42 / DriveConstants.gearBoxRatio;
   }
 
   @Override

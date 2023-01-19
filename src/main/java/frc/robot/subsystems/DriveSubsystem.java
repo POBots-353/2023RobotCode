@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -35,6 +39,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private SlewRateLimiter leftLimiter = new SlewRateLimiter(3.53);
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
+
+  private PhotonCamera limelight = new PhotonCamera("gloworm");
 
   private AHRS navx = new AHRS(I2C.Port.kMXP);
 
@@ -95,13 +101,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void arcadeDrive(double forward, double turn) {
-    if (Math.abs(forward) < 0.06) {
-      forward = 0;
-    }
+    // if (Math.abs(forward) < 0.06) {
+    //   forward = 0;
+    // }
 
-    if (Math.abs(turn) < 0.06) {
-      turn = 0;
-    }
+    // if (Math.abs(turn) < 0.06) {
+    //   turn = 0;
+    // }
 
     double leftSpeed = forward + turn;
 
@@ -119,6 +125,38 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetEncoders() {
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
+  }
+
+  public void alignToTape() {
+    PhotonPipelineResult result = limelight.getLatestResult();
+
+    SmartDashboard.putBoolean("Has Targets", result.hasTargets());
+
+    if (result.hasTargets()) {
+      PhotonTrackedTarget target = result.getBestTarget();
+
+      SmartDashboard.putNumber("Target Yaw", target.getYaw());
+
+      arcadeDrive(0, target.getYaw()/120);
+    }
+  }
+
+  public boolean alignedToTape() {
+    PhotonPipelineResult result = limelight.getLatestResult();
+
+    if (result.hasTargets()) {
+      PhotonTrackedTarget target = result.getBestTarget();
+
+      return Math.abs(target.getYaw()) <= 0.05;
+    }
+
+    return false;
+  }
+
+  
+
+  public PhotonCamera getCamera() {
+    return limelight;
   }
 
   public boolean distanceReached(double distanceMeters) {

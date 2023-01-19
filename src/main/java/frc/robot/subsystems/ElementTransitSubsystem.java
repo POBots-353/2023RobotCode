@@ -26,6 +26,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private CANSparkMax leftMotor = new CANSparkMax(0, MotorType.kBrushless);
   private CANSparkMax rightMotor = new CANSparkMax(0, MotorType.kBrushless);
   private CANSparkMax elevator = new CANSparkMax(0, MotorType.kBrushless);
+  private DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
     pcmCompressor.enableDigital();
@@ -33,6 +35,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
     //upper 4 lines enable/disable compressor, return if compressor active,
     shortSolenoid.set(Value.kReverse);//placeholders
     longSolenoid.set(Value.kReverse);
+    leftPiston.set(Value.kReverse);
+    rightPiston.set(Value.kReverse);
 
   }
   public void runClawMotors() {
@@ -50,7 +54,11 @@ public class ElementTransitSubsystem extends SubsystemBase {
     longSolenoid.toggle();
   }
   public void elevatorOn() {
-    elevator.set(0.5);
+    elevator.set(IntakeConstants.elevatorPulleySpeed);
+  }
+  public void elevatorTiltOn() {
+    leftPiston.toggle();
+    rightPiston.toggle();
   }
   // public static void main(String[] args) { //main method
   //   System.out.println("Kurt sucks"); //kurt sucks

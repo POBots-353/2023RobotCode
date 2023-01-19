@@ -75,6 +75,7 @@ public class RobotContainer {
     Trigger shortClaws = new JoystickButton(operatorStick, 5);
     Trigger longClaws = new JoystickButton(operatorStick, 8);
     Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
+    Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
@@ -85,7 +86,7 @@ public class RobotContainer {
     shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
     longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));//toggles claw half or full
     elevatorPulley.onTrue(Commands.run(transitSubsystem::elevatorOn, transitSubsystem));
-
+    elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
   }
 
   /**

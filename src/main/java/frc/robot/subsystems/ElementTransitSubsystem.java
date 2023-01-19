@@ -21,21 +21,18 @@ import frc.robot.Constants.IntakeConstants;
 
 public class ElementTransitSubsystem extends SubsystemBase {
   private Compressor pcmCompressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-  private DoubleSolenoid leftShortSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private DoubleSolenoid leftLongSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private DoubleSolenoid rightShortSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private DoubleSolenoid rightLongSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid longSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid shortSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
   private CANSparkMax leftMotor = new CANSparkMax(0, MotorType.kBrushless);
   private CANSparkMax rightMotor = new CANSparkMax(0, MotorType.kBrushless);
+  private CANSparkMax elevator = new CANSparkMax(0, MotorType.kBrushless);
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
     pcmCompressor.enableDigital();
     pcmCompressor.disable();
     //upper 4 lines enable/disable compressor, return if compressor active,
-    rightLongSolenoid.set(Value.kReverse);//placeholders
-    rightShortSolenoid.set(Value.kReverse);
-    leftLongSolenoid.set(Value.kReverse);
-    leftShortSolenoid.set(Value.kReverse);
+    shortSolenoid.set(Value.kReverse);//placeholders
+    longSolenoid.set(Value.kReverse);
 
   }
   public void runClawMotors() {
@@ -45,6 +42,15 @@ public class ElementTransitSubsystem extends SubsystemBase {
   public void stopClawMotors(){
     leftMotor.set(0);
     rightMotor.set(0);
+  }
+  public void changeHalf() {
+    shortSolenoid.toggle();
+  }
+  public void changeFull() {
+    longSolenoid.toggle();
+  }
+  public void elevatorOn() {
+    elevator.set(0);
   }
   // public static void main(String[] args) { //main method
   //   System.out.println("Kurt sucks"); //kurt sucks

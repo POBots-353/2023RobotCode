@@ -11,6 +11,9 @@ import frc.robot.commands.TankDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+
+import com.fasterxml.jackson.databind.jsontype.impl.AsWrapperTypeDeserializer;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -69,6 +72,8 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
     Trigger motorIntake = new JoystickButton(operatorStick, 6);
+    Trigger shortClaws = new JoystickButton(operatorStick, 5);
+    Trigger longClaws = new JoystickButton(operatorStick, 8);
     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
@@ -76,6 +81,9 @@ public class RobotContainer {
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
     motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
     motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
+    shortClaws.onTrue(Commands.run(transitSubsystem::changeHalf, transitSubsystem));
+    longClaws.onTrue(Commands.run(transitSubsystem::changeFull, transitSubsystem));//toggles claw half or full
+
   }
 
   /**

@@ -43,14 +43,14 @@ public class ElementTransitSubsystem extends SubsystemBase {
     leftMotor.set(0);
     rightMotor.set(0);
   }
-  public void changeHalf() {
+  public void toggleShort() {
     shortSolenoid.toggle();
   }
-  public void changeFull() {
+  public void toggleLong() {
     longSolenoid.toggle();
   }
   public void elevatorOn() {
-    elevator.set(0);
+    elevator.set(0.5);
   }
   // public static void main(String[] args) { //main method
   //   System.out.println("Kurt sucks"); //kurt sucks

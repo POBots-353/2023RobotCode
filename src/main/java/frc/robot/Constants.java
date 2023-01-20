@@ -29,6 +29,10 @@ public final class Constants {
     public static final int backLeftMotorID = 2;
     public static final int frontRightMotorID = 1;
     public static final int backRightMotorID = 3;
+
+    public static final double gearBoxRatio = 10.7;
+
+    public static final double wheelCircumference = 0.1524 * Math.PI;
   }
   public static class IntakeConstants {
     public static final double intakeSpeed = .5;

@@ -4,21 +4,16 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class TankDriveCommand extends CommandBase {
-  private DoubleSupplier leftSupplier;
-  private DoubleSupplier rightSupplier;
-
+public class AutoDriveCommand extends CommandBase {
+  private double distanceMeters;
   private DriveSubsystem driveSubsystem;
 
-  /** Creates a new TankDriveCommand. */
-  public TankDriveCommand(DoubleSupplier leftSupplier, DoubleSupplier rightSupplier, DriveSubsystem driveSubsystem) {
-    this.leftSupplier = leftSupplier;
-    this.rightSupplier = rightSupplier;
+  /** Creates a new AutoDriveCommand. */
+  public AutoDriveCommand(double distance, DriveSubsystem driveSubsystem) {
+    distanceMeters = distance;
 
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -28,12 +23,13 @@ public class TankDriveCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    driveSubsystem.resetEncoders();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.tankDrive(-leftSupplier.getAsDouble() * 0.45, -rightSupplier.getAsDouble() * 0.45); //.45 before
+    driveSubsystem.autoDrive(distanceMeters);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,6 +40,6 @@ public class TankDriveCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return driveSubsystem.distanceReached(distanceMeters);
   }
 }

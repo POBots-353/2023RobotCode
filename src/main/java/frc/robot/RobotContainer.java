@@ -5,14 +5,15 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AlignToTapeCommand;
+import frc.robot.commands.ArcadeDriveCommand;
+import frc.robot.commands.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
-
-import com.fasterxml.jackson.databind.jsontype.impl.AsWrapperTypeDeserializer;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,9 +48,14 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    
+
+    // driveSubsystem.setDefaultCommand(
+    // new ArcadeDriveCommand(driverController::getLeftY,
+    // driverController::getRightX, driveSubsystem));
+
     driveSubsystem.setDefaultCommand(
-        new TankDriveCommand(driverController::getLeftY, driverController::getRightY, driveSubsystem));
+        new TankDriveCommand(driverController::getLeftY, driverController::getRightY,
+            driveSubsystem));
   }
 
   /**
@@ -71,12 +77,16 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
+
     Trigger motorIntake = new JoystickButton(operatorStick, 6);
     Trigger shortClaws = new JoystickButton(operatorStick, 5);
     Trigger longClaws = new JoystickButton(operatorStick, 8);
     Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
     Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
-    
+
+    Trigger alignToTape = driverController.rightTrigger();
+    alignToTape.whileTrue(new AlignToTapeCommand(driveSubsystem));
+
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
     // cancelling on release.
@@ -96,6 +106,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    return new AutoDriveCommand(5.00, driveSubsystem);
+    // return Autos.exampleAuto(m_exampleSubsystem);
   }
 }

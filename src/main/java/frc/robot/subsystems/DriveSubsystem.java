@@ -62,8 +62,8 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // rightMotors.setInverted(true);
 
-    // backLeftMotor.follow(frontLeftMotor);
-    // backRightMotor.follow(frontRightMotor);
+    backLeftMotor.follow(frontLeftMotor);
+    backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
     // initializePID(backLeftPIDController);
@@ -117,18 +117,10 @@ public class DriveSubsystem extends SubsystemBase {
     leftMotors.set(leftSpeed);
     rightMotors.set(-rightSpeed);
   }
-  private final AHRS gyroScope = new AHRS(SPI.Port.kMXP);
+
   public void autoDrive(double meters) {
     leftPIDController.setReference(convertDistanceToEncoder(meters), ControlType.kSmartMotion);
     rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
-
-    double gyroAngle = gyroScope.getAngle();
-    if (gyroAngle> 15) {
-      tankDrive(0.1, 0.1);
-      if (gyroAngle > -1 && gyroAngle < 1) {
-        tankDrive(0, 0);
-      }
-    }
   }
 
   public void resetEncoders() {
@@ -136,17 +128,14 @@ public class DriveSubsystem extends SubsystemBase {
     frontRightEncoder.setPosition(0);
   }
 
-  public void alignToTape() {
-    PhotonPipelineResult result = limelight.getLatestResult();
+  public void autoBalance() {
+    double gyroAngle = navx.getPitch();
 
-    SmartDashboard.putBoolean("Has Targets", result.hasTargets());
-
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
-
-      SmartDashboard.putNumber("Target Yaw", target.getYaw());
-
-      arcadeDrive(0, target.getYaw()/120);
+    if (Math.abs(gyroAngle) > 15) {
+      tankDrive(0.1, 0.1);
+      if (gyroAngle > -1 && gyroAngle < 1) {
+        tankDrive(0, 0);
+      }
     }
   }
 
@@ -161,8 +150,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     return false;
   }
-
-  
 
   public PhotonCamera getCamera() {
     return limelight;

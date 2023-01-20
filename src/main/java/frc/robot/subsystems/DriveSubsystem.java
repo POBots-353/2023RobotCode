@@ -1,6 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+//testing push
 
 package frc.robot.subsystems;
 
@@ -61,8 +62,8 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // rightMotors.setInverted(true);
 
-    // backLeftMotor.follow(frontLeftMotor);
-    // backRightMotor.follow(frontRightMotor);
+    backLeftMotor.follow(frontLeftMotor);
+    backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
     // initializePID(backLeftPIDController);
@@ -127,17 +128,14 @@ public class DriveSubsystem extends SubsystemBase {
     frontRightEncoder.setPosition(0);
   }
 
-  public void alignToTape() {
-    PhotonPipelineResult result = limelight.getLatestResult();
+  public void autoBalance() {
+    double gyroAngle = navx.getPitch();
 
-    SmartDashboard.putBoolean("Has Targets", result.hasTargets());
-
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
-
-      SmartDashboard.putNumber("Target Yaw", target.getYaw());
-
-      arcadeDrive(0, target.getYaw()/120);
+    if (Math.abs(gyroAngle) > 15) {
+      tankDrive(0.1, 0.1);
+      if (gyroAngle > -1 && gyroAngle < 1) {
+        tankDrive(0, 0);
+      }
     }
   }
 
@@ -152,8 +150,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     return false;
   }
-
-  
 
   public PhotonCamera getCamera() {
     return limelight;

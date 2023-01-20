@@ -1,7 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-//testing push
 
 package frc.robot.subsystems;
 
@@ -117,10 +116,18 @@ public class DriveSubsystem extends SubsystemBase {
     leftMotors.set(leftSpeed);
     rightMotors.set(-rightSpeed);
   }
-
+  private final AHRS gyroScope = new AHRS(SPI.Port.kMXP);
   public void autoDrive(double meters) {
     leftPIDController.setReference(convertDistanceToEncoder(meters), ControlType.kSmartMotion);
     rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
+
+    double gyroAngle = gyroScope.getAngle();
+    if (gyroAngle> 15) {
+      tankDrive(0.1, 0.1);
+      if (gyroAngle > -1 && gyroAngle < 1) {
+        tankDrive(0, 0);
+      }
+    }
   }
 
   public void resetEncoders() {

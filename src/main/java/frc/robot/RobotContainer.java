@@ -36,12 +36,14 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final ElementTransitSubsystem transitSubsystem = new ElementTransitSubsystem();
+  // private final ElementTransitSubsystem transitSubsystem = new
+  // ElementTransitSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public static final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
   public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -78,11 +80,18 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    Trigger motorIntake = new JoystickButton(operatorStick, 6);
-    Trigger shortClaws = new JoystickButton(operatorStick, 5);
-    Trigger longClaws = new JoystickButton(operatorStick, 8);
-    Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
-    Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
+    // Slow drive
+    Trigger leftTrigger = driverController.leftTrigger();
+    leftTrigger.whileTrue(
+        Commands.run(
+            () -> driveSubsystem.tankDrive(-driverController.getLeftY() * 0.25, -driverController.getRightY() * 0.25),
+            driveSubsystem));
+
+    // Trigger motorIntake = new JoystickButton(operatorStick, 6);
+    // Trigger shortClaws = new JoystickButton(operatorStick, 5);
+    // Trigger longClaws = new JoystickButton(operatorStick, 8);
+    // Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
+    // Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
 
     Trigger alignToTape = driverController.rightBumper();
     alignToTape.whileTrue(new AlignToTapeCommand(driveSubsystem));
@@ -91,12 +100,17 @@ public class RobotContainer {
     // pressed,
     // cancelling on release.
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
-    motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
-    shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
-    longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));//toggles claw half or full
-    elevatorPulley.onTrue(Commands.run(transitSubsystem::elevatorOn, transitSubsystem));
-    elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
+    // motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors,
+    // transitSubsystem));
+    // motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors,
+    // transitSubsystem));//trigger claw motors on/off
+    // shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort,
+    // transitSubsystem));
+    // longClaws.onTrue(Commands.run(transitSubsystem::toggleLong,
+    // transitSubsystem));//toggles claw half or full
+    // elevatorPulley.onTrue(Commands.run(transitSubsystem::elevatorOn,
+    // transitSubsystem));
+    // elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
   }
 
   /**

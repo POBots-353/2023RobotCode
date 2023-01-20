@@ -145,7 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
 
-      return Math.abs(target.getYaw()) <= 0.05;
+      return Math.abs(target.getYaw()) <= 0.55;
     }
 
     return false;

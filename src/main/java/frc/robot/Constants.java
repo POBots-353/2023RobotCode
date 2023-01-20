@@ -19,9 +19,12 @@ package frc.robot;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static int operatorStickPort = 1;
+
   }
 
   public static class DriveConstants {
+
     public static final int frontLeftMotorID = 4;
     public static final int backLeftMotorID = 2;
     public static final int frontRightMotorID = 1;
@@ -30,5 +33,8 @@ public final class Constants {
     public static final double gearBoxRatio = 10.7;
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
+  }
+  public static class IntakeConstants {
+    public static final double intakeSpeed = .5;
   }
 }

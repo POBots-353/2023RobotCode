@@ -103,11 +103,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void arcadeDrive(double forward, double turn) {
     // if (Math.abs(forward) < 0.06) {
-    //   forward = 0;
+    // forward = 0;
     // }
 
     // if (Math.abs(turn) < 0.06) {
-    //   turn = 0;
+    // turn = 0;
     // }
 
     double leftSpeed = forward + turn;
@@ -137,6 +137,18 @@ public class DriveSubsystem extends SubsystemBase {
         tankDrive(0, 0);
       }
     }
+  }
+
+  public double getAngleError(double expectedAngle) {
+    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getAngle(), 360);
+
+    if (angleSubtract < -180) {
+      return angleSubtract + 360;
+    } else if (angleSubtract > 180) {
+      return angleSubtract - 360;
+    }
+
+    return angleSubtract;
   }
 
   public boolean alignedToTape() {

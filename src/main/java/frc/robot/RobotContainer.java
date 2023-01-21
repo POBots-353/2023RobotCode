@@ -8,6 +8,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlignToTapeCommand;
 import frc.robot.commands.ArcadeDriveCommand;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
@@ -84,7 +85,9 @@ public class RobotContainer {
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
     Trigger temporaryBalance = driverController.leftBumper();
-    temporaryBalance.whileTrue(Commands.run(driveSubsystem::autoBalance, driveSubsystem));
+    // temporaryBalance.whileTrue(Commands.run(driveSubsystem::autoBalance,
+    // driveSubsystem));
+    temporaryBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 
     // Turn to angle
     // Uses IEEEremainder to get the angle between -180 and 180
@@ -134,7 +137,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new AutoDriveCommand(5.00, driveSubsystem);
+    // return new AutoDriveCommand(5.00, driveSubsystem);
+    return Commands.sequence(new AutoDriveCommand(1.00, driveSubsystem), new AutoBalanceCommand(driveSubsystem));
     // return Autos.exampleAuto(m_exampleSubsystem);
   }
 }

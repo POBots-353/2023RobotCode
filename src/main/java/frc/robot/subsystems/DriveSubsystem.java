@@ -16,6 +16,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -44,6 +45,10 @@ public class DriveSubsystem extends SubsystemBase {
   private PhotonCamera limelight = new PhotonCamera("gloworm");
 
   private AHRS navx = new AHRS(I2C.Port.kMXP);
+
+  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
+
+  private boolean balanceCompleted = false;
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -128,20 +133,47 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void autoBalance() {
-    double gyroAngle = navx.getPitch();
+    double gyroPitch = navx.getPitch();
+    double gyroYaw = Math.IEEEremainder(navx.getYaw(), 360);
 
     // if (Math.abs(gyroAngle) > 15) {
-    //   tankDrive(0.1, 0.1);
-    //   if (Math.abs(gyroAngle) < 1.5) {
-    //     arcadeDrive(0, 0);
-    //   }
+    // tankDrive(0.1, 0.1);
+    // if (Math.abs(gyroAngle) < 1.5) {
+    // arcadeDrive(0, 0);
+    // }
     // }
 
-    if (Math.abs(gyroAngle) > 1.5) {
-      arcadeDrive(-gyroAngle / 45, 0);
-    } else {
+    if (Math.abs(gyroPitch) <= 0.5) {
+      // frontLeftEncoder.setPosition(0);
+      // frontRightEncoder.setPosition(0);
       arcadeDrive(0, 0);
+      // leftPIDController.setReference(0, ControlType.kSmartVelocity);
+      // rightPIDController.setReference(0, ControlType.kSmartVelocity);
+      return;
     }
+
+    if (Math.abs(gyroPitch) < 5.5) {
+      balancePIDController.setP(0.0061);
+    }
+
+    double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
+
+    arcadeDrive(forwardSpeed, 0);
+
+    // if (Math.abs(gyroAngle) > 1.5) {
+    // // arcadeDrive(-gyroAngle / 175, 0);
+    // arcadeDrive(balancePIDController.calculate(gyroAngle, 0), 0);
+    // } else if (Math.abs(gyroAngle) < 5.5) {
+    // balancePIDController.setP(0.0057);
+    // arcadeDrive(balancePIDController.calculate(gyroAngle, 0), 0);
+    // } else {
+    // arcadeDrive(0, 0);
+    // }
+  }
+
+  public void resetBalance() {
+    balancePIDController.setP(0.010);
+    balanceCompleted = false;
   }
 
   public double getAngleError(double expectedAngle) {

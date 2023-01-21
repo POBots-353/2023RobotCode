@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TankDriveCommand extends CommandBase {
@@ -33,7 +34,8 @@ public class TankDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.tankDrive(-leftSupplier.getAsDouble() * 0.45, -rightSupplier.getAsDouble() * 0.45); //.45 before
+    driveSubsystem.tankDrive(-leftSupplier.getAsDouble() * DriveConstants.defaultSpeed,
+        -rightSupplier.getAsDouble() * DriveConstants.defaultSpeed);
   }
 
   // Called once the command ends or is interrupted.

@@ -28,6 +28,11 @@ public final class Constants {
     public static final int frontRightMotorID = 1; // 1
     public static final int backRightMotorID = 3; // 3
 
+    public static final double defaultSpeed = 0.45;
+    public static final double slowSpeed = 0.25;
+
+    public static final double tapeAlignmentTolerance = 0.55;
+
     public static final double gearBoxRatio = 10.7;
 
     public static final double wheelCircumference = 0.1524 * Math.PI;

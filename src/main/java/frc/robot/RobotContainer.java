@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlignToTapeCommand;
 import frc.robot.commands.ArcadeDriveCommand;
@@ -11,11 +12,13 @@ import frc.robot.commands.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.TankDriveCommand;
+import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,6 +45,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public static final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
+  public static final XboxController driverControllerHID = driverController.getHID();
   public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
 
   /**
@@ -80,11 +84,18 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    // Turn to angle
+    // Uses IEEEremainder to get the angle between -180 and 180
+    new Trigger(() -> driverControllerHID.getPOV() != -1)
+        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
+            driveSubsystem));
+
     // Slow drive
     Trigger leftTrigger = driverController.leftTrigger();
     leftTrigger.whileTrue(
         Commands.run(
-            () -> driveSubsystem.tankDrive(-driverController.getLeftY() * 0.25, -driverController.getRightY() * 0.25),
+            () -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
+                -driverController.getRightY() * DriveConstants.slowSpeed),
             driveSubsystem));
 
     // Trigger motorIntake = new JoystickButton(operatorStick, 6);
@@ -93,6 +104,7 @@ public class RobotContainer {
     // Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
     // Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
 
+    // Align to tape
     Trigger alignToTape = driverController.rightBumper();
     alignToTape.whileTrue(new AlignToTapeCommand(driveSubsystem));
 

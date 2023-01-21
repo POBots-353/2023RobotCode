@@ -66,7 +66,6 @@ public class DriveSubsystem extends SubsystemBase {
     backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
-    // initializePID(backLeftPIDController);
     initializePID(rightPIDController);
   }
 
@@ -157,7 +156,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
 
-      return Math.abs(target.getYaw()) <= 0.55;
+      return Math.abs(target.getYaw()) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;

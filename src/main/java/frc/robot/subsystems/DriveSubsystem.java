@@ -130,11 +130,17 @@ public class DriveSubsystem extends SubsystemBase {
   public void autoBalance() {
     double gyroAngle = navx.getPitch();
 
-    if (Math.abs(gyroAngle) > 15) {
-      tankDrive(0.1, 0.1);
-      if (gyroAngle > -1 && gyroAngle < 1) {
-        tankDrive(0, 0);
-      }
+    // if (Math.abs(gyroAngle) > 15) {
+    //   tankDrive(0.1, 0.1);
+    //   if (Math.abs(gyroAngle) < 1.5) {
+    //     arcadeDrive(0, 0);
+    //   }
+    // }
+
+    if (Math.abs(gyroAngle) > 1.5) {
+      arcadeDrive(-gyroAngle / 45, 0);
+    } else {
+      arcadeDrive(0, 0);
     }
   }
 
@@ -150,13 +156,25 @@ public class DriveSubsystem extends SubsystemBase {
     return angleSubtract;
   }
 
-  public boolean alignedToTape() {
+  public boolean alignedToTapeYaw() {
     PhotonPipelineResult result = limelight.getLatestResult();
 
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
 
       return Math.abs(target.getYaw()) <= DriveConstants.tapeAlignmentTolerance;
+    }
+
+    return false;
+  }
+
+  public boolean alignedToTapePitch() {
+    PhotonPipelineResult result = limelight.getLatestResult();
+
+    if (result.hasTargets()) {
+      PhotonTrackedTarget target = result.getBestTarget();
+
+      return Math.abs(target.getPitch() - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;

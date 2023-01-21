@@ -79,10 +79,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
+
+    Trigger temporaryBalance = driverController.leftBumper();
+    temporaryBalance.whileTrue(Commands.run(driveSubsystem::autoBalance, driveSubsystem));
 
     // Turn to angle
     // Uses IEEEremainder to get the angle between -180 and 180

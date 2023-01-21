@@ -32,7 +32,7 @@ public final class Constants {
     public static final double slowSpeed = 0.25;
 
     public static final double tapeAlignmentTolerance = 0.55;
-    public static final double tapeAlignmentPitch = -15.0;
+    public static final double tapeAlignmentPitch = 0.0;
 
     public static final double gearBoxRatio = 10.7;
 

@@ -134,21 +134,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void autoBalance() {
     double gyroPitch = navx.getPitch();
-    double gyroYaw = Math.IEEEremainder(navx.getYaw(), 360);
-
-    // if (Math.abs(gyroAngle) > 15) {
-    // tankDrive(0.1, 0.1);
-    // if (Math.abs(gyroAngle) < 1.5) {
-    // arcadeDrive(0, 0);
-    // }
-    // }
 
     if (Math.abs(gyroPitch) <= 0.5) {
-      // frontLeftEncoder.setPosition(0);
-      // frontRightEncoder.setPosition(0);
       arcadeDrive(0, 0);
-      // leftPIDController.setReference(0, ControlType.kSmartVelocity);
-      // rightPIDController.setReference(0, ControlType.kSmartVelocity);
       return;
     }
 
@@ -159,16 +147,6 @@ public class DriveSubsystem extends SubsystemBase {
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
 
     arcadeDrive(forwardSpeed, 0);
-
-    // if (Math.abs(gyroAngle) > 1.5) {
-    // // arcadeDrive(-gyroAngle / 175, 0);
-    // arcadeDrive(balancePIDController.calculate(gyroAngle, 0), 0);
-    // } else if (Math.abs(gyroAngle) < 5.5) {
-    // balancePIDController.setP(0.0057);
-    // arcadeDrive(balancePIDController.calculate(gyroAngle, 0), 0);
-    // } else {
-    // arcadeDrive(0, 0);
-    // }
   }
 
   public void resetBalance() {

@@ -53,16 +53,15 @@ public class AlignToTapeCommand extends CommandBase {
       pitch = target.getPitch();
 
       double turnSpeed = -turnController.calculate(yaw, 0);
-      double forwardSpeed = -forwardController.calculate(-pitch, -DriveConstants.tapeAlignmentPitch);
+      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
-      SmartDashboard.putNumber("Forward Speed", forwardSpeed);
-      driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.35, 0.35), MathUtil.clamp(turnSpeed, -0.15, 0.15));
+      driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), MathUtil.clamp(turnSpeed, -0.15, 0.15));
     } else if (Math.abs(yaw) >= 5 || Math.abs(pitch - DriveConstants.tapeAlignmentPitch) >= 5) {
 
       double turnSpeed = -turnController.calculate(yaw, 0);
-      double forwardSpeed = -forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
+      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
-      driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.35, 0.35), turnSpeed);
+      driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), turnSpeed);
     } else {
       driveSubsystem.arcadeDrive(0, 0);
     }

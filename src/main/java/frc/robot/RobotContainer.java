@@ -84,10 +84,8 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    Trigger temporaryBalance = driverController.leftBumper();
-    // temporaryBalance.whileTrue(Commands.run(driveSubsystem::autoBalance,
-    // driveSubsystem));
-    temporaryBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
+    Trigger autoBalance = driverController.leftBumper();
+    autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 
     // Turn to angle
     // Uses IEEEremainder to get the angle between -180 and 180

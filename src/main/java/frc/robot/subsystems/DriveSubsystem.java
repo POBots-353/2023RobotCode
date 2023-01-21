@@ -133,9 +133,16 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (Math.abs(gyroAngle) > 15) {
       tankDrive(0.1, 0.1);
-      if (gyroAngle > -1 && gyroAngle < 1) {
+      // Slows down robot as it's climbing the ramp
+      // ToDo: Create logging statements for debugging purpouses (Don't currently know logging mechanism)
+      if (Math.abs(gyroAngle) < - 15) {
+        tankDrive(-0.1, -0.1);
+        // Makes the robot go backards in case if the robot moves too forward and the ramp starts tipping
+      } else if (Math.abs(gyroAngle) > - 1 && Math.abs(gyroAngle) < 1) {
         tankDrive(0, 0);
+        // Stops the robot
       }
+      // If both of these if statemetns are false, the robot will still move uninteruppted.
     }
   }
 

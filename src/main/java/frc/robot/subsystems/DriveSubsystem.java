@@ -16,6 +16,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -45,6 +46,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(I2C.Port.kMXP);
 
+  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
+
+  private boolean balanceCompleted = false;
+
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -66,7 +71,6 @@ public class DriveSubsystem extends SubsystemBase {
     backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
-    // initializePID(backLeftPIDController);
     initializePID(rightPIDController);
   }
 
@@ -103,11 +107,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void arcadeDrive(double forward, double turn) {
     // if (Math.abs(forward) < 0.06) {
-    //   forward = 0;
+    // forward = 0;
     // }
 
     // if (Math.abs(turn) < 0.06) {
-    //   turn = 0;
+    // turn = 0;
     // }
 
     double leftSpeed = forward + turn;
@@ -129,30 +133,57 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void autoBalance() {
-    double gyroAngle = navx.getPitch();
-
-    if (Math.abs(gyroAngle) > 15) {
-      tankDrive(0.1, 0.1);
-      // Slows down robot as it's climbing the ramp
-      // ToDo: Create logging statements for debugging purpouses (Don't currently know logging mechanism)
-      if (Math.abs(gyroAngle) < - 15) {
-        tankDrive(-0.1, -0.1);
-        // Makes the robot go backards in case if the robot moves too forward and the ramp starts tipping
-      } else if (Math.abs(gyroAngle) > - 1 && Math.abs(gyroAngle) < 1) {
-        tankDrive(0, 0);
-        // Stops the robot
-      }
-      // If both of these if statemetns are false, the robot will still move uninteruppted.
+    double gyroPitch = navx.getPitch();
+    if (Math.abs(gyroPitch) <= 0.5) {
+      arcadeDrive(0, 0);
+      return;
     }
+
+    if (Math.abs(gyroPitch) < 5.5) {
+      balancePIDController.setP(0.0061);
+    }
+
+    double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
+
+    arcadeDrive(forwardSpeed, 0);
   }
 
-  public boolean alignedToTape() {
+  public void resetBalance() {
+    balancePIDController.setP(0.010);
+    balanceCompleted = false;
+  }
+
+  public double getAngleError(double expectedAngle) {
+    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw(), 360);
+
+    if (angleSubtract < -180) {
+      return angleSubtract + 360;
+    } else if (angleSubtract > 180) {
+      return angleSubtract - 360;
+    }
+
+    return angleSubtract;
+  }
+
+  public boolean alignedToTapeYaw() {
     PhotonPipelineResult result = limelight.getLatestResult();
 
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
 
-      return Math.abs(target.getYaw()) <= 0.55;
+      return Math.abs(target.getYaw()) <= DriveConstants.tapeAlignmentTolerance;
+    }
+
+    return false;
+  }
+
+  public boolean alignedToTapePitch() {
+    PhotonPipelineResult result = limelight.getLatestResult();
+
+    if (result.hasTargets()) {
+      PhotonTrackedTarget target = result.getBestTarget();
+
+      return Math.abs(target.getPitch() - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;

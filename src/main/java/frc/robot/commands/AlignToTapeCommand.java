@@ -11,8 +11,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AlignToTapeCommand extends CommandBase {
@@ -20,8 +22,10 @@ public class AlignToTapeCommand extends CommandBase {
   private PhotonCamera camera;
 
   private double yaw = 0;
+  private double pitch = 0;
 
-  private PIDController pidController = new PIDController(0.0050, 0, 0.00000);
+  private PIDController forwardController = new PIDController(0.0135, 0, 0);
+  private PIDController turnController = new PIDController(0.0050, 0, 0);
 
   /** Creates a new AlignToTapeCommand. */
   public AlignToTapeCommand(DriveSubsystem driveSubsystem) {
@@ -46,21 +50,24 @@ public class AlignToTapeCommand extends CommandBase {
       PhotonTrackedTarget target = result.getBestTarget();
 
       yaw = target.getYaw();
+      pitch = target.getPitch();
 
-      double turnSpeed = -pidController.calculate(yaw, 0);
+      double turnSpeed = -turnController.calculate(yaw, 0);
+      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
-      driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.15, 0.15));
-    } else if (Math.abs(yaw) >= 5) {
+      driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), MathUtil.clamp(turnSpeed, -0.15, 0.15));
+    } else if (Math.abs(yaw) >= 5 || Math.abs(pitch - DriveConstants.tapeAlignmentPitch) >= 5) {
 
-      double turnSpeed = -pidController.calculate(yaw, 0);
+      double turnSpeed = -turnController.calculate(yaw, 0);
+      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
-      driveSubsystem.arcadeDrive(0, turnSpeed);
+      driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), turnSpeed);
     } else {
       driveSubsystem.arcadeDrive(0, 0);
     }
 
     // Vibrate the controller if the robot is aligned
-    if (driveSubsystem.alignedToTape()) {
+    if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapePitch()) {
       RobotContainer.driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.00);
     } else {
       RobotContainer.driverController.getHID().setRumble(RumbleType.kLeftRumble, 0);

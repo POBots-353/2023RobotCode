@@ -146,6 +146,7 @@ public class DriveSubsystem extends SubsystemBase {
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
 
     arcadeDrive(forwardSpeed, 0);
+    SmartDashboard.putString("Is Balanced?", "BALANCED");
   }
 
   public void resetBalance() {

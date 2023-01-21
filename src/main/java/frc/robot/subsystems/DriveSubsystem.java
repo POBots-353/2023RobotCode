@@ -139,7 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getAngleError(double expectedAngle) {
-    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getAngle(), 360);
+    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw(), 360);
 
     if (angleSubtract < -180) {
       return angleSubtract + 360;

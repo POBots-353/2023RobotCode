@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -39,7 +40,9 @@ public class TurnToAngleCommand extends CommandBase {
     double expectedAngle = angleSupplier.getAsDouble();
     double angleError = driveSubsystem.getAngleError(expectedAngle);
 
-    driveSubsystem.arcadeDrive(0, -pidController.calculate(angleError, expectedAngle));
+    double turnSpeed = angleError * 0.0027;
+
+    driveSubsystem.arcadeDrive(0, turnSpeed);
   }
 
   // Called once the command ends or is interrupted.

@@ -13,13 +13,14 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.Limelight;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AlignToTapeCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
-  private PhotonCamera camera;
+  private Limelight camera;
 
   private double yaw = 0;
   private double pitch = 0;
@@ -44,13 +45,13 @@ public class AlignToTapeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    PhotonPipelineResult result = camera.getLatestResult();
+    // PhotonPipelineResult result = camera.getLatestResult();
 
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
+    if (camera.hasTarget()) {
+      // PhotonTrackedTarget target = result.getBestTarget();
 
-      yaw = target.getYaw();
-      pitch = target.getPitch();
+      yaw = camera.getTargetX();
+      pitch = camera.getTargetY();
 
       double turnSpeed = -turnController.calculate(yaw, 0);
       double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);

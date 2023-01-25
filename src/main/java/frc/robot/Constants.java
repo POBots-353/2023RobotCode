@@ -42,5 +42,8 @@ public final class Constants {
   public static class IntakeConstants {
     public static final double intakeSpeed = 0.5;
     public static final double elevatorPulleySpeed = 0.25;
+    public static final double elevatorTopSetPoint = 3000;
+    public static final double elevatorMidSetPoint = 1500;
+    public static final double elevatorLowSetPoint = 0;
   }
 }

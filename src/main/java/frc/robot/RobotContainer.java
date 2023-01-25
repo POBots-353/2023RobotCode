@@ -85,6 +85,15 @@ public class RobotContainer {
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
 
+    Trigger motorIntake = new JoystickButton(operatorStick, 6);
+    Trigger shortClaws = new JoystickButton(operatorStick, 5);
+    Trigger longClaws = new JoystickButton(operatorStick, 8);
+    Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
+    Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
+    Trigger topSetpoint = new JoystickButton(operatorStick, 9);
+    Trigger midSetpoint = new JoystickButton(operatorStick, 10);
+    Trigger lowSetpoint = new JoystickButton(operatorStick, 11);
+
     Trigger autoBalance = driverController.leftBumper();
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 
@@ -110,12 +119,6 @@ public class RobotContainer {
                 -driverController.getRightY() * DriveConstants.slowSpeed),
             driveSubsystem));
 
-    // Trigger motorIntake = new JoystickButton(operatorStick, 6);
-    // Trigger shortClaws = new JoystickButton(operatorStick, 5);
-    // Trigger longClaws = new JoystickButton(operatorStick, 8);
-    // Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
-    // Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
-
     // Align to tape
     Trigger alignToTape = driverController.rightBumper();
     alignToTape.whileTrue(new AlignToTapeCommand(driveSubsystem));
@@ -124,17 +127,15 @@ public class RobotContainer {
     // pressed,
     // cancelling on release.
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    // motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors,
-    // transitSubsystem));
-    // motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors,
-    // transitSubsystem));//trigger claw motors on/off
-    // shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort,
-    // transitSubsystem));
-    // longClaws.onTrue(Commands.run(transitSubsystem::toggleLong,
-    // transitSubsystem));//toggles claw half or full
-    // elevatorPulley.onTrue(Commands.run(transitSubsystem::elevatorOn,
-    // transitSubsystem));
-    // elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
+
+    motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
+    motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
+    shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
+    longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));//toggles claw half or full
+    elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
+    topSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorHigh, transitSubsystem));
+    midSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorMid, transitSubsystem));
+    lowSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorLow, transitSubsystem));
   }
 
   /**

@@ -41,8 +41,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  // private final ElementTransitSubsystem transitSubsystem = new
-  // ElementTransitSubsystem();
+  private final ElementTransitSubsystem transitSubsystem = new ElementTransitSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public static final CommandXboxController driverController = new CommandXboxController(
@@ -88,7 +87,6 @@ public class RobotContainer {
     Trigger motorIntake = new JoystickButton(operatorStick, 6);
     Trigger shortClaws = new JoystickButton(operatorStick, 5);
     Trigger longClaws = new JoystickButton(operatorStick, 8);
-    Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
     Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
     Trigger topSetpoint = new JoystickButton(operatorStick, 9);
     Trigger midSetpoint = new JoystickButton(operatorStick, 10);
@@ -99,7 +97,8 @@ public class RobotContainer {
 
     // Set the camera pipeline to reflective tape
     Trigger setPipelineTape = driverController.start();
-    setPipelineTape.toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
+    setPipelineTape
+        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
 
     Trigger setPipelineAprilTag = driverController.back();
     setPipelineAprilTag
@@ -129,9 +128,9 @@ public class RobotContainer {
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
-    motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
+    motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));// trigger claw motors on/off
     shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
-    longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));//toggles claw half or full
+    longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));// toggles claw half or full
     elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
     topSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorHigh, transitSubsystem));
     midSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorMid, transitSubsystem));

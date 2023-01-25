@@ -88,6 +88,14 @@ public class RobotContainer {
     Trigger autoBalance = driverController.leftBumper();
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 
+    // Set the camera pipeline to reflective tape
+    Trigger setPipelineTape = driverController.start();
+    setPipelineTape.toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
+
+    Trigger setPipelineAprilTag = driverController.back();
+    setPipelineAprilTag
+        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1), driveSubsystem));
+
     // Turn to angle
     // Uses IEEEremainder to get the angle between -180 and 180
     new Trigger(() -> driverControllerHID.getPOV() != -1)

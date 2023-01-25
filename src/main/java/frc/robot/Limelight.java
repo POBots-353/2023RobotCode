@@ -26,6 +26,10 @@ public class Limelight {
         ts = table.getEntry("ts");
     }
 
+    public NetworkTable getTable() {
+        return table;
+    }
+
     public double getTargetX() {
         return tx.getDouble(0.0);
     }

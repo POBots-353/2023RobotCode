@@ -20,23 +20,28 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
     public static int operatorStickPort = 1;
-
   }
 
   public static class DriveConstants {
+    public static final int frontLeftMotorID = 4; // 4
+    public static final int backLeftMotorID = 2; // 2
+    public static final int frontRightMotorID = 1; // 1
+    public static final int backRightMotorID = 3; // 3
 
-    public static final int frontLeftMotorID = 4;
-    public static final int backLeftMotorID = 2;
-    public static final int frontRightMotorID = 1;
-    public static final int backRightMotorID = 3;
+    public static final double defaultSpeed = 0.45;
+    public static final double slowSpeed = 0.25;
+
+    public static final double tapeAlignmentTolerance = 0.55;
+    public static final double tapeAlignmentPitch = 0.0;
 
     public static final double gearBoxRatio = 10.7;
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
   }
+
   public static class IntakeConstants {
-    public static final double intakeSpeed = .5;
-    public static final double elevatorPulleySpeed = .25;
+    public static final double intakeSpeed = 0.5;
+    public static final double elevatorPulleySpeed = 0.25;
     public static final double elevatorTopSetPoint = 3000;
     public static final double elevatorMidSetPoint = 1500;
     public static final double elevatorLowSetPoint = 0;

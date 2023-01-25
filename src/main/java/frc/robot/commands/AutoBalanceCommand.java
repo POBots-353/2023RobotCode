@@ -4,23 +4,14 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class TankDriveCommand extends CommandBase {
-  private DoubleSupplier leftSupplier;
-  private DoubleSupplier rightSupplier;
+public class AutoBalanceCommand extends CommandBase {
+  DriveSubsystem driveSubsystem;
 
-  private DriveSubsystem driveSubsystem;
-
-  /** Creates a new TankDriveCommand. */
-  public TankDriveCommand(DoubleSupplier leftSupplier, DoubleSupplier rightSupplier, DriveSubsystem driveSubsystem) {
-    this.leftSupplier = leftSupplier;
-    this.rightSupplier = rightSupplier;
-
+  /** Creates a new AutoBalanceCommand. */
+  public AutoBalanceCommand(DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
@@ -29,13 +20,13 @@ public class TankDriveCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    driveSubsystem.resetBalance();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.tankDrive(-leftSupplier.getAsDouble() * DriveConstants.defaultSpeed,
-        -rightSupplier.getAsDouble() * DriveConstants.defaultSpeed);
+    driveSubsystem.autoBalance();
   }
 
   // Called once the command ends or is interrupted.

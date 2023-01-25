@@ -1,6 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
+//testing push
 
 package frc.robot.subsystems;
 
@@ -15,6 +16,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -44,6 +46,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(I2C.Port.kMXP);
 
+  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
+
+  private boolean balanceCompleted = false;
+
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -61,11 +67,10 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // rightMotors.setInverted(true);
 
-    // backLeftMotor.follow(frontLeftMotor);
-    // backRightMotor.follow(frontRightMotor);
+    backLeftMotor.follow(frontLeftMotor);
+    backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
-    // initializePID(backLeftPIDController);
     initializePID(rightPIDController);
   }
 
@@ -102,11 +107,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void arcadeDrive(double forward, double turn) {
     // if (Math.abs(forward) < 0.06) {
-    //   forward = 0;
+    // forward = 0;
     // }
 
     // if (Math.abs(turn) < 0.06) {
-    //   turn = 0;
+    // turn = 0;
     // }
 
     double leftSpeed = forward + turn;
@@ -127,33 +132,63 @@ public class DriveSubsystem extends SubsystemBase {
     frontRightEncoder.setPosition(0);
   }
 
-  public void alignToTape() {
-    PhotonPipelineResult result = limelight.getLatestResult();
+  public void autoBalance() {
+    double gyroPitch = navx.getPitch();
 
-    SmartDashboard.putBoolean("Has Targets", result.hasTargets());
-
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
-
-      SmartDashboard.putNumber("Target Yaw", target.getYaw());
-
-      arcadeDrive(0, target.getYaw()/120);
+    if (Math.abs(gyroPitch) <= 0.5) {
+      arcadeDrive(0, 0);
+      return;
     }
+
+    if (Math.abs(gyroPitch) < 5.5) {
+      balancePIDController.setP(0.0061);
+    }
+
+    double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
+
+    arcadeDrive(forwardSpeed, 0);
   }
 
-  public boolean alignedToTape() {
+  public void resetBalance() {
+    balancePIDController.setP(0.010);
+    balanceCompleted = false;
+  }
+
+  public double getAngleError(double expectedAngle) {
+    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw(), 360);
+
+    if (angleSubtract < -180) {
+      return angleSubtract + 360;
+    } else if (angleSubtract > 180) {
+      return angleSubtract - 360;
+    }
+
+    return angleSubtract;
+  }
+
+  public boolean alignedToTapeYaw() {
     PhotonPipelineResult result = limelight.getLatestResult();
 
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
 
-      return Math.abs(target.getYaw()) <= 0.05;
+      return Math.abs(target.getYaw()) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;
   }
 
-  
+  public boolean alignedToTapePitch() {
+    PhotonPipelineResult result = limelight.getLatestResult();
+
+    if (result.hasTargets()) {
+      PhotonTrackedTarget target = result.getBestTarget();
+
+      return Math.abs(target.getPitch() - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
+    }
+
+    return false;
+  }
 
   public PhotonCamera getCamera() {
     return limelight;

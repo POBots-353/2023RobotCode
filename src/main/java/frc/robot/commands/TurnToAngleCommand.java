@@ -6,22 +6,26 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class TankDriveCommand extends CommandBase {
-  private DoubleSupplier leftSupplier;
-  private DoubleSupplier rightSupplier;
-
+public class TurnToAngleCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
 
-  /** Creates a new TankDriveCommand. */
-  public TankDriveCommand(DoubleSupplier leftSupplier, DoubleSupplier rightSupplier, DriveSubsystem driveSubsystem) {
-    this.leftSupplier = leftSupplier;
-    this.rightSupplier = rightSupplier;
+  private DoubleSupplier angleSupplier;
 
+  private PIDController pidController = new PIDController(0.0027, 0, 0);
+
+  /** Creates a new TurnToAngleCommand. */
+  // Angle must be between -180 and 180
+  public TurnToAngleCommand(DoubleSupplier angleSupplier, DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
+
+    this.angleSupplier = angleSupplier;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
   }
@@ -34,8 +38,12 @@ public class TankDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.tankDrive(-leftSupplier.getAsDouble() * DriveConstants.defaultSpeed,
-        -rightSupplier.getAsDouble() * DriveConstants.defaultSpeed);
+    double expectedAngle = angleSupplier.getAsDouble();
+    double angleError = driveSubsystem.getAngleError(expectedAngle);
+
+    double turnSpeed = angleError * 0.0027;
+
+    driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.35, 0.35));
   }
 
   // Called once the command ends or is interrupted.

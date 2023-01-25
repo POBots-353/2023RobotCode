@@ -4,18 +4,22 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AlignToTapeCommand;
 import frc.robot.commands.ArcadeDriveCommand;
+import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.TankDriveCommand;
+import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,12 +40,15 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final ElementTransitSubsystem transitSubsystem = new ElementTransitSubsystem();
+  // private final ElementTransitSubsystem transitSubsystem = new
+  // ElementTransitSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController driverController = new CommandXboxController(
+  public static final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
+  public static final XboxController driverControllerHID = driverController.getHID();
   public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -73,7 +80,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
@@ -87,13 +93,32 @@ public class RobotContainer {
     Trigger midSetpoint = new JoystickButton(operatorStick, 10);
     Trigger lowSetpoint = new JoystickButton(operatorStick, 11);
 
-    Trigger alignToTape = driverController.rightTrigger();
+    Trigger autoBalance = driverController.leftBumper();
+    autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
+
+    // Turn to angle
+    // Uses IEEEremainder to get the angle between -180 and 180
+    new Trigger(() -> driverControllerHID.getPOV() != -1)
+        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
+            driveSubsystem));
+
+    // Slow drive
+    Trigger leftTrigger = driverController.leftTrigger();
+    leftTrigger.whileTrue(
+        Commands.run(
+            () -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
+                -driverController.getRightY() * DriveConstants.slowSpeed),
+            driveSubsystem));
+
+    // Align to tape
+    Trigger alignToTape = driverController.rightBumper();
     alignToTape.whileTrue(new AlignToTapeCommand(driveSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
     // cancelling on release.
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
     motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
     motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
     shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
@@ -111,7 +136,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new AutoDriveCommand(5.00, driveSubsystem);
+    // return new AutoDriveCommand(5.00, driveSubsystem);
+    return Commands.sequence(new AutoDriveCommand(1.00, driveSubsystem), new AutoBalanceCommand(driveSubsystem));
     // return Autos.exampleAuto(m_exampleSubsystem);
   }
 }

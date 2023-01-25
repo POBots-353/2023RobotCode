@@ -83,6 +83,9 @@ public class RobotContainer {
     Trigger longClaws = new JoystickButton(operatorStick, 8);
     Trigger elevatorPulley = new JoystickButton(operatorStick, 13);
     Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
+    Trigger topSetpoint = new JoystickButton(operatorStick, 9);
+    Trigger midSetpoint = new JoystickButton(operatorStick, 10);
+    Trigger lowSetpoint = new JoystickButton(operatorStick, 11);
 
     Trigger alignToTape = driverController.rightTrigger();
     alignToTape.whileTrue(new AlignToTapeCommand(driveSubsystem));
@@ -95,8 +98,10 @@ public class RobotContainer {
     motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));//trigger claw motors on/off
     shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
     longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));//toggles claw half or full
-    elevatorPulley.onTrue(Commands.run(transitSubsystem::elevatorOn, transitSubsystem));
     elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
+    topSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorHigh, transitSubsystem));
+    midSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorMid, transitSubsystem));
+    lowSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorLow, transitSubsystem));
   }
 
   /**

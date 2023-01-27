@@ -41,7 +41,11 @@ public class TurnToAngleCommand extends CommandBase {
     double expectedAngle = angleSupplier.getAsDouble();
     double angleError = driveSubsystem.getAngleError(expectedAngle);
 
-    double turnSpeed = angleError * 0.0027;
+    // double turnSpeed = angleError * 0.0027;
+
+    // pidController.calculate(angleError, 0);
+
+    double turnSpeed = -pidController.calculate(angleError, 0);
 
     driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.35, 0.35));
   }

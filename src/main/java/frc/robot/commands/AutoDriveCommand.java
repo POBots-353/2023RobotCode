@@ -4,16 +4,20 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoDriveCommand extends CommandBase {
-  private double distanceMeters;
+  private DoubleSupplier distanceSupplier;
   private DriveSubsystem driveSubsystem;
 
   /** Creates a new AutoDriveCommand. */
-  public AutoDriveCommand(double distance, DriveSubsystem driveSubsystem) {
-    distanceMeters = distance;
+  public AutoDriveCommand(DoubleSupplier distance, DriveSubsystem driveSubsystem) {
+    this.distanceSupplier = distance;
+
+    driveSubsystem.resetEncoders();
 
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,17 +33,18 @@ public class AutoDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.autoDrive(distanceMeters);
+    driveSubsystem.autoDrive(distanceSupplier.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    driveSubsystem.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return driveSubsystem.distanceReached(distanceMeters);
+    return driveSubsystem.distanceReached(distanceSupplier.getAsDouble());
   }
 }

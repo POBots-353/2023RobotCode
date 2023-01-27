@@ -2,7 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.autonomous;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -10,18 +12,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class AlignToTapeCommand extends CommandBase {
+public class AutoTurnToAngleCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
-  private Limelight camera;
 
-  private PIDController turnController = new PIDController(0.0050, 0.00155, 0.00025);
+  private DoubleSupplier angleSupplier;
 
-  private double yaw = 0;
+  private PIDController pidController = new PIDController(0.0037, 0.00125, 0.00025);
 
-  /** Creates a new AlignToTapeCommand. */
-  public AlignToTapeCommand(DriveSubsystem driveSubsystem) {
+  /** Creates a new AutoTurnToAngleCommand. */
+  public AutoTurnToAngleCommand(DoubleSupplier angleSupplier, DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
-    camera = driveSubsystem.getCamera();
+
+    this.angleSupplier = angleSupplier;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
@@ -35,15 +37,16 @@ public class AlignToTapeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (camera.hasTarget()) {
-      yaw = camera.getTargetX();
+    double expectedAngle = angleSupplier.getAsDouble();
+    double angleError = driveSubsystem.getAngleError(expectedAngle);
 
-      double turnSpeed = -turnController.calculate(yaw, 0);
+    // double turnSpeed = angleError * 0.0027;
 
-      driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.15, 0.15));
-    } else {
-      driveSubsystem.arcadeDrive(0, 0);
-    }
+    // pidController.calculate(angleError, 0);
+
+    double turnSpeed = -pidController.calculate(angleError, 0);
+
+    driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.35, 0.35));
   }
 
   // Called once the command ends or is interrupted.
@@ -55,6 +58,6 @@ public class AlignToTapeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return driveSubsystem.alignedToTapeYaw();
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 1.0;
   }
 }

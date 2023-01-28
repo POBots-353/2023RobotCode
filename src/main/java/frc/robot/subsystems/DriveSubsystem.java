@@ -146,7 +146,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (Math.abs(gyroPitch) < 5.5) {
       if (Math.abs(gyroPitch) < 2.5) {
-        balancePIDController.setP(0.0075);
+        balancePIDController.setP(0.0085);
       } else {
         balancePIDController.setP(0.0061);
       }

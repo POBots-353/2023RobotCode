@@ -18,6 +18,8 @@ public class AlignToTapeCommand extends CommandBase {
 
   private double yaw = 0;
 
+  private double timeAligned = 0;
+
   /** Creates a new AlignToTapeCommand. */
   public AlignToTapeCommand(DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
@@ -30,6 +32,7 @@ public class AlignToTapeCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timeAligned = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -44,6 +47,12 @@ public class AlignToTapeCommand extends CommandBase {
     } else {
       driveSubsystem.arcadeDrive(0, 0);
     }
+
+    if (driveSubsystem.alignedToTapeYaw()) {
+      timeAligned++;
+    } else if (timeAligned > 0) {
+      timeAligned--;
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -55,6 +64,6 @@ public class AlignToTapeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return driveSubsystem.alignedToTapeYaw();
+    return driveSubsystem.alignedToTapeYaw() && timeAligned >= 10;
   }
 }

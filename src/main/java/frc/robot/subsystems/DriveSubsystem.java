@@ -139,13 +139,17 @@ public class DriveSubsystem extends SubsystemBase {
   public void autoBalance() {
     double gyroPitch = navx.getPitch();
 
-    if (Math.abs(gyroPitch) <= 0.5) {
+    if (Math.abs(gyroPitch) <= 0.25) {
       arcadeDrive(0, 0);
       return;
     }
 
     if (Math.abs(gyroPitch) < 5.5) {
-      balancePIDController.setP(0.0061);
+      if (Math.abs(gyroPitch) < 2.5) {
+        balancePIDController.setP(0.0075);
+      } else {
+        balancePIDController.setP(0.0061);
+      }
     }
 
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
@@ -215,7 +219,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean distanceReached(double distanceMeters) {
-    return Math.abs(frontLeftEncoder.getPosition() - convertDistanceToEncoder(distanceMeters)) <= 0.5;
+    return Math.abs(frontLeftEncoder.getPosition() - convertDistanceToEncoder(distanceMeters)) <= 0.10;
   }
 
   public double convertDistanceToEncoder(double meters) {
@@ -229,23 +233,24 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
     SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
 
-    Double[] campose = limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);
+    // Double[] campose =
+    // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);
 
-    if (campose.length > 0) {
-      double x = campose[0];
-      double y = campose[1];
-      double z = campose[2];
+    // if (campose.length > 0) {
+    // double x = campose[0];
+    // double y = campose[1];
+    // double z = campose[2];
 
-      double distance = Math.sqrt(x * x + y * y + z * z);
+    // double distance = Math.sqrt(x * x + y * y + z * z);
 
-      SmartDashboard.putNumber("Distance?", distance);
+    // SmartDashboard.putNumber("Distance?", distance);
 
-      SmartDashboard.putNumber("Camera Translation X", campose[0]);
-      SmartDashboard.putNumber("Camera Translation Y", campose[1]);
-      SmartDashboard.putNumber("Camera Translation Z", campose[2]);
-      SmartDashboard.putNumber("Camera Rotation Pitch", campose[3]);
-      SmartDashboard.putNumber("Camera Rotation Yaw", campose[4]);
-      SmartDashboard.putNumber("Camera Rotation Roll", campose[5]);
-    }
+    // SmartDashboard.putNumber("Camera Translation X", campose[0]);
+    // SmartDashboard.putNumber("Camera Translation Y", campose[1]);
+    // SmartDashboard.putNumber("Camera Translation Z", campose[2]);
+    // SmartDashboard.putNumber("Camera Rotation Pitch", campose[3]);
+    // SmartDashboard.putNumber("Camera Rotation Yaw", campose[4]);
+    // SmartDashboard.putNumber("Camera Rotation Roll", campose[5]);
+    // }
   }
 }

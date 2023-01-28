@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -17,7 +18,9 @@ public class TurnToAngleCommand extends CommandBase {
 
   private DoubleSupplier angleSupplier;
 
-  private PIDController pidController = new PIDController(0.0027, 0, 0);
+  private PIDController pidController = new PIDController(0.0047, 0, 0.00115);
+
+  private SlewRateLimiter turnLimiter = new SlewRateLimiter(1.50);
 
   /** Creates a new TurnToAngleCommand. */
   // Angle must be between -180 and 180
@@ -33,6 +36,7 @@ public class TurnToAngleCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    turnLimiter.reset(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,13 +45,30 @@ public class TurnToAngleCommand extends CommandBase {
     double expectedAngle = angleSupplier.getAsDouble();
     double angleError = driveSubsystem.getAngleError(expectedAngle);
 
+    double angleErrorAbs = Math.abs(angleError);
+
+    if (angleErrorAbs < 15) {
+      if (angleErrorAbs < 3) {
+        pidController.setP(0.0135);
+        pidController.setI(0.00375);
+      } else {
+        pidController.setP(0.0115);
+        pidController.setI(0.00275);
+      }
+    } else {
+      pidController.setP(0.0047);
+      pidController.setI(0);
+    }
+
     // double turnSpeed = angleError * 0.0027;
 
     // pidController.calculate(angleError, 0);
 
     double turnSpeed = -pidController.calculate(angleError, 0);
 
-    driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.35, 0.35));
+    // MathUtil.clamp(turnSpeed, -0.35, 0.35)
+
+    driveSubsystem.arcadeDrive(0, turnLimiter.calculate(turnSpeed));
   }
 
   // Called once the command ends or is interrupted.

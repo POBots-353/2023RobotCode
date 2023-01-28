@@ -69,10 +69,10 @@ public class DriveToTapeCommand extends CommandBase {
 
     // Vibrate the controller if the robot is aligned
     if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapePitch()) {
-      RobotContainer.driverController.getHID().setRumble(RumbleType.kLeftRumble, 1.00);
+      RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 1.00);
       SmartDashboard.putBoolean("Target Aligned", true);
     } else {
-      RobotContainer.driverController.getHID().setRumble(RumbleType.kLeftRumble, 0);
+      RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 0);
       SmartDashboard.putBoolean("Target Aligned", false);
     }
   }
@@ -80,7 +80,7 @@ public class DriveToTapeCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.driverController.getHID().setRumble(RumbleType.kLeftRumble, 0);
+    RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 0);
     SmartDashboard.putBoolean("Target Aligned", false);
   }
 

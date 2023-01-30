@@ -23,10 +23,10 @@ public final class Constants {
   }
 
   public static class DriveConstants {
-    public static final int frontLeftMotorID = 4; // 4
-    public static final int backLeftMotorID = 2; // 2
-    public static final int frontRightMotorID = 1; // 1
-    public static final int backRightMotorID = 3; // 3
+    public static final int frontLeftMotorID = 4; // 10
+    public static final int backLeftMotorID = 2; // 14
+    public static final int frontRightMotorID = 1; // 9
+    public static final int backRightMotorID = 3; // 5
 
     public static final double defaultSpeed = 0.45;
     public static final double slowSpeed = 0.25;

@@ -18,7 +18,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -50,8 +53,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
 
-  private boolean balanceCompleted = false;
-
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -65,17 +66,21 @@ public class DriveSubsystem extends SubsystemBase {
   private double maxVel = 5000;
   private double maxAcc = 2500;
 
+  private PowerDistribution powerDistribution = new PowerDistribution(0, ModuleType.kCTRE);
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    // rightMotors.setInverted(true);
-
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
     initializePID(rightPIDController);
 
+    // Put the gyro on the dashboard
     SmartDashboard.putData(navx);
+
+    // Clear sticky faults
+    powerDistribution.clearStickyFaults();
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -159,7 +164,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetBalance() {
     balancePIDController.setP(0.010);
-    balanceCompleted = false;
   }
 
   public double getAngleError(double expectedAngle) {
@@ -232,6 +236,8 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Yaw", navx.getYaw());
     SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
     SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
+
+    SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
 
     // Double[] campose =
     // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);

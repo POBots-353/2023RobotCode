@@ -93,6 +93,7 @@ public class RobotContainer {
     Trigger topSetpoint = new JoystickButton(operatorStick, 9);
     Trigger midSetpoint = new JoystickButton(operatorStick, 10);
     Trigger lowSetpoint = new JoystickButton(operatorStick, 11);
+    Trigger brakeInitiation = new JoystickButton(operatorStick, 16);
 
     // used for testing motors on the robot with intake
     // Trigger tester = new JoystickButton(operatorStick, 5);
@@ -152,6 +153,7 @@ public class RobotContainer {
     // tester.onTrue(Commands.run(transitSubsystem::elevatorOn, transitSubsystem));
     // tester2.onTrue(Commands.run(transitSubsystem::elevatorOff,
     // transitSubsystem));
+    brakeInitiation.toggleOnTrue(Commands.run(driveSubsystem::breakingMechanism, driveSubsystem));
   }
 
   /**

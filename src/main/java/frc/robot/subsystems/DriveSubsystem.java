@@ -19,11 +19,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
@@ -47,6 +51,8 @@ public class DriveSubsystem extends SubsystemBase {
   private Limelight limelight = new Limelight("limelight");
 
   private AHRS navx = new AHRS(I2C.Port.kMXP);
+
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
 
@@ -131,6 +137,7 @@ public class DriveSubsystem extends SubsystemBase {
     rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
   }
 
+  public void brakingMechanism()
   public void resetEncoders() {
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
@@ -173,6 +180,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     return angleSubtract;
+  }
+
+  public void breakingMechanism() {
+    brakePiston.toggle();
   }
 
   public boolean alignedToTapeYaw() {

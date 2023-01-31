@@ -2,18 +2,18 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.autonomous;
 
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class TurnToAngleCommand extends CommandBase {
+public class AutoTurnToAngleCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
 
   private DoubleSupplier angleSupplier;
@@ -22,9 +22,10 @@ public class TurnToAngleCommand extends CommandBase {
 
   private SlewRateLimiter turnLimiter = new SlewRateLimiter(1.50);
 
-  /** Creates a new TurnToAngleCommand. */
-  // Angle must be between -180 and 180
-  public TurnToAngleCommand(DoubleSupplier angleSupplier, DriveSubsystem driveSubsystem) {
+  private int timeAligned = 0;
+
+  /** Creates a new AutoTurnToAngleCommand. */
+  public AutoTurnToAngleCommand(DoubleSupplier angleSupplier, DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
     this.angleSupplier = angleSupplier;
@@ -37,6 +38,7 @@ public class TurnToAngleCommand extends CommandBase {
   @Override
   public void initialize() {
     turnLimiter.reset(0);
+    timeAligned = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,7 +51,7 @@ public class TurnToAngleCommand extends CommandBase {
 
     if (angleErrorAbs < 15) {
       if (angleErrorAbs < 3) {
-        pidController.setP(0.0135);
+        pidController.setP(0.0155);
         pidController.setI(0.00375);
       } else {
         pidController.setP(0.0115);
@@ -69,16 +71,23 @@ public class TurnToAngleCommand extends CommandBase {
     // MathUtil.clamp(turnSpeed, -0.35, 0.35)
 
     driveSubsystem.arcadeDrive(0, turnLimiter.calculate(turnSpeed));
+
+    if (angleErrorAbs <= 0.50) {
+      timeAligned++;
+    } else if (timeAligned > 0) {
+      timeAligned--;
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    driveSubsystem.arcadeDrive(0, 0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 0.50 && timeAligned >= 5;
   }
 }

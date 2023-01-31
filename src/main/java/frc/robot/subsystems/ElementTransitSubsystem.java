@@ -5,8 +5,11 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -14,51 +17,92 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.IntakeConstants;
 
 public class ElementTransitSubsystem extends SubsystemBase {
-  private Compressor pcmCompressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-  private DoubleSolenoid longSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private DoubleSolenoid shortSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private CANSparkMax leftMotor = new CANSparkMax(0, MotorType.kBrushless);
-  private CANSparkMax rightMotor = new CANSparkMax(0, MotorType.kBrushless);
-  private CANSparkMax elevator = new CANSparkMax(0, MotorType.kBrushless);
-  private DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  private DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  // private Compressor pcmCompressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+  // private DoubleSolenoid longSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  // private DoubleSolenoid shortSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  // private CANSparkMax leftMotor = new CANSparkMax(0, MotorType.kBrushless);
+  // private CANSparkMax rightMotor = new CANSparkMax(0, MotorType.kBrushless);
+  private CANSparkMax elevator = new CANSparkMax(7, MotorType.kBrushless);
+  // private DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  // private DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private SparkMaxPIDController elevatorPid = elevator.getPIDController();
+
+  private RelativeEncoder elevatorEncoder = elevator.getEncoder();
+  
+  private int smartMotionSlot = 0;
+  private int allowedErr;
+  private int minVel;
+  private double kP = 4e-4;
+  private double kI = 0;
+  private double kD = 0;
+  private double kIz = 0;
+  private double kFF = 0.000146;
+  private double kMaxOutput = 1;
+  private double kMinOutput = -1;
+  private double maxVel = 5000;
+  private double maxAcc = 2500;
+
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
-    pcmCompressor.enableDigital();
-    pcmCompressor.disable();
+    // pcmCompressor.enableDigital();
+    // pcmCompressor.disable();
     //upper 4 lines enable/disable compressor, return if compressor active,
-    shortSolenoid.set(Value.kReverse);//placeholders
-    longSolenoid.set(Value.kReverse);
-    leftPiston.set(Value.kReverse);
-    rightPiston.set(Value.kReverse);
+    // shortSolenoid.set(Value.kReverse);//placeholders
+    // longSolenoid.set(Value.kReverse);
+    // leftPiston.set(Value.kReverse);
+    // rightPiston.set(Value.kReverse);
 
+    initializePID(elevatorPid);
+  }
+  private void initializePID(SparkMaxPIDController p) {
+    p.setP(kP);
+    p.setI(kI);
+    p.setD(kD);
+    p.setIZone(kIz);
+    p.setFF(kFF);
+    p.setOutputRange(kMinOutput, kMaxOutput);
+    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
   }
   public void runClawMotors() {
-    leftMotor.set(IntakeConstants.intakeSpeed);
-    rightMotor.set(IntakeConstants.intakeSpeed);
+    // leftMotor.set(IntakeConstants.intakeSpeed);
+    // rightMotor.set(IntakeConstants.intakeSpeed);
   }
   public void stopClawMotors(){
-    leftMotor.set(0);
-    rightMotor.set(0);
+    // leftMotor.set(0);
+    // rightMotor.set(0);
   }
   public void toggleShort() {
-    shortSolenoid.toggle();
+    // shortSolenoid.toggle();
   }
   public void toggleLong() {
-    longSolenoid.toggle();
+    // longSolenoid.toggle();
   }
   public void elevatorOn() {
     elevator.set(IntakeConstants.elevatorPulleySpeed);
   }
+  public void elevatorOff() {
+    elevator.set(0);
+  }
   public void elevatorTiltOn() {
-    leftPiston.toggle();
-    rightPiston.toggle();
+    // leftPiston.toggle();
+    // rightPiston.toggle();
+  }
+  public void elevatorHigh() {
+    // elevatorPid.setReference(IntakeConstants.elevatorTopSetPoint, CANSparkMax.ControlType.kPosition);
+  }
+  public void elevatorMid() {
+    // elevatorPid.setReference(IntakeConstants.elevatorMidSetPoint, CANSparkMax.ControlType.kPosition);
+  }
+  public void elevatorLow() {
+    // elevatorPid.setReference(IntakeConstants.elevatorLowSetPoint, CANSparkMax.ControlType.kPosition);
   }
   // public static void main(String[] args) { //main method
   //   System.out.println("Kurt sucks"); //kurt sucks
@@ -66,18 +110,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    //  boolean motorStart = RobotContainer.operatorStick.getRawButton(1);
-    // boolean motorStop = RobotContainer.operatorStick.getRawButton(0);
-    // boolean shortExtend = RobotContainer.operatorStick.getRawButton(2);
-    // boolean longExtend = RobotContainer.operatorStick.getRawButton(3);
-    // boolean shortDeextend = RobotContainer.operatorStick.getRawButton(4);
-    // if (motorIntake) {
-    //   runMotors();
-    // } else if(motorStop){
-    //   stopMotors();
-    // }
-    
+    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
   } 
 
 }

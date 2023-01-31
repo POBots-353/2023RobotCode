@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -42,7 +43,8 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter leftLimiter = new SlewRateLimiter(3.53);
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
 
-  private PhotonCamera limelight = new PhotonCamera("gloworm");
+  // private PhotonCamera limelight = new PhotonCamera("gloworm");
+  private Limelight limelight = new Limelight("limelight");
 
   private AHRS navx = new AHRS(I2C.Port.kMXP);
 
@@ -72,6 +74,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     initializePID(leftPIDController);
     initializePID(rightPIDController);
+
+    SmartDashboard.putData(navx);
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -134,13 +138,18 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void autoBalance() {
     double gyroPitch = navx.getPitch();
+
     if (Math.abs(gyroPitch) <= 0.5) {
       arcadeDrive(0, 0);
       return;
     }
 
     if (Math.abs(gyroPitch) < 5.5) {
-      balancePIDController.setP(0.0061);
+      if (Math.abs(gyroPitch) < 2.5) {
+        balancePIDController.setP(0.0085);
+      } else {
+        balancePIDController.setP(0.0061);
+      }
     }
 
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
@@ -167,35 +176,51 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean alignedToTapeYaw() {
-    PhotonPipelineResult result = limelight.getLatestResult();
-
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
-
-      return Math.abs(target.getYaw()) <= DriveConstants.tapeAlignmentTolerance;
+    if (limelight.hasTarget()) {
+      return Math.abs(limelight.getTargetX()) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;
+    // PhotonPipelineResult result = limelight.getLatestResult();
+
+    // if (result.hasTargets()) {
+    // PhotonTrackedTarget target = result.getBestTarget();
+
+    // return Math.abs(target.getYaw()) <= DriveConstants.tapeAlignmentTolerance;
+    // }
+
+    // return false;
   }
 
   public boolean alignedToTapePitch() {
-    PhotonPipelineResult result = limelight.getLatestResult();
-
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
-
-      return Math.abs(target.getPitch() - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
+    if (limelight.hasTarget()) {
+      return Math
+          .abs(limelight.getTargetY() - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;
+    // PhotonPipelineResult result = limelight.getLatestResult();
+
+    // if (result.hasTargets()) {
+    // PhotonTrackedTarget target = result.getBestTarget();
+
+    // return Math.abs(target.getPitch() - DriveConstants.tapeAlignmentPitch) <=
+    // DriveConstants.tapeAlignmentTolerance;
+    // }
+
+    // return false;
   }
 
-  public PhotonCamera getCamera() {
+  // public PhotonCamera getCamera() {
+  // return limelight;
+  // }
+
+  public Limelight getCamera() {
     return limelight;
   }
 
   public boolean distanceReached(double distanceMeters) {
-    return Math.abs(frontLeftEncoder.getPosition() - convertDistanceToEncoder(distanceMeters)) <= 0.5;
+    return Math.abs(frontLeftEncoder.getPosition() - convertDistanceToEncoder(distanceMeters)) <= 0.10;
   }
 
   public double convertDistanceToEncoder(double meters) {
@@ -205,13 +230,28 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Left Encoder Position", frontLeftEncoder.getPosition());
-    SmartDashboard.putNumber("Left Encoder Velocity", frontLeftEncoder.getVelocity());
-    SmartDashboard.putNumber("Gyro Yaw:", navx.getYaw());
-    SmartDashboard.putNumber("Gyro Pitch:", navx.getPitch());
-    SmartDashboard.putNumber("Gyro Roll:", navx.getRoll());
+    SmartDashboard.putNumber("Gyro Yaw", navx.getYaw());
+    SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
+    SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
 
-    SmartDashboard.putNumber("Gyro X Displacement", navx.getDisplacementX());
-    SmartDashboard.putNumber("Gyro Y Velocity", navx.getVelocityY());
+    // Double[] campose =
+    // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);
+
+    // if (campose.length > 0) {
+    // double x = campose[0];
+    // double y = campose[1];
+    // double z = campose[2];
+
+    // double distance = Math.sqrt(x * x + y * y + z * z);
+
+    // SmartDashboard.putNumber("Distance?", distance);
+
+    // SmartDashboard.putNumber("Camera Translation X", campose[0]);
+    // SmartDashboard.putNumber("Camera Translation Y", campose[1]);
+    // SmartDashboard.putNumber("Camera Translation Z", campose[2]);
+    // SmartDashboard.putNumber("Camera Rotation Pitch", campose[3]);
+    // SmartDashboard.putNumber("Camera Rotation Yaw", campose[4]);
+    // SmartDashboard.putNumber("Camera Rotation Roll", campose[5]);
+    // }
   }
 }

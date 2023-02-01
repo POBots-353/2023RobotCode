@@ -18,10 +18,17 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -50,13 +57,11 @@ public class DriveSubsystem extends SubsystemBase {
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
   private Limelight limelight = new Limelight("limelight");
 
-  private AHRS navx = new AHRS(I2C.Port.kMXP);
+  private AHRS navx = new AHRS(SPI.Port.kMXP);
 
   private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
-
-  private boolean balanceCompleted = false;
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -71,17 +76,28 @@ public class DriveSubsystem extends SubsystemBase {
   private double maxVel = 5000;
   private double maxAcc = 2500;
 
+  private PowerDistribution powerDistribution = new PowerDistribution(0, ModuleType.kCTRE);
+
+  Field2d field = new Field2d();
+
+  private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
+      new Pose2d(2, 4.3, navx.getRotation2d()));
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    // rightMotors.setInverted(true);
-
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 
     initializePID(leftPIDController);
     initializePID(rightPIDController);
 
+    // Put the gyro on the dashboard
     SmartDashboard.putData(navx);
+
+    // Clear sticky faults
+    powerDistribution.clearStickyFaults();
+
+    SmartDashboard.putData(field);
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -170,7 +186,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetBalance() {
     balancePIDController.setP(0.010);
-    balanceCompleted = false;
+  }
+
+  public double getGyroYaw() {
+    return Math.IEEEremainder(navx.getYaw(), 360);
   }
 
   public double getAngleError(double expectedAngle) {
@@ -241,12 +260,25 @@ public class DriveSubsystem extends SubsystemBase {
     return 2 * (meters / DriveConstants.wheelCircumference) * 42 / DriveConstants.gearBoxRatio;
   }
 
+  public double convertEncoderToDistance(double encoder) {
+    return 0.5 * DriveConstants.gearBoxRatio * DriveConstants.wheelCircumference * encoder / 42;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    odometry.update(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
+        -convertEncoderToDistance(frontRightEncoder.getPosition()));
+
+    field.setRobotPose(odometry.getPoseMeters());
+
+    SmartDashboard.putNumber("Left Meters", convertEncoderToDistance(frontLeftEncoder.getPosition()));
+
     SmartDashboard.putNumber("Gyro Yaw", navx.getYaw());
     SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
     SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
+
+    SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
 
     // Double[] campose =
     // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);

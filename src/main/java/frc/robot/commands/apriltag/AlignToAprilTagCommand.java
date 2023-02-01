@@ -21,39 +21,14 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
   private double neededDistance;
   private double neededAngle;
 
+  private double relativeAngle;
+
   private Limelight camera;
 
   /** Creates a new AlignToAprilTagCommand. */
   public AlignToAprilTagCommand(DriveSubsystem driveSubsystem) {
     camera = driveSubsystem.getCamera();
 
-    // Double[] cameraPose =
-    // camera.getTable().getEntry("campose").getDoubleArray(new Double[0]);
-
-    // if (cameraPose.length == 0) {
-    // return;
-    // }
-
-    // double zTranslationError = -cameraPose[2] - 1.5;
-    // double xTranslationError = cameraPose[0];
-
-    // neededAngle = 90 + Math.toDegrees(Math.atan(zTranslationError /
-    // xTranslationError));
-
-    // neededDistance = Math.sqrt((xTranslationError * xTranslationError) +
-    // (zTranslationError * zTranslationError));
-
-    // if (neededAngle > 90) {
-    // neededAngle -= 180;
-    // neededDistance *= -1;
-    // }
-
-    // if (neededAngle < -90) {
-    // neededAngle += 180;
-    // neededDistance *= -1;
-    // }
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(
         Commands.runOnce(() -> {
           Double[] cameraPose = camera.getTable().getEntry("campose").getDoubleArray(new Double[0]);
@@ -62,18 +37,30 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
             return;
           }
 
-          double zTranslationError = -cameraPose[2] - 1.5;
-          double xTranslationError = cameraPose[0];
+          double zTranslation = -cameraPose[2];
+          double xTranslation = cameraPose[0];
+
+          double zTranslationError = zTranslation - 1.5;
+          double xTranslationError = xTranslation;
+
+          double robotSkew = -Math.toDegrees(Math.atan2(xTranslation, zTranslation));
+          relativeAngle = driveSubsystem.getGyroYaw() - robotSkew;
+
+          // relativeAngle = driveSubsystem.getAngleError(cameraPose[4]);
+
+          SmartDashboard.putNumber("Target Yaw", robotSkew);
+
+          SmartDashboard.putNumber("Relative Angle", relativeAngle);
 
           neededAngle = 90 + Math.toDegrees(Math.atan(zTranslationError / xTranslationError));
 
-          neededDistance = Math.sqrt((xTranslationError * xTranslationError) + (zTranslationError * zTranslationError));
+          // neededDistance = Math.sqrt((xTranslationError * xTranslationError) +
+          // (zTranslationError * zTranslationError));
+          neededDistance = Math.hypot(xTranslationError, zTranslationError);
 
           if (zTranslationError < 0 && xTranslationError > 0) {
             neededDistance *= -1;
           }
-
-          SmartDashboard.putNumber("Needed Distance", neededDistance);
 
           if (neededAngle > 90) {
             neededAngle -= 180;

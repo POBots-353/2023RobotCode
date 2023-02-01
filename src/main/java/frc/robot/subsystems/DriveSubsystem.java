@@ -18,17 +18,23 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
@@ -52,6 +58,8 @@ public class DriveSubsystem extends SubsystemBase {
   private Limelight limelight = new Limelight("limelight");
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
+
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
 
@@ -145,6 +153,7 @@ public class DriveSubsystem extends SubsystemBase {
     rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
   }
 
+  public void brakingMechanism()
   public void resetEncoders() {
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
@@ -153,22 +162,26 @@ public class DriveSubsystem extends SubsystemBase {
   public void autoBalance() {
     double gyroPitch = navx.getPitch();
 
-    if (Math.abs(gyroPitch) <= 0.25) {
+    if (Math.abs(gyroPitch) <= 0.5) {
       arcadeDrive(0, 0);
+      SmartDashboard.putBoolean("Balanced", true);
       return;
     }
 
     if (Math.abs(gyroPitch) < 5.5) {
       if (Math.abs(gyroPitch) < 2.5) {
         balancePIDController.setP(0.0085);
+        SmartDashboard.putBoolean("Balanced", false)
       } else {
         balancePIDController.setP(0.0061);
+        SmartDashboard.putBoolean("Balanced", false);
       }
     }
 
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
 
     arcadeDrive(forwardSpeed, 0);
+    SmartDashboard.putString("Is Balanced?", "BALANCED");
   }
 
   public void resetBalance() {
@@ -189,6 +202,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     return angleSubtract;
+  }
+
+  public void toggleBreak() {
+    brakePiston.toggle();
   }
 
   public boolean alignedToTapeYaw() {

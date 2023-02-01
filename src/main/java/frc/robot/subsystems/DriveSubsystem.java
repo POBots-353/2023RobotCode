@@ -153,7 +153,10 @@ public class DriveSubsystem extends SubsystemBase {
     rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
   }
 
-  public void brakingMechanism()
+  public void toggleBrakes() {
+    brakePiston.toggle();
+  }
+
   public void resetEncoders() {
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
@@ -171,7 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (Math.abs(gyroPitch) < 5.5) {
       if (Math.abs(gyroPitch) < 2.5) {
         balancePIDController.setP(0.0085);
-        SmartDashboard.putBoolean("Balanced", false)
+        SmartDashboard.putBoolean("Balanced", false);
       } else {
         balancePIDController.setP(0.0061);
         SmartDashboard.putBoolean("Balanced", false);
@@ -202,10 +205,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     return angleSubtract;
-  }
-
-  public void toggleBreak() {
-    brakePiston.toggle();
   }
 
   public boolean alignedToTapeYaw() {

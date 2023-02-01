@@ -107,28 +107,22 @@ public class RobotContainer {
     // Set the camera pipeline to reflective tape
     Trigger setPipelineTape = driverController.start();
     setPipelineTape
-        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0),
-            driveSubsystem));
+        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
 
     Trigger setPipelineAprilTag = driverController.back();
     setPipelineAprilTag
-        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1),
-            driveSubsystem));
+        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1), driveSubsystem));
 
     // Turn to angle
     // Uses IEEEremainder to get the angle between -180 and 180
     new Trigger(() -> driverControllerHID.getPOV() != -1)
-        .whileTrue(new TurnToAngleCommand(
-            () -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
-            driveSubsystem));
+        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
 
     // Slow drive
     Trigger leftTrigger = driverController.leftTrigger();
     leftTrigger.whileTrue(
-        Commands.run(
-            () -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
-                -driverController.getRightY() * DriveConstants.slowSpeed),
-            driveSubsystem));
+        Commands.run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
+            -driverController.getRightY() * DriveConstants.slowSpeed), driveSubsystem));
 
     // Align to tape
     Trigger alignToTape = driverController.rightBumper();
@@ -153,7 +147,7 @@ public class RobotContainer {
     // tester.onTrue(Commands.run(transitSubsystem::elevatorOn, transitSubsystem));
     // tester2.onTrue(Commands.run(transitSubsystem::elevatorOff,
     // transitSubsystem));
-    brakeInitiation.toggleOnTrue(Commands.run(driveSubsystem::breakingMechanism, driveSubsystem));
+    brakeInitiation.toggleOnTrue(Commands.runOnce(driveSubsystem::toggleBrakes, driveSubsystem));
   }
 
   /**

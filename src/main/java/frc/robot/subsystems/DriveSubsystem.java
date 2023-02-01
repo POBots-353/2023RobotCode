@@ -148,14 +148,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (Math.abs(gyroPitch) <= 0.5) {
       arcadeDrive(0, 0);
+      SmartDashboard.putBoolean("Balanced", true);
       return;
     }
 
     if (Math.abs(gyroPitch) < 5.5) {
       if (Math.abs(gyroPitch) < 2.5) {
         balancePIDController.setP(0.0085);
+        SmartDashboard.putBoolean("Balanced", false)
       } else {
         balancePIDController.setP(0.0061);
+        SmartDashboard.putBoolean("Balanced", false);
       }
     }
 
@@ -182,7 +185,7 @@ public class DriveSubsystem extends SubsystemBase {
     return angleSubtract;
   }
 
-  public void breakingMechanism() {
+  public void toggleBreak() {
     brakePiston.toggle();
   }
 

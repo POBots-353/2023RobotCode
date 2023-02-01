@@ -28,8 +28,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
   // private CANSparkMax leftMotor = new CANSparkMax(0, MotorType.kBrushless);
   // private CANSparkMax rightMotor = new CANSparkMax(0, MotorType.kBrushless);
   private CANSparkMax elevator = new CANSparkMax(7, MotorType.kBrushless);
-  // private DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
-  // private DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid leftPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid rightPiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
   private SparkMaxPIDController elevatorPid = elevator.getPIDController();
 
   private RelativeEncoder elevatorEncoder = elevator.getEncoder();
@@ -46,6 +46,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private double kMinOutput = -1;
   private double maxVel = 5000;
   private double maxAcc = 2500;
+
 
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
@@ -104,6 +105,16 @@ public class ElementTransitSubsystem extends SubsystemBase {
   public void elevatorLow() {
     // elevatorPid.setReference(IntakeConstants.elevatorLowSetPoint, CANSparkMax.ControlType.kPosition);
   }
+  public void setElevatorPosition(double elevatorPos){
+    elevatorPid.setReference(elevatorPos, CANSparkMax.ControlType.kSmartMotion);
+    // leftPiston.set(Value.kForward);
+    // rightPiston.set(Value.kForward);
+  }
+  public double getElevatorPosition() {
+    return elevatorEncoder.getPosition();
+  }
+  // turn on motor then pistons then turn motor off
+
   // public static void main(String[] args) { //main method
   //   System.out.println("Kurt sucks"); //kurt sucks
   // } charlie's footprint

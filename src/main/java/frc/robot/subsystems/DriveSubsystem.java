@@ -59,7 +59,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  // private DoubleSolenoid brakePiston = new
+  // DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
 
@@ -154,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void toggleBrakes() {
-    brakePiston.toggle();
+    // brakePiston.toggle();
   }
 
   public void resetEncoders() {

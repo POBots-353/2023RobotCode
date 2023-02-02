@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import frc.robot.Constants.Buttons;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveToTapeCommand;
 import frc.robot.commands.ArcadeDriveCommand;
@@ -12,6 +14,7 @@ import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SetElevatorPositionCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.apriltag.AlignToAprilTagCommand;
@@ -23,6 +26,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -52,10 +56,15 @@ public class RobotContainer {
   public static final XboxController driverControllerHID = driverController.getHID();
   public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
 
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    autoChooser.setDefaultOption("Drive Backwards", new AutoDriveCommand(1.00, driveSubsystem));
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();
 
@@ -82,72 +91,82 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    configureDriveButtons();
+
+    configureElevatorButtons();
+
+    configureIntakeButtons();
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    Trigger motorIntake = new JoystickButton(operatorStick, 3);
-    Trigger shortClaws = new JoystickButton(operatorStick, 4);
-    Trigger longClaws = new JoystickButton(operatorStick, 8);
-    Trigger elevatorTilt = new JoystickButton(operatorStick, 7);
-    Trigger topSetpoint = new JoystickButton(operatorStick, 9);
-    Trigger midSetpoint = new JoystickButton(operatorStick, 10);
-    Trigger lowSetpoint = new JoystickButton(operatorStick, 11);
-    Trigger brakeInitiation = new JoystickButton(operatorStick, 16);
-
-    // used for testing motors on the robot with intake
-    // Trigger tester = new JoystickButton(operatorStick, 5);
-    // Trigger tester2 = new JoystickButton(operatorStick, 6);
-
-    Trigger autoBalance = driverController.leftBumper();
-    autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
-
-    driverController.y().whileTrue(new AlignToAprilTagCommand(driveSubsystem));
-
-    // Set the camera pipeline to reflective tape
-    Trigger setPipelineTape = driverController.start();
-    setPipelineTape
-        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
-
-    Trigger setPipelineAprilTag = driverController.back();
-    setPipelineAprilTag
-        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1), driveSubsystem));
-
-    // Turn to angle
-    // Uses IEEEremainder to get the angle between -180 and 180
-    new Trigger(() -> driverControllerHID.getPOV() != -1)
-        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
-
-    // Slow drive
-    Trigger leftTrigger = driverController.leftTrigger();
-    leftTrigger.whileTrue(
-        Commands.run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
-            -driverController.getRightY() * DriveConstants.slowSpeed), driveSubsystem));
-
-    // Align to tape
-    Trigger alignToTape = driverController.rightBumper();
-    alignToTape.whileTrue(new DriveToTapeCommand(driveSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
     // cancelling on release.
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+  }
 
-    motorIntake.onTrue(Commands.run(transitSubsystem::runClawMotors, transitSubsystem));
-    motorIntake.onFalse(Commands.run(transitSubsystem::stopClawMotors, transitSubsystem));// trigger claw
-    // motors
-    // on/off
-    shortClaws.onTrue(Commands.run(transitSubsystem::toggleShort, transitSubsystem));
-    longClaws.onTrue(Commands.run(transitSubsystem::toggleLong, transitSubsystem));// toggles claw half or
-    // full
-    elevatorTilt.toggleOnTrue(Commands.run(transitSubsystem::elevatorTiltOn));
-    topSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorHigh, transitSubsystem));
-    midSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorMid, transitSubsystem));
-    lowSetpoint.toggleOnTrue(Commands.run(transitSubsystem::elevatorLow, transitSubsystem));
-    // tester.onTrue(Commands.run(transitSubsystem::elevatorOn, transitSubsystem));
-    // tester2.onTrue(Commands.run(transitSubsystem::elevatorOff,
-    // transitSubsystem));
-    brakeInitiation.toggleOnTrue(Commands.runOnce(driveSubsystem::toggleBrakes, driveSubsystem));
+  public void configureDriveButtons() {
+    Trigger slowDrive = driverController.leftTrigger();
+
+    Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
+
+    Trigger autoBalance = driverController.leftBumper();
+
+    Trigger alignToTape = driverController.rightBumper();
+
+    Trigger alignToAprilTag = driverController.y();
+
+    Trigger setPipelineTape = driverController.start();
+    Trigger setPipelineAprilTag = driverController.back();
+
+    slowDrive.whileTrue(
+        Commands.run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
+            -driverController.getRightY() * DriveConstants.slowSpeed), driveSubsystem));
+
+    // Uses IEEEremainder to get the angle between -180 and 180
+    turnToAngle
+        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
+
+    autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
+
+    alignToTape.whileTrue(new DriveToTapeCommand(driveSubsystem));
+
+    alignToAprilTag.whileTrue(new AlignToAprilTagCommand(driveSubsystem));
+
+    setPipelineTape
+        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
+
+    setPipelineAprilTag
+        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1), driveSubsystem));
+  }
+
+  public void configureElevatorButtons() {
+    JoystickButton elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
+    JoystickButton elevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton);
+    JoystickButton elevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
+    JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
+
+    elevatorTilt.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleElevatorTilt, transitSubsystem));
+
+    elevatorHigh.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorTopSetPoint, transitSubsystem));
+    elevatorMid.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, transitSubsystem));
+    elevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, transitSubsystem));
+  }
+
+  public void configureIntakeButtons() {
+    JoystickButton inTake = new JoystickButton(operatorStick, Buttons.intakeInButton);
+    JoystickButton outTake = new JoystickButton(operatorStick, Buttons.intakeOutButton);
+    JoystickButton openCloseIntake = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
+
+    inTake.whileTrue(Commands.run(transitSubsystem::inTake, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
+
+    outTake.whileTrue(Commands.run(transitSubsystem::outTake, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
+
+    openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
   }
 
   /**
@@ -158,8 +177,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     // return new AutoDriveCommand(5.00, driveSubsystem);
-    return Commands.sequence(new AutoDriveCommand(() -> 1.00, driveSubsystem),
-        new AutoBalanceCommand(driveSubsystem));
+    return autoChooser.getSelected();
     // return Autos.exampleAuto(m_exampleSubsystem);
   }
 }

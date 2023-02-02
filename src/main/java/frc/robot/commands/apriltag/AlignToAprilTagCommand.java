@@ -21,8 +21,6 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
   private double neededDistance;
   private double neededAngle;
 
-  private double relativeAngle;
-
   private Limelight camera;
 
   /** Creates a new AlignToAprilTagCommand. */
@@ -37,30 +35,21 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
             return;
           }
 
-          double zTranslation = -cameraPose[2];
+          double zTranslation = cameraPose[2];
           double xTranslation = cameraPose[0];
 
-          double zTranslationError = zTranslation - 1.5;
+          double zTranslationError = -zTranslation - 1.5;
           double xTranslationError = xTranslation;
 
-          double robotSkew = -Math.toDegrees(Math.atan2(xTranslation, zTranslation));
-          relativeAngle = driveSubsystem.getGyroYaw() - robotSkew;
+          neededAngle = 90 + Math.toDegrees(Math.atan2(zTranslationError, xTranslationError));
 
-          // relativeAngle = driveSubsystem.getAngleError(cameraPose[4]);
+          neededDistance = -Math.sqrt((xTranslationError * xTranslationError) +
+              (zTranslationError * zTranslationError));
+          // neededDistance = Math.hypot(zTranslationError, xTranslationError);
 
-          SmartDashboard.putNumber("Target Yaw", robotSkew);
-
-          SmartDashboard.putNumber("Relative Angle", relativeAngle);
-
-          neededAngle = 90 + Math.toDegrees(Math.atan(zTranslationError / xTranslationError));
-
-          // neededDistance = Math.sqrt((xTranslationError * xTranslationError) +
-          // (zTranslationError * zTranslationError));
-          neededDistance = Math.hypot(xTranslationError, zTranslationError);
-
-          if (zTranslationError < 0 && xTranslationError > 0) {
-            neededDistance *= -1;
-          }
+          // if (zTranslationError < 0 && xTranslationError > 0) {
+          // neededDistance *= -1;
+          // }
 
           if (neededAngle > 90) {
             neededAngle -= 180;

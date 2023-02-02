@@ -46,6 +46,9 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private DoubleSolenoid elevatorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       IntakeConstants.elevatorPistonForwardID, IntakeConstants.elevatorPistonReverseID);
 
+  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+      IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
+
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -114,12 +117,12 @@ public class ElementTransitSubsystem extends SubsystemBase {
     // return elevatorEncoder.getPosition();
     return 0;
   }
-  
-  public void toggleOnManipulatorBreak(){
+
+  public void toggleOnManipulatorBreak() {
     manipulatorBreak.set(Value.kForward);
   }
-  
-  public void toggleOffManipulatorBreak(){
+
+  public void toggleOffManipulatorBreak() {
     manipulatorBreak.set(Value.kReverse);
   }
 

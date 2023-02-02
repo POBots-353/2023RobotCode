@@ -24,6 +24,10 @@ public class AutoDriveCommand extends CommandBase {
     addRequirements(driveSubsystem);
   }
 
+  public AutoDriveCommand(double distance, DriveSubsystem driveSubsystem) {
+    this(() -> distance, driveSubsystem);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

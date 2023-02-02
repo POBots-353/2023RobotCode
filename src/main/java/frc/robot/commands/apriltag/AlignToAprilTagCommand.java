@@ -43,24 +43,24 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
           double zTranslationError = zTranslation - 1.5;
           double xTranslationError = xTranslation;
 
-          double robotSkew = -Math.toDegrees(Math.atan2(xTranslation, zTranslation));
-          relativeAngle = driveSubsystem.getGyroYaw() - robotSkew;
+          double robotSkew = Math.toDegrees(Math.atan2(xTranslation, zTranslation));
+          relativeAngle = driveSubsystem.getGyroYaw() + robotSkew;
 
-          // relativeAngle = driveSubsystem.getAngleError(cameraPose[4]);
+          relativeAngle = driveSubsystem.getAngleError(cameraPose[4]);
 
           SmartDashboard.putNumber("Target Yaw", robotSkew);
 
           SmartDashboard.putNumber("Relative Angle", relativeAngle);
 
-          neededAngle = 90 + Math.toDegrees(Math.atan(zTranslationError / xTranslationError));
+          neededAngle = 90 + Math.toDegrees(Math.atan2(zTranslationError, xTranslationError));
 
-          // neededDistance = Math.sqrt((xTranslationError * xTranslationError) +
-          // (zTranslationError * zTranslationError));
-          neededDistance = Math.hypot(xTranslationError, zTranslationError);
+          neededDistance = -Math.sqrt((xTranslationError * xTranslationError) +
+              (zTranslationError * zTranslationError));
+          // neededDistance = Math.hypot(zTranslationError, xTranslationError);
 
-          if (zTranslationError < 0 && xTranslationError > 0) {
-            neededDistance *= -1;
-          }
+          // if (zTranslationError < 0 && xTranslationError > 0) {
+          // neededDistance *= -1;
+          // }
 
           if (neededAngle > 90) {
             neededAngle -= 180;

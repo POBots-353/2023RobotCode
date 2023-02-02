@@ -34,6 +34,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   private RelativeEncoder elevatorEncoder = elevator.getEncoder();
   
+  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1,2 );
+  
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -112,6 +114,12 @@ public class ElementTransitSubsystem extends SubsystemBase {
   }
   public double getElevatorPosition() {
     return elevatorEncoder.getPosition();
+  }
+  public void toggleOnManipulatorBreak(){
+    manipulatorBreak.set(Value.kForward);
+  }
+  public void toggleOffManipulatorBreak(){
+    manipulatorBreak.set(Value.kReverse);
   }
   // turn on motor then pistons then turn motor off
 

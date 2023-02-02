@@ -22,6 +22,22 @@ public final class Constants {
     public static int operatorStickPort = 1;
   }
 
+  public static class Buttons {
+    // Elevator
+    public static final int elevatorHighButton = 7;
+    public static final int elevatorMidButton = 6;
+    public static final int elevatorLowButton = 5;
+    public static final int toggleElevatorPistonsButton = 8;
+
+    // Intake
+    public static final int intakeInButton = 13;
+    public static final int intakeOutButton = 12;
+    public static final int intakeOpenClose = 14;
+
+    // Drive
+    public static final int toggleBrakesButton = 3;
+  }
+
   public static class DriveConstants {
     public static final int frontLeftMotorID = 4; // 10
     public static final int backLeftMotorID = 2; // 14
@@ -38,13 +54,23 @@ public final class Constants {
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
-    public final static int forwardChannel = 1;
-    public final static int reverseChannel = 2;
+    public final static int pistonBrakeForwardID = 1;
+    public final static int pistonBrakeReverseID = 2;
   }
 
   public static class IntakeConstants {
+    public static final int elevatorMotorID = 0;
+
+    public static final int elevatorPistonForwardID = 0;
+    public static final int elevatorPistonReverseID = 0;
+
+    public static final int leftIntakeMotorID = 0;
+    public static final int rightIntakeMotorID = 0;
+
+    public static final int intakePistonForwardID = 0;
+    public static final int intakePistonReverseID = 0;
+
     public static final double intakeSpeed = 0.5;
-    public static final double elevatorPulleySpeed = 0.25;
     public static final double elevatorTopSetPoint = 3000;
     public static final double elevatorMidSetPoint = 1500;
     public static final double elevatorLowSetPoint = 0;

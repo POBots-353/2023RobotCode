@@ -21,8 +21,6 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
   private double neededDistance;
   private double neededAngle;
 
-  private double relativeAngle;
-
   private Limelight camera;
 
   /** Creates a new AlignToAprilTagCommand. */
@@ -37,20 +35,11 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
             return;
           }
 
-          double zTranslation = -cameraPose[2];
+          double zTranslation = cameraPose[2];
           double xTranslation = cameraPose[0];
 
-          double zTranslationError = zTranslation - 1.5;
+          double zTranslationError = -zTranslation - 1.5;
           double xTranslationError = xTranslation;
-
-          double robotSkew = Math.toDegrees(Math.atan2(xTranslation, zTranslation));
-          relativeAngle = driveSubsystem.getGyroYaw() + robotSkew;
-
-          relativeAngle = driveSubsystem.getAngleError(cameraPose[4]);
-
-          SmartDashboard.putNumber("Target Yaw", robotSkew);
-
-          SmartDashboard.putNumber("Relative Angle", relativeAngle);
 
           neededAngle = 90 + Math.toDegrees(Math.atan2(zTranslationError, xTranslationError));
 

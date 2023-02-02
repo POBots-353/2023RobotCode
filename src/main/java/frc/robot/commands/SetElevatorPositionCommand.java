@@ -19,12 +19,19 @@ public class SetElevatorPositionCommand extends CommandBase {
   }
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    elementTransit.toggleOffManipulatorBreak();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     elementTransit.setElevatorPosition(elevatorPosition);
+    if(elevatorPosition == elementTransit.getElevatorPosition() ){
+      elementTransit.toggleOnManipulatorBreak();
+    } else {
+      elementTransit.toggleOffManipulatorBreak();
+    }
   }
 
   // Called once the command ends or is interrupted.

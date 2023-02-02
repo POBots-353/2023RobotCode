@@ -114,6 +114,14 @@ public class ElementTransitSubsystem extends SubsystemBase {
     // return elevatorEncoder.getPosition();
     return 0;
   }
+  
+  public void toggleOnManipulatorBreak(){
+    manipulatorBreak.set(Value.kForward);
+  }
+  
+  public void toggleOffManipulatorBreak(){
+    manipulatorBreak.set(Value.kReverse);
+  }
 
   @Override
   public void periodic() {

@@ -37,6 +37,9 @@ public final class Constants {
     public static final double gearBoxRatio = 10.7;
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
+
+    public final static int forwardChannel = 1;
+    public final static int reverseChannel = 2;
   }
 
   public static class IntakeConstants {

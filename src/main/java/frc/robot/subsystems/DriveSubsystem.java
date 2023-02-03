@@ -77,9 +77,9 @@ public class DriveSubsystem extends SubsystemBase {
   private double maxVel = 5000;
   private double maxAcc = 2500;
 
-  private PowerDistribution powerDistribution = new PowerDistribution(0, ModuleType.kCTRE);
+  private PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
-  Field2d field = new Field2d();
+  private Field2d field = new Field2d();
 
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       new Pose2d(2, 4.3, navx.getRotation2d()));

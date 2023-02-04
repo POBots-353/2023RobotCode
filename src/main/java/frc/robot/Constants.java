@@ -39,10 +39,10 @@ public final class Constants {
   }
 
   public static class DriveConstants {
-    public static final int frontLeftMotorID = 10; // 10 4
-    public static final int backLeftMotorID = 14; // 14 2
-    public static final int frontRightMotorID = 9; // 9 1
-    public static final int backRightMotorID = 5; // 5 3
+    public static final int frontLeftMotorID = 4; // 10 4
+    public static final int backLeftMotorID = 2; // 14 2
+    public static final int frontRightMotorID = 1; // 9 1
+    public static final int backRightMotorID = 3; // 5 3
 
     public static final double defaultSpeed = 0.45;
     public static final double slowSpeed = 0.25;
@@ -67,6 +67,9 @@ public final class Constants {
     public static final int leftIntakeMotorID = 0;
     public static final int rightIntakeMotorID = 0;
 
+    public static final int leftActuatorID = 0;
+    public static final int rightActuatorID = 0;
+
     public static final int intakePistonForwardID = 0;
     public static final int intakePistonReverseID = 0;
 
@@ -77,5 +80,7 @@ public final class Constants {
     public static final double elevatorTopSetPoint = 3000;
     public static final double elevatorMidSetPoint = 1500;
     public static final double elevatorLowSetPoint = 0;
+
+    public static final double actuatorDownPosition = 1.0;
   }
 }

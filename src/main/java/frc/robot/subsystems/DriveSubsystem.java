@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -264,6 +265,8 @@ public class DriveSubsystem extends SubsystemBase {
     return 0.5 * DriveConstants.gearBoxRatio * DriveConstants.wheelCircumference * encoder / 42;
   }
 
+  private AnalogInput ultrasonic = new AnalogInput(1);
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -274,11 +277,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Left Meters", convertEncoderToDistance(frontLeftEncoder.getPosition()));
 
+    SmartDashboard.putNumber("Ultrasonic", ultrasonic.getVoltage());
+
     SmartDashboard.putNumber("Gyro Yaw", navx.getYaw());
     SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
     SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
 
-    SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
+    // SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
 
     // Double[] campose =
     // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);

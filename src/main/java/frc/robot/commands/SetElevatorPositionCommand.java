@@ -5,11 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ElementTransitSubsystem;
 
 public class SetElevatorPositionCommand extends CommandBase {
   private ElementTransitSubsystem elementTransit;
   private double elevatorPosition;
+
   /** Creates a new LowManipulator. */
   public SetElevatorPositionCommand(double position, ElementTransitSubsystem elementTransit) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -17,6 +19,7 @@ public class SetElevatorPositionCommand extends CommandBase {
     elevatorPosition = position;
     addRequirements(elementTransit);
   }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -27,7 +30,14 @@ public class SetElevatorPositionCommand extends CommandBase {
   @Override
   public void execute() {
     elementTransit.setElevatorPosition(elevatorPosition);
-    if(elevatorPosition == elementTransit.getElevatorPosition() ){
+
+    if (elevatorPosition == IntakeConstants.elevatorLowSetPoint) {
+      elementTransit.actuatorDown();
+    } else {
+      elementTransit.actuatorUp();
+    }
+
+    if (elevatorPosition == elementTransit.getElevatorPosition()) {
       elementTransit.toggleOnManipulatorBreak();
     } else {
       elementTransit.toggleOffManipulatorBreak();
@@ -36,7 +46,9 @@ public class SetElevatorPositionCommand extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    elementTransit.toggleOnManipulatorBreak();
+  }
 
   // Returns true when the command should end.
   @Override

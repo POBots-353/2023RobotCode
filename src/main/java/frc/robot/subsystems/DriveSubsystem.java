@@ -5,10 +5,6 @@
 
 package frc.robot.subsystems;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -31,7 +27,6 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -60,8 +55,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  // private DoubleSolenoid brakePiston = new
-  // DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+      DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
 
@@ -92,6 +87,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     initializePID(leftPIDController);
     initializePID(rightPIDController);
+
+    brakePiston.set(Value.kReverse);
 
     // Put the gyro on the dashboard
     SmartDashboard.putData(navx);
@@ -156,7 +153,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void toggleBrakes() {
-    // brakePiston.toggle();
+    brakePiston.toggle();
   }
 
   public void resetEncoders() {

@@ -281,25 +281,5 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
 
     // SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
-
-    // Double[] campose =
-    // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);
-
-    // if (campose.length > 0) {
-    // double x = campose[0];
-    // double y = campose[1];
-    // double z = campose[2];
-
-    // double distance = Math.sqrt(x * x + y * y + z * z);
-
-    // SmartDashboard.putNumber("Distance?", distance);
-
-    // SmartDashboard.putNumber("Camera Translation X", campose[0]);
-    // SmartDashboard.putNumber("Camera Translation Y", campose[1]);
-    // SmartDashboard.putNumber("Camera Translation Z", campose[2]);
-    // SmartDashboard.putNumber("Camera Rotation Pitch", campose[3]);
-    // SmartDashboard.putNumber("Camera Rotation Yaw", campose[4]);
-    // SmartDashboard.putNumber("Camera Rotation Roll", campose[5]);
-    // }
   }
 }

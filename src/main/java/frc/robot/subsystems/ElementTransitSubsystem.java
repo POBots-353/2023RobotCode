@@ -21,19 +21,24 @@ import frc.robot.Constants.IntakeConstants;
 
 public class ElementTransitSubsystem extends SubsystemBase {
   // Pneumatic stuff
-  private Compressor pcmCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
+  // private Compressor pcmCompressor = new Compressor(1,
+  // PneumaticsModuleType.REVPH);
 
-  private PneumaticHub pneumaticHub = new PneumaticHub(1);
+  // private PneumaticHub pneumaticHub = new PneumaticHub(1);
 
   // Intake objects
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(IntakeConstants.leftIntakeMotorID, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(IntakeConstants.rightIntakeMotorID, MotorType.kBrushless);
+  // private CANSparkMax leftIntakeMotor = new
+  // CANSparkMax(IntakeConstants.leftIntakeMotorID, MotorType.kBrushless);
+  // private CANSparkMax rightIntakeMotor = new
+  // CANSparkMax(IntakeConstants.rightIntakeMotorID, MotorType.kBrushless);
 
-  private Servo leftActuator = new Servo(IntakeConstants.leftActuatorID);
-  private Servo rightActuator = new Servo(IntakeConstants.rightActuatorID);
+  // private Servo leftActuator = new Servo(IntakeConstants.leftActuatorID);
+  // private Servo rightActuator = new Servo(IntakeConstants.rightActuatorID);
 
-  private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
+  // private DoubleSolenoid intakePiston = new
+  // DoubleSolenoid(PneumaticsModuleType.REVPH,
+  // IntakeConstants.intakePistonForwardID,
+  // IntakeConstants.intakePistonReverseID);
 
   // Elevator objects
   private CANSparkMax elevatorMotor = new CANSparkMax(IntakeConstants.elevatorMotorID, MotorType.kBrushless);
@@ -42,11 +47,15 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   private RelativeEncoder elevatorEncoder = elevatorMotor.getEncoder();
 
-  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.elevatorPistonForwardID, IntakeConstants.elevatorPistonReverseID);
+  // private DoubleSolenoid elevatorPiston = new
+  // DoubleSolenoid(PneumaticsModuleType.REVPH,
+  // IntakeConstants.elevatorPistonForwardID,
+  // IntakeConstants.elevatorPistonReverseID);
 
-  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
+  // private DoubleSolenoid manipulatorBreak = new
+  // DoubleSolenoid(PneumaticsModuleType.REVPH,
+  // IntakeConstants.manipulatorBreakForwardID,
+  // IntakeConstants.manipulatorBreakReverseID);
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -55,22 +64,22 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private double kI = 0;
   private double kD = 0;
   private double kIz = 0;
-  private double kFF = 0.000146;
+  private double kFF = 0.000156;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 5000;
-  private double maxAcc = 2500;
+  private double maxVel = 5000; // 5000
+  private double maxAcc = 3000; // 2500
 
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
-    pcmCompressor.enableDigital();
+    // pcmCompressor.enableDigital();
 
-    leftActuator.setBounds(2, 0, 0, 0, 1);
-    rightActuator.setBounds(2, 0, 0, 0, 1);
+    // leftActuator.setBounds(2, 0, 0, 0, 1);
+    // rightActuator.setBounds(2, 0, 0, 0, 1);
 
-    intakePiston.set(Value.kReverse);
+    // intakePiston.set(Value.kReverse);
 
-    elevatorPiston.set(Value.kReverse);
+    // elevatorPiston.set(Value.kReverse);
 
     initializePID(elevatorPIDController);
   }
@@ -89,60 +98,64 @@ public class ElementTransitSubsystem extends SubsystemBase {
   }
 
   public void inTake() {
-    leftIntakeMotor.set(IntakeConstants.intakeSpeed);
-    rightIntakeMotor.set(IntakeConstants.intakeSpeed);
+    // leftIntakeMotor.set(IntakeConstants.intakeSpeed);
+    // rightIntakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
   public void outTake() {
-    leftIntakeMotor.set(-IntakeConstants.intakeSpeed);
-    rightIntakeMotor.set(-IntakeConstants.intakeSpeed);
+    // leftIntakeMotor.set(-IntakeConstants.intakeSpeed);
+    // rightIntakeMotor.set(-IntakeConstants.intakeSpeed);
   }
 
   public void stopClawMotors() {
-    leftIntakeMotor.set(0);
-    rightIntakeMotor.set(0);
+    // leftIntakeMotor.set(0);
+    // rightIntakeMotor.set(0);
   }
 
   public void actuatorDown() {
-    leftActuator.set(IntakeConstants.actuatorDownPosition);
-    rightActuator.set(IntakeConstants.actuatorDownPosition);
+    // leftActuator.set(IntakeConstants.actuatorDownPosition);
+    // rightActuator.set(IntakeConstants.actuatorDownPosition);
   }
 
   public void actuatorUp() {
-    leftActuator.set(0);
-    rightActuator.set(0);
+    // leftActuator.set(0);
+    // rightActuator.set(0);
   }
 
   public void openCloseClaw() {
-    intakePiston.toggle();
+    // intakePiston.toggle();
   }
 
   public void toggleElevatorTilt() {
-    elevatorPiston.toggle();
+    // elevatorPiston.toggle();
   }
 
   public void setElevatorPosition(double elevatorPos) {
-    elevatorPIDController.setReference(elevatorPos,
-        CANSparkMax.ControlType.kSmartMotion);
+    // elevatorPIDController.setReference(elevatorPos,
+    //     CANSparkMax.ControlType.kSmartMotion);
+  }
+
+  public void elevatorOff() {
+    elevatorMotor.set(0);
   }
 
   public double getElevatorPosition() {
-    // return elevatorEncoder.getPosition();
-    return 0;
+    return elevatorEncoder.getPosition();
+    // return 0;
   }
 
   public void toggleOnManipulatorBreak() {
-    manipulatorBreak.set(Value.kForward);
+    // manipulatorBreak.set(Value.kForward);
   }
 
   public void toggleOffManipulatorBreak() {
-    manipulatorBreak.set(Value.kReverse);
+    // manipulatorBreak.set(Value.kReverse);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
-    SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
+    // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
   }
 
 }

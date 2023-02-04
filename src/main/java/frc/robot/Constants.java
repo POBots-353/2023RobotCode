@@ -59,7 +59,7 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final int elevatorMotorID = 0;
+    public static final int elevatorMotorID = 9;
 
     public static final int elevatorPistonForwardID = 0;
     public static final int elevatorPistonReverseID = 0;
@@ -77,8 +77,8 @@ public final class Constants {
     public static final int manipulatorBreakReverseID = 0;
 
     public static final double intakeSpeed = 0.5;
-    public static final double elevatorTopSetPoint = 3000;
-    public static final double elevatorMidSetPoint = 1500;
+    public static final double elevatorTopSetPoint = -60;
+    public static final double elevatorMidSetPoint = -34;
     public static final double elevatorLowSetPoint = 0;
 
     public static final double actuatorDownPosition = 1.0;

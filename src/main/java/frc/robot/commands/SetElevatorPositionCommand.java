@@ -48,11 +48,14 @@ public class SetElevatorPositionCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     elementTransit.toggleOnManipulatorBreak();
+    elementTransit.elevatorOff();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elementTransit.getElevatorPosition() == elevatorPosition;
+    // return false;
+    return Math.abs(elementTransit.getElevatorPosition() - elevatorPosition) < 0.5;
+    // return elementTransit.getElevatorPosition() == elevatorPosition;
   }
 }

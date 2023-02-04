@@ -25,6 +25,7 @@ import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -58,6 +59,9 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
+  private Servo leftServo = new Servo(0);
+  private Servo rightServo = new Servo(1);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -67,6 +71,19 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();
+
+    leftServo.setBounds(2, 0, 0, 0, 1);
+    rightServo.setBounds(2, 0, 0, 0, 1);
+
+    driverController.a().whileTrue(Commands.run(() -> {
+      leftServo.set(1);
+      rightServo.set(1);
+    }));
+
+    driverController.a().whileFalse(Commands.run(() -> {
+      leftServo.set(0);
+      rightServo.set(0);
+    }));
 
     // driveSubsystem.setDefaultCommand(
     // new ArcadeDriveCommand(driverController::getLeftY,
@@ -107,9 +124,12 @@ public class RobotContainer {
     driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
   }
 
+  /**
+   * Configures all drive triggers and buttons
+   */
   public void configureDriveButtons() {
     Trigger slowDrive = driverController.leftTrigger();
-
+    // charlie was here
     Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
 
     Trigger autoBalance = driverController.leftBumper();
@@ -142,11 +162,14 @@ public class RobotContainer {
         .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1), driveSubsystem));
   }
 
+  /**
+   * Configures all the buttons and triggers for the elevator
+   */
   public void configureElevatorButtons() {
     JoystickButton elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
     JoystickButton elevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton);
     JoystickButton elevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
-    JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
+    JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton);
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleElevatorTilt, transitSubsystem));
 
@@ -155,6 +178,9 @@ public class RobotContainer {
     elevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, transitSubsystem));
   }
 
+  /**
+   * Configures all the buttons for the intake
+   */
   public void configureIntakeButtons() {
     JoystickButton inTake = new JoystickButton(operatorStick, Buttons.intakeInButton);
     JoystickButton outTake = new JoystickButton(operatorStick, Buttons.intakeOutButton);

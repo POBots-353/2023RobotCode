@@ -35,6 +35,7 @@ import frc.robot.commands.DriveToTapeCommand;
 import edu.wpi.first.wpilibj.AnalogInput;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
@@ -101,6 +102,65 @@ public class DriveSubsystem extends SubsystemBase {
     powerDistribution.clearStickyFaults();
 
     SmartDashboard.putData(field);
+  }
+
+  public void initializeFieldPosition(int position) {
+    switch (DriverStation.getAlliance()) {
+      case Red:
+        initializeRedFieldPosition(position);
+        break;
+      case Blue:
+        initializeBlueFieldPosition(position);
+        break;
+      default:
+        break;
+    }
+  }
+
+  public void initializeRedFieldPosition(int position) {
+    double startX = 15.513558 - 0.9652;
+    double startY = 0;
+
+    switch (position) {
+      case 1:
+        startY = 4.424;
+        break;
+      case 2:
+        startY = 2.748;
+        break;
+      case 3:
+        startY = 1.07;
+        break;
+      default:
+        break;
+    }
+
+    odometry.resetPosition(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
+        convertEncoderToDistance(frontRightEncoder.getPosition()),
+        new Pose2d(startX, startY, navx.getRotation2d()));
+  }
+
+  public void initializeBlueFieldPosition(int position) {
+    double startX = 1.02743 + 0.9652;
+    double startY = 0;
+
+    switch (position) {
+      case 1:
+        startY = 4.424;
+        break;
+      case 2:
+        startY = 2.748;
+        break;
+      case 3:
+        startY = 1.07;
+        break;
+      default:
+        break;
+    }
+
+    odometry.resetPosition(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
+        convertEncoderToDistance(frontRightEncoder.getPosition()),
+        new Pose2d(startX, startY, navx.getRotation2d()));
   }
 
   private void initializePID(SparkMaxPIDController p) {

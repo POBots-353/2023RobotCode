@@ -28,7 +28,7 @@ import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
@@ -64,6 +64,8 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
+  private SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
+
   private Servo leftServo = new Servo(0);
   private Servo rightServo = new Servo(1);
   private Servo middleServo = new Servo(2);
@@ -73,12 +75,19 @@ public class RobotContainer {
    */
   public RobotContainer() {
     autoChooser.setDefaultOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
-    autoChooser.addOption("Drive Back and Balance", new DriveOnChargeStationAuto(driveSubsystem));
     autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(transitSubsystem, driveSubsystem));
+    autoChooser.addOption("Drive Back and Balance", new DriveOnChargeStationAuto(driveSubsystem));
     autoChooser.addOption("Place Cone and Drive Back", new PlaceGPAndMobilityAuto(transitSubsystem, driveSubsystem));
     autoChooser.addOption("Place Cone and Balance", new PlaceGPBalanceAuto(transitSubsystem, driveSubsystem));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", 2);
+    startingFieldPosition.addOption("Substation Side", 1);
+    startingFieldPosition.addOption("Perimeter Side", 3);
+
+    SmartDashboard.putData("Starting Field Position", startingFieldPosition);
+
     // Configure the trigger bindings
     configureBindings();
 
@@ -206,6 +215,10 @@ public class RobotContainer {
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
 
     openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
+  }
+
+  public void autonomousInit() {
+    driveSubsystem.initializeFieldPosition(startingFieldPosition.getSelected());
   }
 
   /**

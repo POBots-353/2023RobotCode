@@ -61,6 +61,7 @@ public class RobotContainer {
 
   private Servo leftServo = new Servo(0);
   private Servo rightServo = new Servo(1);
+  private Servo middleServo = new Servo(2);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -74,15 +75,18 @@ public class RobotContainer {
 
     leftServo.setBounds(2, 0, 0, 0, 1);
     rightServo.setBounds(2, 0, 0, 0, 1);
+    middleServo.setBounds(2, 0, 0, 0, 1);
 
     driverController.a().whileTrue(Commands.run(() -> {
       leftServo.set(1);
       rightServo.set(1);
+    middleServo.set(1);
     }));
 
     driverController.a().whileFalse(Commands.run(() -> {
       leftServo.set(0);
       rightServo.set(0);
+      middleServo.set(0);
     }));
 
     // driveSubsystem.setDefaultCommand(

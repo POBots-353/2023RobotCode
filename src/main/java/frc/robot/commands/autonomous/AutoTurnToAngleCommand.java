@@ -69,10 +69,6 @@ public class AutoTurnToAngleCommand extends CommandBase {
       // pidController.setPID(0.0047, 0, 0);
     }
 
-    // double turnSpeed = angleError * 0.0027;
-
-    // pidController.calculate(angleError, 0);
-
     double turnSpeed = -pidController.calculate(angleError, 0);
 
     // MathUtil.clamp(turnSpeed, -0.35, 0.35)

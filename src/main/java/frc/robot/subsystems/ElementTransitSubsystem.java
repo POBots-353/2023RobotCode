@@ -126,6 +126,14 @@ public class ElementTransitSubsystem extends SubsystemBase {
     // intakePiston.toggle();
   }
 
+  public void openClaw() {
+    // intakePiston.set(Value.kReverse);
+  }
+
+  public void closeClaw() {
+    // intakePiston.set(Value.kForward);
+  }
+
   public void toggleElevatorTilt() {
     // elevatorPiston.toggle();
   }

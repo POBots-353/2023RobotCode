@@ -198,6 +198,10 @@ public class DriveSubsystem extends SubsystemBase {
     return Math.IEEEremainder(navx.getYaw(), 360);
   }
 
+  public double getGyroPitch() {
+    return Math.IEEEremainder(navx.getYaw(), 360);
+  }
+
   public double getAngleError(double expectedAngle) {
     double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw(), 360);
 

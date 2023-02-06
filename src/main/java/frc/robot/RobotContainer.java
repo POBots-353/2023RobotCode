@@ -10,8 +10,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveToTapeCommand;
 import frc.robot.commands.ArcadeDriveCommand;
-import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.AutoDriveCommand;
+import frc.robot.commands.autonomous.AutoBalanceCommand;
+import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SetElevatorPositionCommand;
@@ -20,6 +20,11 @@ import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.apriltag.AlignToAprilTagCommand;
 import frc.robot.commands.apriltag.DriveToSquaredCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
+import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
+import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
+import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
+import frc.robot.commands.autonomous.routines.PlaceGPAndMobilityAuto;
+import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -67,7 +72,11 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    autoChooser.setDefaultOption("Drive Backwards", new AutoDriveCommand(1.00, driveSubsystem));
+    autoChooser.setDefaultOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
+    autoChooser.addOption("Drive Back and Balance", new DriveOnChargeStationAuto(driveSubsystem));
+    autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(transitSubsystem, driveSubsystem));
+    autoChooser.addOption("Place Cone and Drive Back", new PlaceGPAndMobilityAuto(transitSubsystem, driveSubsystem));
+    autoChooser.addOption("Place Cone and Balance", new PlaceGPBalanceAuto(transitSubsystem, driveSubsystem));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
     // Configure the trigger bindings
@@ -80,7 +89,7 @@ public class RobotContainer {
     driverController.a().whileTrue(Commands.run(() -> {
       leftServo.set(1);
       rightServo.set(1);
-    middleServo.set(1);
+      middleServo.set(1);
     }));
 
     driverController.a().whileFalse(Commands.run(() -> {

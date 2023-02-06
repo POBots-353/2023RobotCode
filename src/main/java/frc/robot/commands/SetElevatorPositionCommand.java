@@ -5,11 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ElementTransitSubsystem;
 
 public class SetElevatorPositionCommand extends CommandBase {
   private ElementTransitSubsystem elementTransit;
   private double elevatorPosition;
+
   /** Creates a new LowManipulator. */
   public SetElevatorPositionCommand(double position, ElementTransitSubsystem elementTransit) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -17,23 +19,43 @@ public class SetElevatorPositionCommand extends CommandBase {
     elevatorPosition = position;
     addRequirements(elementTransit);
   }
+
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    elementTransit.toggleOffManipulatorBreak();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     elementTransit.setElevatorPosition(elevatorPosition);
+
+    if (elevatorPosition == IntakeConstants.elevatorLowSetPoint) {
+      elementTransit.actuatorDown();
+    } else {
+      elementTransit.actuatorUp();
+    }
+
+    if (elevatorPosition == elementTransit.getElevatorPosition()) {
+      elementTransit.toggleOnManipulatorBreak();
+    } else {
+      elementTransit.toggleOffManipulatorBreak();
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    elementTransit.toggleOnManipulatorBreak();
+    elementTransit.elevatorOff();
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elementTransit.getElevatorPosition() == elevatorPosition;
+    // return false;
+    return Math.abs(elementTransit.getElevatorPosition() - elevatorPosition) < 0.5;
+    // return elementTransit.getElevatorPosition() == elevatorPosition;
   }
 }

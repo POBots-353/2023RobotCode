@@ -5,10 +5,6 @@
 
 package frc.robot.subsystems;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -31,10 +27,13 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
+
 import frc.robot.commands.DriveToTapeCommand;
+
+import edu.wpi.first.wpilibj.AnalogInput;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -60,8 +59,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  // private DoubleSolenoid brakePiston = new
-  // DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+      DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
 
@@ -78,9 +77,9 @@ public class DriveSubsystem extends SubsystemBase {
   private double maxVel = 5000;
   private double maxAcc = 2500;
 
-  private PowerDistribution powerDistribution = new PowerDistribution(0, ModuleType.kCTRE);
+  private PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
-  Field2d field = new Field2d();
+  private Field2d field = new Field2d();
 
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       new Pose2d(2, 4.3, navx.getRotation2d()));
@@ -92,6 +91,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     initializePID(leftPIDController);
     initializePID(rightPIDController);
+
+    brakePiston.set(Value.kReverse);
 
     // Put the gyro on the dashboard
     SmartDashboard.putData(navx);
@@ -156,7 +157,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void toggleBrakes() {
-    // brakePiston.toggle();
+    brakePiston.toggle();
   }
 
   public void resetEncoders() {
@@ -265,6 +266,8 @@ public class DriveSubsystem extends SubsystemBase {
     return 0.5 * DriveConstants.gearBoxRatio * DriveConstants.wheelCircumference * encoder / 42;
   }
 
+  private AnalogInput ultrasonic = new AnalogInput(1);
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -275,30 +278,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Left Meters", convertEncoderToDistance(frontLeftEncoder.getPosition()));
 
+    SmartDashboard.putNumber("Ultrasonic", ultrasonic.getVoltage());
+
     SmartDashboard.putNumber("Gyro Yaw", navx.getYaw());
     SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
     SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
 
-    SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
-
-    // Double[] campose =
-    // limelight.getTable().getEntry("campose").getDoubleArray(new Double[0]);
-
-    // if (campose.length > 0) {
-    // double x = campose[0];
-    // double y = campose[1];
-    // double z = campose[2];
-
-    // double distance = Math.sqrt(x * x + y * y + z * z);
-
-    // SmartDashboard.putNumber("Distance?", distance);
-
-    // SmartDashboard.putNumber("Camera Translation X", campose[0]);
-    // SmartDashboard.putNumber("Camera Translation Y", campose[1]);
-    // SmartDashboard.putNumber("Camera Translation Z", campose[2]);
-    // SmartDashboard.putNumber("Camera Rotation Pitch", campose[3]);
-    // SmartDashboard.putNumber("Camera Rotation Yaw", campose[4]);
-    // SmartDashboard.putNumber("Camera Rotation Roll", campose[5]);
-    // }
+    // SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
   }
 }

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Limelight;
 import frc.robot.commands.AlignToTapeCommand;
-import frc.robot.commands.AutoDriveCommand;
+import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 

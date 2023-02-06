@@ -34,6 +34,10 @@ public class AutoTurnToAngleCommand extends CommandBase {
     addRequirements(driveSubsystem);
   }
 
+  public AutoTurnToAngleCommand(double angle, DriveSubsystem driveSubsystem) {
+    this(() -> angle, driveSubsystem);
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

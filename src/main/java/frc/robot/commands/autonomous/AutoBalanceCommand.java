@@ -12,7 +12,7 @@ import frc.robot.subsystems.DriveSubsystem;
 public class AutoBalanceCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
 
-  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
+  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125); // kD 0.00125
 
   /** Creates a new AutoBalanceCommand. */
   public AutoBalanceCommand(DriveSubsystem driveSubsystem) {

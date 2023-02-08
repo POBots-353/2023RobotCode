@@ -54,15 +54,18 @@ public final class Constants {
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
-    public final static int pistonBrakeForwardID = 1;
-    public final static int pistonBrakeReverseID = 2;
+    public static final double distanceToEncoderRatio = 2 * 42 / (wheelCircumference * gearBoxRatio);
+    public static final double encoderToDistanceRatio = 0.5 * wheelCircumference * gearBoxRatio / 42;
+
+    public final static int pistonBrakeForwardID = 8;
+    public final static int pistonBrakeReverseID = 7;
   }
 
   public static class IntakeConstants {
     public static final int elevatorMotorID = 9;
 
-    public static final int elevatorPistonForwardID = 0;
-    public static final int elevatorPistonReverseID = 0;
+    public static final int elevatorPistonForwardID = 6;
+    public static final int elevatorPistonReverseID = 9;
 
     public static final int leftIntakeMotorID = 0;
     public static final int rightIntakeMotorID = 0;

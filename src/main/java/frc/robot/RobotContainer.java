@@ -156,6 +156,8 @@ public class RobotContainer {
 
     Trigger autoBalance = driverController.leftBumper();
 
+    Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
+
     Trigger alignToTape = driverController.rightBumper();
 
     Trigger alignToAprilTag = driverController.y();
@@ -172,6 +174,8 @@ public class RobotContainer {
         .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
 
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
+
+    toggleBrake.toggleOnTrue(Commands.runOnce(driveSubsystem::toggleBrakes, driveSubsystem));
 
     alignToTape.whileTrue(new DriveToTapeCommand(driveSubsystem));
 

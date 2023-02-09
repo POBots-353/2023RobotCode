@@ -21,10 +21,10 @@ import frc.robot.Constants.IntakeConstants;
 
 public class ElementTransitSubsystem extends SubsystemBase {
   // Pneumatic stuff
-  // private Compressor pcmCompressor = new Compressor(1,
-  // PneumaticsModuleType.REVPH);
+  private Compressor pcmCompressor = new Compressor(1,
+      PneumaticsModuleType.REVPH);
 
-  // private PneumaticHub pneumaticHub = new PneumaticHub(1);
+  private PneumaticHub pneumaticHub = new PneumaticHub(1);
 
   // Intake objects
   // private CANSparkMax leftIntakeMotor = new
@@ -47,10 +47,9 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   private RelativeEncoder elevatorEncoder = elevatorMotor.getEncoder();
 
-  // private DoubleSolenoid elevatorPiston = new
-  // DoubleSolenoid(PneumaticsModuleType.REVPH,
-  // IntakeConstants.elevatorPistonForwardID,
-  // IntakeConstants.elevatorPistonReverseID);
+  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+      IntakeConstants.elevatorPistonForwardID,
+      IntakeConstants.elevatorPistonReverseID);
 
   // private DoubleSolenoid manipulatorBreak = new
   // DoubleSolenoid(PneumaticsModuleType.REVPH,
@@ -72,14 +71,14 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
-    // pcmCompressor.enableDigital();
+    pcmCompressor.enableDigital();
 
     // leftActuator.setBounds(2, 0, 0, 0, 1);
     // rightActuator.setBounds(2, 0, 0, 0, 1);
 
     // intakePiston.set(Value.kReverse);
 
-    // elevatorPiston.set(Value.kReverse);
+    elevatorPiston.set(Value.kReverse);
 
     initializePID(elevatorPIDController);
   }
@@ -126,13 +125,21 @@ public class ElementTransitSubsystem extends SubsystemBase {
     // intakePiston.toggle();
   }
 
+  public void openClaw() {
+    // intakePiston.set(Value.kReverse);
+  }
+
+  public void closeClaw() {
+    // intakePiston.set(Value.kForward);
+  }
+
   public void toggleElevatorTilt() {
-    // elevatorPiston.toggle();
+    elevatorPiston.toggle();
   }
 
   public void setElevatorPosition(double elevatorPos) {
     // elevatorPIDController.setReference(elevatorPos,
-    //     CANSparkMax.ControlType.kSmartMotion);
+    // CANSparkMax.ControlType.kSmartMotion);
   }
 
   public void elevatorOff() {
@@ -154,8 +161,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
-    // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
+    // SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
+    SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
   }
 
 }

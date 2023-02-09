@@ -10,8 +10,8 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveToTapeCommand;
 import frc.robot.commands.ArcadeDriveCommand;
-import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.AutoDriveCommand;
+import frc.robot.commands.autonomous.AutoBalanceCommand;
+import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SetElevatorPositionCommand;
@@ -20,10 +20,15 @@ import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.apriltag.AlignToAprilTagCommand;
 import frc.robot.commands.apriltag.DriveToSquaredCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
+import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
+import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
+import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
+import frc.robot.commands.autonomous.routines.PlaceGPAndMobilityAuto;
+import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
@@ -59,30 +64,47 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
+  private SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
+
   private Servo leftServo = new Servo(0);
   private Servo rightServo = new Servo(1);
+  private Servo middleServo = new Servo(2);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    autoChooser.setDefaultOption("Drive Backwards", new AutoDriveCommand(1.00, driveSubsystem));
+    autoChooser.setDefaultOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
+    autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(transitSubsystem, driveSubsystem));
+    autoChooser.addOption("Drive Back and Balance", new DriveOnChargeStationAuto(driveSubsystem));
+    autoChooser.addOption("Place Cone and Drive Back", new PlaceGPAndMobilityAuto(transitSubsystem, driveSubsystem));
+    autoChooser.addOption("Place Cone and Balance", new PlaceGPBalanceAuto(transitSubsystem, driveSubsystem));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", 2);
+    startingFieldPosition.addOption("Substation Side", 1);
+    startingFieldPosition.addOption("Perimeter Side", 3);
+
+    SmartDashboard.putData("Starting Field Position", startingFieldPosition);
+
     // Configure the trigger bindings
     configureBindings();
 
     leftServo.setBounds(2, 0, 0, 0, 1);
     rightServo.setBounds(2, 0, 0, 0, 1);
+    middleServo.setBounds(2, 0, 0, 0, 1);
 
     driverController.a().whileTrue(Commands.run(() -> {
       leftServo.set(1);
       rightServo.set(1);
+      middleServo.set(1);
     }));
 
     driverController.a().whileFalse(Commands.run(() -> {
       leftServo.set(0);
       rightServo.set(0);
+      middleServo.set(0);
     }));
 
     // driveSubsystem.setDefaultCommand(
@@ -134,6 +156,8 @@ public class RobotContainer {
 
     Trigger autoBalance = driverController.leftBumper();
 
+    Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
+
     Trigger alignToTape = driverController.rightBumper();
 
     Trigger alignToAprilTag = driverController.y();
@@ -147,9 +171,11 @@ public class RobotContainer {
 
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
-        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
+        .whileTrue(new AutoTurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
 
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
+
+    toggleBrake.toggleOnTrue(Commands.runOnce(driveSubsystem::toggleBrakes, driveSubsystem));
 
     alignToTape.whileTrue(new DriveToTapeCommand(driveSubsystem));
 
@@ -193,6 +219,10 @@ public class RobotContainer {
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
 
     openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
+  }
+
+  public void autonomousInit() {
+    driveSubsystem.initializeFieldPosition(startingFieldPosition.getSelected());
   }
 
   /**

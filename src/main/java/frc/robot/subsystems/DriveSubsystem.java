@@ -22,15 +22,20 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Limelight;
 import frc.robot.Constants.DriveConstants;
+
+import frc.robot.commands.DriveToTapeCommand;
+
 import edu.wpi.first.wpilibj.AnalogInput;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
@@ -53,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
   private Limelight limelight = new Limelight("limelight");
 
-  private AHRS navx = new AHRS(SPI.Port.kMXP);
+  private AHRS navx = new AHRS(Port.kUSB1);
 
   private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
@@ -70,7 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double kFF = 0.000146;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 5000;
+  private double maxVel = 1750;
   private double maxAcc = 2500;
 
   private PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
@@ -82,6 +87,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    frontLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
+    frontRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
+
+    frontLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
+    frontRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
+
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 
@@ -148,8 +159,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void autoDrive(double meters) {
-    leftPIDController.setReference(convertDistanceToEncoder(meters), ControlType.kSmartMotion);
-    rightPIDController.setReference(-convertDistanceToEncoder(meters), ControlType.kSmartMotion);
+    leftPIDController.setReference(meters, ControlType.kSmartMotion);
+    rightPIDController.setReference(-meters, ControlType.kSmartMotion);
+    // leftPIDController.setReference(convertDistanceToEncoder(meters),
+    // ControlType.kSmartMotion);
+    // rightPIDController.setReference(-convertDistanceToEncoder(meters),
+    // ControlType.kSmartMotion);
+  }
+
+  public void autoTurn(double turnCircumference) {
+    SmartDashboard.putNumber("Turn Circumference", turnCircumference);
+    leftPIDController.setReference(turnCircumference, ControlType.kSmartMotion);
+    rightPIDController.setReference(turnCircumference, ControlType.kSmartMotion);
   }
 
   public void toggleBrakes() {
@@ -196,6 +217,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double getGyroYaw() {
     return Math.IEEEremainder(navx.getYaw(), 360);
+  }
+
+  public double getGyroPitch() {
+    return Math.IEEEremainder(navx.getPitch(), 360);
   }
 
   public double getAngleError(double expectedAngle) {
@@ -255,34 +280,99 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean distanceReached(double distanceMeters) {
-    return Math.abs(frontLeftEncoder.getPosition() - convertDistanceToEncoder(distanceMeters)) <= 0.10;
+    return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.006;
+    // return Math.abs(frontLeftEncoder.getPosition() -
+    // convertDistanceToEncoder(distanceMeters)) <= 0.10;
   }
 
   public double convertDistanceToEncoder(double meters) {
-    return 2 * (meters / DriveConstants.wheelCircumference) * 42 / DriveConstants.gearBoxRatio;
+    return meters * DriveConstants.distanceToEncoderRatio;
+    // return 2 * (meters / DriveConstants.wheelCircumference) * 42 /
+    // DriveConstants.gearBoxRatio;
   }
 
   public double convertEncoderToDistance(double encoder) {
-    return 0.5 * DriveConstants.gearBoxRatio * DriveConstants.wheelCircumference * encoder / 42;
+    return encoder * DriveConstants.encoderToDistanceRatio;
+    // return 0.5 * DriveConstants.gearBoxRatio * DriveConstants.wheelCircumference
+    // * encoder / 42;
   }
 
-  private AnalogInput ultrasonic = new AnalogInput(1);
+  public void initializeFieldPosition(int position) {
+    switch (DriverStation.getAlliance()) {
+      case Red:
+        initializeRedFieldPosition(position);
+        break;
+      case Blue:
+        initializeBlueFieldPosition(position);
+        break;
+      default:
+        break;
+    }
+  }
+
+  public void initializeRedFieldPosition(int position) {
+    double startX = 15.513558 - 0.9652;
+    double startY = 0;
+
+    switch (position) {
+      case 1:
+        startY = 4.424;
+        break;
+      case 2:
+        startY = 2.748;
+        break;
+      case 3:
+        startY = 1.07;
+        break;
+      default:
+        break;
+    }
+
+    odometry.resetPosition(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
+        convertEncoderToDistance(frontRightEncoder.getPosition()),
+        new Pose2d(startX, startY, navx.getRotation2d()));
+  }
+
+  public void initializeBlueFieldPosition(int position) {
+    double startX = 1.02743 + 0.9652;
+    double startY = 0;
+
+    switch (position) {
+      case 1:
+        startY = 4.424;
+        break;
+      case 2:
+        startY = 2.748;
+        break;
+      case 3:
+        startY = 1.07;
+        break;
+      default:
+        break;
+    }
+
+    odometry.resetPosition(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
+        convertEncoderToDistance(frontRightEncoder.getPosition()),
+        new Pose2d(startX, startY, navx.getRotation2d()));
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    odometry.update(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
-        -convertEncoderToDistance(frontRightEncoder.getPosition()));
+    // odometry.update(navx.getRotation2d(),
+    // convertEncoderToDistance(frontLeftEncoder.getPosition()),
+    // -convertEncoderToDistance(frontRightEncoder.getPosition()));
+
+    odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
+        -frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
 
-    SmartDashboard.putNumber("Left Meters", convertEncoderToDistance(frontLeftEncoder.getPosition()));
+    SmartDashboard.putNumber("Left Meters", frontLeftEncoder.getPosition());
 
-    SmartDashboard.putNumber("Ultrasonic", ultrasonic.getVoltage());
-
-    SmartDashboard.putNumber("Gyro Yaw", navx.getYaw());
-    SmartDashboard.putNumber("Gyro Pitch", navx.getPitch());
-    SmartDashboard.putNumber("Gyro Roll", navx.getRoll());
+    SmartDashboard.putNumber("Gyro Yaw", Math.IEEEremainder(navx.getYaw(), 360));
+    SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));
+    SmartDashboard.putNumber("Gyro Roll", Math.IEEEremainder(navx.getRoll(), 360));
 
     // SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
   }

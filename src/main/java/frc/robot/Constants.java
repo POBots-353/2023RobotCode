@@ -54,6 +54,8 @@ public final class Constants {
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
+    public static final double trackDiameter = 0.581025;
+
     public static final double distanceToEncoderRatio = 2 * 42 / (wheelCircumference * gearBoxRatio);
     public static final double encoderToDistanceRatio = 0.5 * wheelCircumference * gearBoxRatio / 42;
 
@@ -62,13 +64,13 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final int elevatorMotorID = 9;
+    public static final int elevatorMotorID = 5;
 
     public static final int elevatorPistonForwardID = 6;
     public static final int elevatorPistonReverseID = 9;
 
-    public static final int leftIntakeMotorID = 0;
-    public static final int rightIntakeMotorID = 0;
+    public static final int leftIntakeMotorID = 6;
+    public static final int rightIntakeMotorID = 7;
 
     public static final int leftActuatorID = 0;
     public static final int rightActuatorID = 0;

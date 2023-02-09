@@ -18,9 +18,9 @@ public class AutoTurnToAngleCommand extends CommandBase {
 
   private DoubleSupplier angleSupplier;
 
-  private PIDController pidController = new PIDController(0.0047, 0, 0.00115);
+  private PIDController pidController = new PIDController(0.0145, 0, 0.00155); // d: 0.00115, 0.00125
 
-  private SlewRateLimiter turnLimiter = new SlewRateLimiter(1.50);
+  private SlewRateLimiter turnLimiter = new SlewRateLimiter(3.75);
 
   private int timeAligned = 0;
 
@@ -53,27 +53,27 @@ public class AutoTurnToAngleCommand extends CommandBase {
 
     double angleErrorAbs = Math.abs(angleError);
 
-    if (angleErrorAbs < 15) {
-      if (angleErrorAbs < 3) {
-        pidController.setP(0.0125); // 0.0135
-        pidController.setI(0.00395); // 0.00375
-        // pidController.setPID(0.0125, 0.00375, 0);
-      } else {
-        pidController.setP(0.0095); // 0.0115
-        pidController.setI(0.00275);
-        // pidController.setPID(0.0115, 0.00275, 0);
-      }
-    } else {
-      pidController.setP(0.0047);
-      pidController.setI(0);
-      // pidController.setPID(0.0047, 0, 0);
-    }
+    // if (angleErrorAbs < 15) {
+    // if (angleErrorAbs < 3) {
+    // pidController.setP(0.0125); // 0.0135
+    // // pidController.setI(0.00375); // 0.00375
+    // // pidController.setPID(0.0125, 0.00375, 0);
+    // } else {
+    // pidController.setP(0.0065); // 0.0115
+    // // pidController.setI(0.00275);
+    // // pidController.setPID(0.0115, 0.00275, 0);
+    // }
+    // } else {
+    // pidController.setP(0.0145);
+    // pidController.setI(0);
+    // // pidController.setPID(0.0047, 0, 0);
+    // }
 
     double turnSpeed = -pidController.calculate(angleError, 0);
-
+    double limitedTurnSpeed = MathUtil.clamp(turnSpeed, -0.15, 0.15);
     // MathUtil.clamp(turnSpeed, -0.35, 0.35)
 
-    driveSubsystem.arcadeDrive(0, turnLimiter.calculate(turnSpeed));
+    driveSubsystem.arcadeDrive(0, turnLimiter.calculate(limitedTurnSpeed));
 
     if (angleErrorAbs <= 0.50) {
       timeAligned++;
@@ -91,6 +91,6 @@ public class AutoTurnToAngleCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 0.50 && timeAligned >= 5;
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 0.50 && timeAligned >= 25;
   }
 }

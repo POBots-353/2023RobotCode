@@ -171,7 +171,7 @@ public class RobotContainer {
 
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
-        .whileTrue(new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
+        .whileTrue(new AutoTurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
 
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 

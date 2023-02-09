@@ -54,8 +54,6 @@ public final class Constants {
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
-    public static final double trackDiameter = 0.581025;
-
     public static final double distanceToEncoderRatio = 2 * 42 / (wheelCircumference * gearBoxRatio);
     public static final double encoderToDistanceRatio = 0.5 * wheelCircumference * gearBoxRatio / 42;
 

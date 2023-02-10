@@ -13,14 +13,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Limelight;
+import frc.robot.LimelightHelpers;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoDriveToTapeCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
-  private Limelight camera;
 
   private double yaw = 0;
   private double pitch = 0;
@@ -33,7 +32,6 @@ public class AutoDriveToTapeCommand extends CommandBase {
   /** Creates a new AutoDriveToTape. */
   public AutoDriveToTapeCommand(DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
-    camera = driveSubsystem.getCamera();
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
@@ -50,11 +48,11 @@ public class AutoDriveToTapeCommand extends CommandBase {
   public void execute() {
     // PhotonPipelineResult result = camera.getLatestResult();
 
-    if (camera.hasTarget()) {
+    if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
       // PhotonTrackedTarget target = result.getBestTarget();
 
-      yaw = camera.getTargetX();
-      pitch = camera.getTargetY();
+      yaw = LimelightHelpers.getTX(DriveConstants.limelightName);
+      pitch = LimelightHelpers.getTY(DriveConstants.limelightName);
 
       double turnSpeed = -turnController.calculate(yaw, 0);
       double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);

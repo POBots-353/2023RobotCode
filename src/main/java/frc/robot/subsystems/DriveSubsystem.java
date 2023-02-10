@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Limelight;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DriveConstants;
 
 import frc.robot.commands.DriveToTapeCommand;
@@ -57,7 +57,6 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
 
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
-  private Limelight limelight = new Limelight("limelight");
 
   private AHRS navx = new AHRS(Port.kUSB1);
 
@@ -232,8 +231,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean alignedToTapeYaw() {
-    if (limelight.hasTarget()) {
-      return Math.abs(limelight.getTargetX()) <= DriveConstants.tapeAlignmentTolerance;
+    if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
+      return Math.abs(LimelightHelpers.getTX(DriveConstants.limelightName)) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;
@@ -249,9 +248,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean alignedToTapePitch() {
-    if (limelight.hasTarget()) {
+    if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
       return Math
-          .abs(limelight.getTargetY() - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
+          .abs(LimelightHelpers.getTY(DriveConstants.limelightName)
+              - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;
@@ -270,10 +270,6 @@ public class DriveSubsystem extends SubsystemBase {
   // public PhotonCamera getCamera() {
   // return limelight;
   // }
-
-  public Limelight getCamera() {
-    return limelight;
-  }
 
   public boolean distanceReached(double distanceMeters) {
     return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.006;

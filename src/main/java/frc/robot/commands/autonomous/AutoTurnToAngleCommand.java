@@ -10,7 +10,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class AutoTurnToAngleCommand extends CommandBase {
@@ -91,6 +90,6 @@ public class AutoTurnToAngleCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 0.50 && timeAligned >= 25;
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 0.50 && timeAligned >= 10;
   }
 }

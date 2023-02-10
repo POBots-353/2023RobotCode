@@ -41,6 +41,8 @@ public final class Constants {
   }
 
   public static class DriveConstants {
+    public static final String limelightName = "limelight";
+
     public static final int frontLeftMotorID = 4; // 10 4
     public static final int backLeftMotorID = 2; // 14 2
     public static final int frontRightMotorID = 1; // 9 1

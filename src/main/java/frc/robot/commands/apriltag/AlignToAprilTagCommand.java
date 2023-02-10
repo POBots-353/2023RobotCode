@@ -4,11 +4,13 @@
 
 package frc.robot.commands.apriltag;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Limelight;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers;
 import frc.robot.commands.AlignToTapeCommand;
 import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
@@ -21,25 +23,21 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
   private double neededDistance;
   private double neededAngle;
 
-  private Limelight camera;
-
   /** Creates a new AlignToAprilTagCommand. */
   public AlignToAprilTagCommand(DriveSubsystem driveSubsystem) {
-    camera = driveSubsystem.getCamera();
 
     addCommands(
         Commands.runOnce(() -> {
-          Double[] cameraPose = camera.getTable().getEntry("campose").getDoubleArray(new Double[0]);
+          Pose3d cameraPose = LimelightHelpers.getCameraPose3d_TargetSpace(DriveConstants.limelightName);
 
-          if (cameraPose.length == 0) {
-            return;
-          }
-
-          double zTranslation = cameraPose[2];
-          double xTranslation = cameraPose[0];
+          double zTranslation = cameraPose.getZ();
+          double xTranslation = cameraPose.getX();
 
           double zTranslationError = -zTranslation - 1.5;
           double xTranslationError = xTranslation;
+
+          SmartDashboard.putNumber("Z Trans", zTranslation);
+          SmartDashboard.putNumber("X Trans", xTranslation);
 
           neededAngle = 90 + Math.toDegrees(Math.atan2(zTranslationError, xTranslationError));
 

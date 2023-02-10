@@ -19,8 +19,8 @@ import frc.robot.commands.SetElevatorPositionCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.commands.apriltag.AlignToAprilTagCommand;
-import frc.robot.commands.apriltag.DriveToSquaredCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
+import frc.robot.commands.autonomous.FollowTrajectoryCommand;
 import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
 import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
 import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
@@ -198,10 +198,12 @@ public class RobotContainer {
     alignToAprilTag.whileTrue(new AlignToAprilTagCommand(driveSubsystem));
 
     setPipelineTape
-        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(0), driveSubsystem));
+        .toggleOnTrue(
+            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 0), driveSubsystem));
 
     setPipelineAprilTag
-        .toggleOnTrue(Commands.runOnce(() -> driveSubsystem.getCamera().setPipelineIndex(1), driveSubsystem));
+        .toggleOnTrue(
+            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 1), driveSubsystem));
   }
 
   /**
@@ -237,10 +239,6 @@ public class RobotContainer {
     openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
   }
 
-  public void autonomousInit() {
-    driveSubsystem.initializeFieldPosition(startingFieldPosition.getSelected());
-  }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -248,50 +246,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     String trajectoryJSON = "output/Testing.wpilib.json";
-    Trajectory trajectory = new Trajectory();
 
-    try {
-      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-    } catch (IOException ex) {
-      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-    }
-
-    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-        new SimpleMotorFeedforward(
-            AutoConstants.ksVolts,
-            AutoConstants.kvVoltSecondsPerMeter,
-            AutoConstants.kaVoltSecondsSquaredPerMeter),
-        DriveConstants.driveKinematics,
-        10);
-
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.driveKinematics)
-        // Apply the voltage constraint
-        .addConstraint(autoVoltageConstraint);
-
-    RamseteCommand ramseteCommand = new RamseteCommand(
-        trajectory,
-        driveSubsystem::getPose,
-        new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-        new SimpleMotorFeedforward(
-            AutoConstants.ksVolts,
-            AutoConstants.kvVoltSecondsPerMeter,
-            AutoConstants.kaVoltSecondsSquaredPerMeter),
-        DriveConstants.driveKinematics,
-        driveSubsystem::getWheelSpeeds,
-        new PIDController(AutoConstants.kPDriveVel, 0, 0),
-        new PIDController(AutoConstants.kPDriveVel, 0, 0),
-        // RamseteCommand passes volts to the callback
-        driveSubsystem::tankDriveVolts,
-        driveSubsystem);
-
-    driveSubsystem.resetOdometry(trajectory.getInitialPose());
-
-    return ramseteCommand;
+    return new FollowTrajectoryCommand(trajectoryJSON, driveSubsystem);
 
     // An example command will be run in autonomous
     // return autoChooser.getSelected();

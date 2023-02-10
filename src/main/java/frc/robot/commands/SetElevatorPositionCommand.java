@@ -31,11 +31,11 @@ public class SetElevatorPositionCommand extends CommandBase {
   public void execute() {
     elementTransit.setElevatorPosition(elevatorPosition);
 
-    if (elevatorPosition == IntakeConstants.elevatorLowSetPoint) {
-      elementTransit.actuatorDown();
-    } else {
-      elementTransit.actuatorUp();
-    }
+    // if (elevatorPosition == IntakeConstants.elevatorLowSetPoint) {
+    //   elementTransit.actuatorDown();
+    // } else {
+    //   elementTransit.actuatorUp();
+    // }
 
     if (elevatorPosition == elementTransit.getElevatorPosition()) {
       elementTransit.toggleOnManipulatorBreak();

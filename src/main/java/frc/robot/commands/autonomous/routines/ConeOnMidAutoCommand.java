@@ -29,9 +29,10 @@ public class ConeOnMidAutoCommand extends SequentialCommandGroup {
         new AutoDriveCommand(0.2143125, driveSubsystem),
 
         // Robot will align to the node
-        new AutoDriveToTapeCommand(driveSubsystem),
+        new AutoDriveToTapeCommand(driveSubsystem)
 
         // Robot will outtake the game piece it started with
-        Commands.runOnce(transitSystem::openClaw, transitSystem));
+        // Commands.runOnce(transitSystem::openClaw, transitSystem)
+        );
   }
 }

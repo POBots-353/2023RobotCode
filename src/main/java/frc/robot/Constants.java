@@ -32,7 +32,7 @@ public final class Constants {
     // Intake
     public static final int intakeInButton = 13;
     public static final int intakeOutButton = 12;
-    public static final int intakeOpenClose = 14;
+    public static final int intakePiston = 14;
 
     // Drive
     public static final int toggleBrakesButton = 3;

@@ -21,24 +21,22 @@ import frc.robot.Constants.IntakeConstants;
 
 public class ElementTransitSubsystem extends SubsystemBase {
   // Pneumatic stuff
-  private Compressor pcmCompressor = new Compressor(1,
-      PneumaticsModuleType.REVPH);
+  private Compressor pcmCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
 
   private PneumaticHub pneumaticHub = new PneumaticHub(1);
 
   // Intake objects
-  // private CANSparkMax leftIntakeMotor = new
-  // CANSparkMax(IntakeConstants.leftIntakeMotorID, MotorType.kBrushless);
-  // private CANSparkMax rightIntakeMotor = new
-  // CANSparkMax(IntakeConstants.rightIntakeMotorID, MotorType.kBrushless);
+  // private CANSparkMax leftIntakeMotor = new CANSparkMax(IntakeConstants.leftIntakeMotorID, MotorType.kBrushless);
+  // private CANSparkMax rightIntakeMotor = new CANSparkMax(IntakeConstants.rightIntakeMotorID, MotorType.kBrushless);
 
   // private Servo leftActuator = new Servo(IntakeConstants.leftActuatorID);
   // private Servo rightActuator = new Servo(IntakeConstants.rightActuatorID);
 
-  // private DoubleSolenoid intakePiston = new
-  // DoubleSolenoid(PneumaticsModuleType.REVPH,
-  // IntakeConstants.intakePistonForwardID,
-  // IntakeConstants.intakePistonReverseID);
+  // private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
+
+  private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 0);
+
+  private CANSparkMax intakeMotor = new CANSparkMax(0, MotorType.kBrushless);
 
   // Elevator objects
   private CANSparkMax elevatorMotor = new CANSparkMax(IntakeConstants.elevatorMotorID, MotorType.kBrushless);
@@ -47,14 +45,9 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   private RelativeEncoder elevatorEncoder = elevatorMotor.getEncoder();
 
-  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.elevatorPistonForwardID,
-      IntakeConstants.elevatorPistonReverseID);
+  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH, IntakeConstants.elevatorPistonForwardID, IntakeConstants.elevatorPistonReverseID);
 
-  // private DoubleSolenoid manipulatorBreak = new
-  // DoubleSolenoid(PneumaticsModuleType.REVPH,
-  // IntakeConstants.manipulatorBreakForwardID,
-  // IntakeConstants.manipulatorBreakReverseID);
+  // private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.REVPH, IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -96,41 +89,54 @@ public class ElementTransitSubsystem extends SubsystemBase {
     p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
   }
 
-  public void inTake() {
-    // leftIntakeMotor.set(IntakeConstants.intakeSpeed);
-    // rightIntakeMotor.set(IntakeConstants.intakeSpeed);
-  }
+  // public void inTake() {
+  //   // leftIntakeMotor.set(IntakeConstants.intakeSpeed);
+  //   // rightIntakeMotor.set(IntakeConstants.intakeSpeed);
+  // }
 
-  public void outTake() {
-    // leftIntakeMotor.set(-IntakeConstants.intakeSpeed);
-    // rightIntakeMotor.set(-IntakeConstants.intakeSpeed);
-  }
+  // public void outTake() {
+  //   // leftIntakeMotor.set(-IntakeConstants.intakeSpeed);
+  //   // rightIntakeMotor.set(-IntakeConstants.intakeSpeed);
+  // }
 
-  public void stopClawMotors() {
-    // leftIntakeMotor.set(0);
-    // rightIntakeMotor.set(0);
-  }
+  // public void stopClawMotors() {
+  //   // leftIntakeMotor.set(0);
+  //   // rightIntakeMotor.set(0);
+  // }
 
-  public void actuatorDown() {
-    // leftActuator.set(IntakeConstants.actuatorDownPosition);
-    // rightActuator.set(IntakeConstants.actuatorDownPosition);
-  }
+  // public void actuatorDown() {
+  //   // leftActuator.set(IntakeConstants.actuatorDownPosition);
+  //   // rightActuator.set(IntakeConstants.actuatorDownPosition);
+  // }
 
-  public void actuatorUp() {
-    // leftActuator.set(0);
-    // rightActuator.set(0);
-  }
+  // public void actuatorUp() {
+  //   // leftActuator.set(0);
+  //   // rightActuator.set(0);
+  // }
 
-  public void openCloseClaw() {
-    // intakePiston.toggle();
-  }
+  // public void openCloseClaw() {
+  //   // intakePiston.toggle();
+  // }
 
-  public void openClaw() {
-    // intakePiston.set(Value.kReverse);
-  }
+  // public void openClaw() {
+  //   // intakePiston.set(Value.kReverse);
+  // }
 
-  public void closeClaw() {
-    // intakePiston.set(Value.kForward);
+  // public void closeClaw() {
+  //   // intakePiston.set(Value.kForward);
+  // }
+
+  public void intakeIn() {
+    intakeMotor.set(IntakeConstants.intakeSpeed);
+  }
+  public void intakeOut() {
+    intakeMotor.set(-IntakeConstants.intakeSpeed);
+  }
+  public void toggleIntakePiston() {
+    intakePiston.toggle();
+  }
+  public void stopIntakeMotor() {
+    intakeMotor.set(0);
   }
 
   public void toggleElevatorTilt() {
@@ -138,8 +144,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
   }
 
   public void setElevatorPosition(double elevatorPos) {
-    // elevatorPIDController.setReference(elevatorPos,
-    // CANSparkMax.ControlType.kSmartMotion);
+    // elevatorPIDController.setReference(elevatorPos, CANSparkMax.ControlType.kSmartMotion);
   }
 
   public void elevatorOff() {

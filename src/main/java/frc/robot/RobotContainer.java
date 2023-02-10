@@ -175,7 +175,7 @@ public class RobotContainer {
 
     Trigger alignToTape = driverController.rightBumper();
 
-    Trigger alignToAprilTag = driverController.y();
+    Trigger alignToAprilTag = driverController.leftBumper();
 
     Trigger setPipelineTape = driverController.start();
     Trigger setPipelineAprilTag = driverController.back();
@@ -289,7 +289,7 @@ public class RobotContainer {
         driveSubsystem::tankDriveVolts,
         driveSubsystem);
 
-        driveSubsystem.resetOdometry(trajectory.getInitialPose());
+    driveSubsystem.resetOdometry(trajectory.getInitialPose());
 
     return ramseteCommand;
 

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.Buttons;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -28,7 +29,20 @@ import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.XboxController;
@@ -36,6 +50,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -171,7 +186,8 @@ public class RobotContainer {
 
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
-        .whileTrue(new AutoTurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
+        .whileTrue(
+            new AutoTurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
 
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 
@@ -231,9 +247,54 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    String trajectoryJSON = "output/Testing.wpilib.json";
+    Trajectory trajectory = new Trajectory();
+
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+    }
+
+    var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+        new SimpleMotorFeedforward(
+            AutoConstants.ksVolts,
+            AutoConstants.kvVoltSecondsPerMeter,
+            AutoConstants.kaVoltSecondsSquaredPerMeter),
+        DriveConstants.driveKinematics,
+        10);
+
+    TrajectoryConfig config = new TrajectoryConfig(
+        AutoConstants.kMaxSpeedMetersPerSecond,
+        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        // Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(DriveConstants.driveKinematics)
+        // Apply the voltage constraint
+        .addConstraint(autoVoltageConstraint);
+
+    RamseteCommand ramseteCommand = new RamseteCommand(
+        trajectory,
+        driveSubsystem::getPose,
+        new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+        new SimpleMotorFeedforward(
+            AutoConstants.ksVolts,
+            AutoConstants.kvVoltSecondsPerMeter,
+            AutoConstants.kaVoltSecondsSquaredPerMeter),
+        DriveConstants.driveKinematics,
+        driveSubsystem::getWheelSpeeds,
+        new PIDController(AutoConstants.kPDriveVel, 0, 0),
+        new PIDController(AutoConstants.kPDriveVel, 0, 0),
+        // RamseteCommand passes volts to the callback
+        driveSubsystem::tankDriveVolts,
+        driveSubsystem);
+
+        driveSubsystem.resetOdometry(trajectory.getInitialPose());
+
+    return ramseteCommand;
+
     // An example command will be run in autonomous
-    // return new AutoDriveCommand(5.00, driveSubsystem);
-    return autoChooser.getSelected();
+    // return autoChooser.getSelected();
     // return Autos.exampleAuto(m_exampleSubsystem);
   }
 }

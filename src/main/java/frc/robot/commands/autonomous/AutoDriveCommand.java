@@ -28,14 +28,6 @@ public class AutoDriveCommand extends CommandBase {
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
-
-    // String trajectoryJSON = "paths/Blue1.wpilib.json";
-    // try {
-    //   Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-    //   Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-    // } catch (IOException ex) {
-    //   SmartDashboard.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-    // }
   }
 
   public AutoDriveCommand(double distance, DriveSubsystem driveSubsystem) {

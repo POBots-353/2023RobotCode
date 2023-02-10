@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -52,6 +54,10 @@ public final class Constants {
 
     public static final double gearBoxRatio = 10.7;
 
+    public static final double trackDiameter = 0.581025;
+
+    public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(trackDiameter);
+
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
     public static final double distanceToEncoderRatio = 2 * 42 / (wheelCircumference * gearBoxRatio);
@@ -59,6 +65,19 @@ public final class Constants {
 
     public final static int pistonBrakeForwardID = 8;
     public final static int pistonBrakeReverseID = 7;
+  }
+
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 1.25;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+
+    public static final double kRamseteB = 1.25; // 2
+    public static final double kRamseteZeta = 0.7; // 0.7
+    public static final double ksVolts = 0.22; // 0.22
+    public static final double kvVoltSecondsPerMeter = 1.98; // 1.98
+    public static final double kaVoltSecondsSquaredPerMeter = 0.2; // 0.2
+
+    public static final double kPDriveVel = 0.0004;
   }
 
   public static class IntakeConstants {

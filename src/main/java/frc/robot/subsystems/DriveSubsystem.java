@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -87,6 +88,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    frontLeftMotor.restoreFactoryDefaults();
+    frontRightMotor.restoreFactoryDefaults();
+    backLeftMotor.restoreFactoryDefaults();
+    backRightMotor.restoreFactoryDefaults();
+
     frontLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
 
@@ -350,6 +356,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Pose2d getPose() {
     return odometry.getPoseMeters();
+  }
+
+  public Rotation2d getRotation() {
+    return navx.getRotation2d();
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {

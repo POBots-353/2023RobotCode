@@ -75,9 +75,9 @@ public final class Constants {
 
     public static final double kRamseteB = 1.25; // 2
     public static final double kRamseteZeta = 0.7; // 0.7
-    public static final double ksVolts = 0.22; // 0.22
-    public static final double kvVoltSecondsPerMeter = 1.98; // 1.98
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2; // 0.2
+    public static final double ksVolts = 0.22; // 0.22 0.24188 0.067503
+    public static final double kvVoltSecondsPerMeter = 1.98; // 1.98 2.0196 1.7163
+    public static final double kaVoltSecondsSquaredPerMeter = 0.2; // 0.2 1.3422
 
     public static final double kPDriveVel = 0.0004;
   }

@@ -4,29 +4,35 @@
 
 package frc.robot.commands.apriltag;
 
+import java.util.List;
+
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
-import frc.robot.commands.AlignToTapeCommand;
-import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
+import frc.robot.commands.autonomous.DriveToPoseCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AlignToAprilTagCommand extends SequentialCommandGroup {
-  private double neededDistance;
-  private double neededAngle;
+  private Trajectory trajectory = new Trajectory();
 
   /** Creates a new AlignToAprilTagCommand. */
   public AlignToAprilTagCommand(DriveSubsystem driveSubsystem) {
-
     addCommands(
+        // Trajectory generation
         Commands.runOnce(() -> {
           Pose3d cameraPose = LimelightHelpers.getCameraPose3d_TargetSpace(DriveConstants.limelightName);
 
@@ -36,36 +42,31 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
           double zTranslationError = -zTranslation - 1.5;
           double xTranslationError = xTranslation;
 
-          SmartDashboard.putNumber("Z Trans", zTranslation);
-          SmartDashboard.putNumber("X Trans", xTranslation);
+          var autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+              new SimpleMotorFeedforward(
+                  AutoConstants.ksVolts,
+                  AutoConstants.kvVoltSecondsPerMeter,
+                  AutoConstants.kaVoltSecondsSquaredPerMeter),
+              DriveConstants.driveKinematics,
+              10);
 
-          neededAngle = 90 + Math.toDegrees(Math.atan2(zTranslationError, xTranslationError));
+          TrajectoryConfig config = new TrajectoryConfig(
+              AutoConstants.kMaxSpeedMetersPerSecond,
+              AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+              // Add kinematics to ensure max speed is actually obeyed
+              .setKinematics(DriveConstants.driveKinematics)
+              // Apply the voltage constraint
+              .addConstraint(autoVoltageConstraint);
 
-          neededDistance = -Math.sqrt((xTranslationError * xTranslationError) +
-              (zTranslationError * zTranslationError));
-          // neededDistance = Math.hypot(zTranslationError, xTranslationError);
+          Pose2d currentPose = driveSubsystem.getPose();
+          Translation2d translation = new Translation2d(zTranslationError, xTranslationError);
 
-          // if (zTranslationError < 0 && xTranslationError > 0) {
-          // neededDistance *= -1;
-          // }
+          Pose2d finalPose = new Pose2d(currentPose.getTranslation().plus(translation), driveSubsystem.getRotation());
 
-          if (neededAngle > 90) {
-            neededAngle -= 180;
-            neededDistance *= -1;
-          }
-
-          if (neededAngle < -90) {
-            neededAngle += 180;
-            neededDistance *= -1;
-          }
-
+          trajectory = TrajectoryGenerator.generateTrajectory(driveSubsystem.getPose(), List.of(),
+              finalPose, config);
         }, driveSubsystem),
-        new AutoTurnToAngleCommand(() -> neededAngle, driveSubsystem),
-        new WaitCommand(0.15),
-        new AutoDriveCommand(() -> neededDistance, driveSubsystem),
-        new WaitCommand(0.15),
-        new AutoTurnToAngleCommand(() -> 0, driveSubsystem),
-        new WaitCommand(0.15),
-        new AlignToTapeCommand(driveSubsystem));
+        new DriveToPoseCommand(() -> trajectory, driveSubsystem),
+        new AutoTurnToAngleCommand(0, driveSubsystem));
   }
 }

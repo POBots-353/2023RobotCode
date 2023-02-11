@@ -226,17 +226,23 @@ public class RobotContainer {
    * Configures all the buttons for the intake
    */
   public void configureIntakeButtons() {
-    JoystickButton inTake = new JoystickButton(operatorStick, Buttons.intakeInButton);
-    JoystickButton outTake = new JoystickButton(operatorStick, Buttons.intakeOutButton);
-    JoystickButton openCloseIntake = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
+    // JoystickButton inTake = new JoystickButton(operatorStick, Buttons.intakeInButton);
+    // JoystickButton outTake = new JoystickButton(operatorStick, Buttons.intakeOutButton);
+    // JoystickButton openCloseIntake = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
+    JoystickButton intakeForward = new JoystickButton(operatorStick, Buttons.intakeInButton);
+    JoystickButton intakeReverse = new JoystickButton(operatorStick, Buttons.intakeOutButton);
+    JoystickButton intakePistons = new JoystickButton(operatorStick, 0);
 
-    inTake.whileTrue(Commands.run(transitSubsystem::inTake, transitSubsystem))
-        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
+    intakeForward.whileTrue(Commands.run(transitSubsystem::intakeIn, transitSubsystem)).toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
+    intakeReverse.whileTrue(Commands.run(transitSubsystem::intakeOut, transitSubsystem)).toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
+    intakePistons.onTrue(Commands.run(transitSubsystem::toggleIntakePiston, transitSubsystem));
+    // inTake.whileTrue(Commands.run(transitSubsystem::inTake, transitSubsystem))
+    //     .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
 
-    outTake.whileTrue(Commands.run(transitSubsystem::outTake, transitSubsystem))
-        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
+    // outTake.whileTrue(Commands.run(transitSubsystem::outTake, transitSubsystem))
+    //     .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
 
-    openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
+    // openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
   }
 
   /**

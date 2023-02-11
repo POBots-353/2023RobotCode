@@ -33,7 +33,7 @@ public class PlaceGPAndMobilityAuto extends SequentialCommandGroup {
         new AlignToTapeCommand(driveSubsystem),
 
         // Robot will outtake the game piece it started with
-        Commands.runOnce(transitSystem::openClaw, transitSystem),
+        // Commands.runOnce(transitSystem::openClaw, transitSystem),
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to cross mobility line

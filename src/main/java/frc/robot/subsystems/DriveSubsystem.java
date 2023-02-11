@@ -380,21 +380,15 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // odometry.update(navx.getRotation2d(),
-    // convertEncoderToDistance(frontLeftEncoder.getPosition()),
-    // -convertEncoderToDistance(frontRightEncoder.getPosition()));
-
     odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
         -frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
 
-    SmartDashboard.putNumber("Left Meters", frontLeftEncoder.getPosition());
-
     SmartDashboard.putNumber("Gyro Yaw", Math.IEEEremainder(navx.getYaw(), 360));
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));
     SmartDashboard.putNumber("Gyro Roll", Math.IEEEremainder(navx.getRoll(), 360));
 
-    // SmartDashboard.putNumber("Battery Voltage", powerDistribution.getVoltage());
+    SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
   }
 }

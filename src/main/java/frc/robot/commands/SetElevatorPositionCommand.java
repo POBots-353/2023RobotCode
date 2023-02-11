@@ -32,23 +32,23 @@ public class SetElevatorPositionCommand extends CommandBase {
     elementTransit.setElevatorPosition(elevatorPosition);
 
     // if (elevatorPosition == IntakeConstants.elevatorLowSetPoint) {
-    //   elementTransit.actuatorDown();
+    // elementTransit.actuatorDown();
     // } else {
-    //   elementTransit.actuatorUp();
+    // elementTransit.actuatorUp();
     // }
 
-    if (elevatorPosition == elementTransit.getElevatorPosition()) {
-      elementTransit.toggleOnManipulatorBreak();
-    } else {
-      elementTransit.toggleOffManipulatorBreak();
-    }
+    // if (elevatorPosition == elementTransit.getElevatorPosition()) {
+    // elementTransit.toggleOnManipulatorBreak();
+    // } else {
+    // elementTransit.toggleOffManipulatorBreak();
+    // }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     elementTransit.toggleOnManipulatorBreak();
-    elementTransit.elevatorOff();
+    elementTransit.elevatorStop();
   }
 
   // Returns true when the command should end.

@@ -31,10 +31,13 @@ public final class Constants {
     public static final int elevatorLowButton = 5;
     public static final int toggleElevatorPistonsButton = 8;
 
+    public static final int elevatorUpButton = 10;
+    public static final int elevatorDownButton = 9;
+
     // Intake
-    public static final int intakeInButton = 13;
-    public static final int intakeOutButton = 12;
-    public static final int intakePiston = 14;
+    public static final int intakeCubeButton = 13;
+    public static final int intakeConeButton = 12;
+    public static final int intakeOpenClose = 14;
 
     // Drive
     public static final int toggleBrakesButton = 3;
@@ -88,22 +91,24 @@ public final class Constants {
     public static final int elevatorPistonForwardID = 6;
     public static final int elevatorPistonReverseID = 9;
 
-    public static final int leftIntakeMotorID = 6;
-    public static final int rightIntakeMotorID = 7;
+    public static final int intakeMotorID = 6;
 
     public static final int leftActuatorID = 0;
     public static final int rightActuatorID = 0;
 
-    public static final int intakePistonForwardID = 0;
-    public static final int intakePistonReverseID = 0;
+    public static final int intakePistonForwardID = 5;
+    public static final int intakePistonReverseID = 10;
 
-    public static final int manipulatorBreakForwardID = 0;
-    public static final int manipulatorBreakReverseID = 0;
+    public static final int manipulatorBreakForwardID = 4;
+    public static final int manipulatorBreakReverseID = 11;
 
     public static final double intakeSpeed = 0.5;
-    public static final double elevatorTopSetPoint = -60;
-    public static final double elevatorMidSetPoint = -34;
-    public static final double elevatorLowSetPoint = 0;
+
+    public static final double elevatorTopSetPoint = -69;
+    public static final double elevatorMidSetPoint = -30;
+    public static final double elevatorLowSetPoint = 1.35;
+
+    public static final double elevatorSpeed = 0.25;
 
     public static final double actuatorDownPosition = 1.0;
   }

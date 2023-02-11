@@ -211,38 +211,42 @@ public class RobotContainer {
    */
   public void configureElevatorButtons() {
     JoystickButton elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
+
     JoystickButton elevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton);
     JoystickButton elevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
     JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton);
+
+    JoystickButton elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorUpButton);
+    JoystickButton elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorUpButton);
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleElevatorTilt, transitSubsystem));
 
     elevatorHigh.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorTopSetPoint, transitSubsystem));
     elevatorMid.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, transitSubsystem));
     elevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, transitSubsystem));
+
+    elevatorUp.whileTrue(Commands.run(transitSubsystem::elevatorUp, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::elevatorStop));
+
+    elevatorDown.whileTrue(Commands.run(transitSubsystem::elevatorDown, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::elevatorStop));
   }
 
   /**
    * Configures all the buttons for the intake
    */
   public void configureIntakeButtons() {
-    // JoystickButton inTake = new JoystickButton(operatorStick, Buttons.intakeInButton);
-    // JoystickButton outTake = new JoystickButton(operatorStick, Buttons.intakeOutButton);
-    // JoystickButton openCloseIntake = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
-    JoystickButton intakeForward = new JoystickButton(operatorStick, Buttons.intakeInButton);
-    JoystickButton intakeReverse = new JoystickButton(operatorStick, Buttons.intakeOutButton);
-    JoystickButton intakePistons = new JoystickButton(operatorStick, 0);
+    JoystickButton intakeCube = new JoystickButton(operatorStick, Buttons.intakeConeButton);
+    JoystickButton intakeCone = new JoystickButton(operatorStick, Buttons.intakeCubeButton);
+    JoystickButton intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
 
-    intakeForward.whileTrue(Commands.run(transitSubsystem::intakeIn, transitSubsystem)).toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
-    intakeReverse.whileTrue(Commands.run(transitSubsystem::intakeOut, transitSubsystem)).toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
-    intakePistons.onTrue(Commands.run(transitSubsystem::toggleIntakePiston, transitSubsystem));
-    // inTake.whileTrue(Commands.run(transitSubsystem::inTake, transitSubsystem))
-    //     .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
+    intakeCube.whileTrue(Commands.run(transitSubsystem::intakeCube, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
-    // outTake.whileTrue(Commands.run(transitSubsystem::outTake, transitSubsystem))
-    //     .toggleOnFalse(Commands.runOnce(transitSubsystem::stopClawMotors, transitSubsystem));
+    intakeCone.whileTrue(Commands.run(transitSubsystem::intakeCone, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
-    // openCloseIntake.toggleOnTrue(Commands.runOnce(transitSubsystem::openCloseClaw, transitSubsystem));
+    intakePiston.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleIntakePiston, transitSubsystem));
   }
 
   /**

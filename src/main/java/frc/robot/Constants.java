@@ -21,7 +21,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
-    public static int operatorStickPort = 1;
+    public static final int operatorStickPort = 1;
   }
 
   public static class Buttons {
@@ -31,8 +31,8 @@ public final class Constants {
     public static final int elevatorLowButton = 5;
     public static final int toggleElevatorPistonsButton = 8;
 
-    public static final int elevatorUpButton = 10;
-    public static final int elevatorDownButton = 9;
+    public static final int elevatorManualUpButton = 10;
+    public static final int elevatorManualDownButton = 9;
 
     // Intake
     public static final int intakeCubeButton = 13;
@@ -46,10 +46,10 @@ public final class Constants {
   public static class DriveConstants {
     public static final String limelightName = "limelight";
 
-    public static final int frontLeftMotorID = 4; // 10 4
-    public static final int backLeftMotorID = 2; // 14 2
-    public static final int frontRightMotorID = 1; // 9 1
-    public static final int backRightMotorID = 3; // 5 3
+    public static final int frontLeftMotorID = 4;
+    public static final int backLeftMotorID = 2;
+    public static final int frontRightMotorID = 1;
+    public static final int backRightMotorID = 3;
 
     public static final double defaultSpeed = 0.45;
     public static final double slowSpeed = 0.25;
@@ -57,7 +57,7 @@ public final class Constants {
     public static final double tapeAlignmentTolerance = 1.50;
     public static final double tapeAlignmentPitch = -10.0;
 
-    public static final double gearBoxRatio = 10.7;
+    public static final double gearBoxRatio = 10.7; // 8.41
 
     public static final double trackDiameter = 0.581025;
 

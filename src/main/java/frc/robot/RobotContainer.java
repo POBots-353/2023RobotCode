@@ -25,6 +25,7 @@ import frc.robot.commands.drive.ArcadeDriveCommand;
 import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.commands.drive.TankDriveCommand;
 import frc.robot.commands.drive.TurnToAngleCommand;
+import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
@@ -196,8 +197,8 @@ public class RobotContainer {
     JoystickButton elevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
     JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton);
 
-    JoystickButton elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorUpButton);
-    JoystickButton elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorUpButton);
+    JoystickButton elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
+    JoystickButton elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleElevatorTilt, transitSubsystem));
 
@@ -205,11 +206,9 @@ public class RobotContainer {
     elevatorMid.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, transitSubsystem));
     elevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, transitSubsystem));
 
-    elevatorUp.whileTrue(Commands.run(transitSubsystem::elevatorUp, transitSubsystem))
-        .toggleOnFalse(Commands.runOnce(transitSubsystem::elevatorStop));
+    elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed, transitSubsystem));
 
-    elevatorDown.whileTrue(Commands.run(transitSubsystem::elevatorDown, transitSubsystem))
-        .toggleOnFalse(Commands.runOnce(transitSubsystem::elevatorStop));
+    elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed, transitSubsystem));
   }
 
   /**

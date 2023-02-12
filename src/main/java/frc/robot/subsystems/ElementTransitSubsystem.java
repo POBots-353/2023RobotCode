@@ -116,6 +116,10 @@ public class ElementTransitSubsystem extends SubsystemBase {
     elevatorMotor.set(IntakeConstants.elevatorSpeed);
   }
 
+  public void setElevatorSpeed(double speed) {
+    elevatorMotor.set(speed);
+  }
+
   public void elevatorStop() {
     elevatorMotor.set(0);
   }

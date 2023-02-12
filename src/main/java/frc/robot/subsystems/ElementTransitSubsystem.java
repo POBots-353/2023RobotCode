@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,9 +25,6 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private PneumaticHub pneumaticHub = new PneumaticHub(1);
 
   // Intake objects
-  // private Servo leftActuator = new Servo(IntakeConstants.leftActuatorID);
-  // private Servo rightActuator = new Servo(IntakeConstants.rightActuatorID);
-
   private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       IntakeConstants.intakePistonForwardID,
       IntakeConstants.intakePistonReverseID);
@@ -141,5 +137,4 @@ public class ElementTransitSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
   }
-
 }

@@ -2,10 +2,10 @@ package frc.robot.commands.autonomous.routines;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.DriveToTapeCommand;
 import frc.robot.commands.autonomous.AutoBalanceCommand;
 import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
+import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 

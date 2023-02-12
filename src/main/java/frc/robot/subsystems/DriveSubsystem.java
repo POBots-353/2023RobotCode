@@ -173,12 +173,6 @@ public class DriveSubsystem extends SubsystemBase {
     // ControlType.kSmartMotion);
   }
 
-  public void autoTurn(double turnCircumference) {
-    SmartDashboard.putNumber("Turn Circumference", turnCircumference);
-    leftPIDController.setReference(turnCircumference, ControlType.kSmartMotion);
-    rightPIDController.setReference(turnCircumference, ControlType.kSmartMotion);
-  }
-
   public void toggleBrakes() {
     brakePiston.toggle();
   }

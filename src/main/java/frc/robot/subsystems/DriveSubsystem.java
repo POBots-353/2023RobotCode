@@ -173,6 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void toggleBrakes() {
     brakePiston.toggle();
+    // Breakes pistion on toggle of button
   }
 
   public void resetEncoders() {
@@ -186,6 +187,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (Math.abs(gyroPitch) <= 0.5) {
       arcadeDrive(0, 0);
       SmartDashboard.putBoolean("Balanced", true);
+      // Stops Robot
       return;
     }
 
@@ -193,15 +195,18 @@ public class DriveSubsystem extends SubsystemBase {
       if (Math.abs(gyroPitch) < 2.5) {
         balancePIDController.setP(0.0085);
         SmartDashboard.putBoolean("Balanced", false);
+        // Adjusts PID values
       } else {
         balancePIDController.setP(0.0061);
         SmartDashboard.putBoolean("Balanced", false);
+        // Adjusts PID values
       }
     }
 
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
 
     arcadeDrive(forwardSpeed, 0);
+    SmartDashboard.putBoolean("Balanced", false);
   }
 
   public void resetBalance() {

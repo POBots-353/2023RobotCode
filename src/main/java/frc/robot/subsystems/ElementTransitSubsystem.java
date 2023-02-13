@@ -88,8 +88,16 @@ public class ElementTransitSubsystem extends SubsystemBase {
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
+  public void outTakeCube() {
+    intakeMotor.set(-IntakeConstants.intakeSpeed);
+  }
+
   public void intakeCone() {
     intakeMotor.set(-IntakeConstants.intakeSpeed);
+  }
+  
+  public void outTakeCone() {
+    intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
   public void stopIntakeMotor() {

@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.LimelightHelpers;
-import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
-import frc.robot.commands.autonomous.DriveToPoseCommand;
+import frc.robot.commands.drive.AutoTurnToAngleCommand;
+import frc.robot.commands.drive.DriveToPoseCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more

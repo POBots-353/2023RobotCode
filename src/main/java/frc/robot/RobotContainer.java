@@ -9,20 +9,20 @@ import frc.robot.Constants.Buttons;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.autonomous.AutoBalanceCommand;
-import frc.robot.commands.autonomous.AutoDriveCommand;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.apriltag.AlignToAprilTagCommand;
-import frc.robot.commands.autonomous.AutoTurnToAngleCommand;
-import frc.robot.commands.autonomous.FollowTrajectoryCommand;
 import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
 import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
 import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
 import frc.robot.commands.autonomous.routines.PlaceGPAndMobilityAuto;
 import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.commands.drive.ArcadeDriveCommand;
+import frc.robot.commands.drive.AutoBalanceCommand;
+import frc.robot.commands.drive.AutoDriveCommand;
+import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.drive.DriveToTapeCommand;
+import frc.robot.commands.drive.FollowTrajectoryCommand;
 import frc.robot.commands.drive.TankDriveCommand;
 import frc.robot.commands.drive.TurnToAngleCommand;
 import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
@@ -150,7 +150,7 @@ public class RobotContainer {
     // charlie was here
     Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
 
-    Trigger autoBalance = driverController.leftBumper();
+    Trigger autoBalance = driverController.b();
 
     Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
 
@@ -215,14 +215,22 @@ public class RobotContainer {
    * Configures all the buttons for the intake
    */
   public void configureIntakeButtons() {
-    JoystickButton intakeCube = new JoystickButton(operatorStick, Buttons.intakeConeButton);
-    JoystickButton intakeCone = new JoystickButton(operatorStick, Buttons.intakeCubeButton);
+    JoystickButton intakeCone = new JoystickButton(operatorStick, Buttons.intakeConeButton);
+    JoystickButton outtakeCone = new JoystickButton(operatorStick, Buttons.outtakeConeButton);
+    JoystickButton intakeCube = new JoystickButton(operatorStick, Buttons.intakeCubeButton);
+    JoystickButton outtakeCube = new JoystickButton(operatorStick, Buttons.outtakeCubeButton);
     JoystickButton intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
+
+    intakeCone.whileTrue(Commands.run(transitSubsystem::intakeCone, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
+
+    outtakeCone.whileTrue(Commands.run(transitSubsystem::outTakeCone, transitSubsystem))
+        .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
     intakeCube.whileTrue(Commands.run(transitSubsystem::intakeCube, transitSubsystem))
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
-    intakeCone.whileTrue(Commands.run(transitSubsystem::intakeCone, transitSubsystem))
+    outtakeCube.whileTrue(Commands.run(transitSubsystem::intakeCube, transitSubsystem))
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
     intakePiston.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleIntakePiston, transitSubsystem));

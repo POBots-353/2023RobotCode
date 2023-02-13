@@ -35,9 +35,12 @@ public final class Constants {
     public static final int elevatorManualDownButton = 9;
 
     // Intake
-    public static final int intakeCubeButton = 13;
-    public static final int intakeConeButton = 12;
-    public static final int intakeOpenClose = 14;
+    public static final int intakeConeButton = 13;
+    public static final int outtakeConeButton = 12;
+    public static final int intakeCubeButton = 14;
+    public static final int outtakeCubeButton = 15;
+
+    public static final int intakeOpenClose = 11;
 
     // Drive
     public static final int toggleBrakesButton = 3;
@@ -102,7 +105,7 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 4;
     public static final int manipulatorBreakReverseID = 11;
 
-    public static final double intakeSpeed = 0.5;
+    public static final double intakeSpeed = 0.25;
 
     public static final double elevatorTopSetPoint = -69;
     public static final double elevatorMidSetPoint = -30;

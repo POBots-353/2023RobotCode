@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -43,6 +44,10 @@ public class PathPlannerUtil {
         new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, elementTransit));
     eventMap.put("elevatorLow",
         new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, elementTransit));
+
+    // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
+    // eventMap.put("marker2", new PrintCommand("Passed Marker 2"));
+    // eventMap.put("marker3", new PrintCommand("Passed Marker 3"));
   }
 
   public static PathPlannerTrajectory loadPathPlannerTrajectory(String path) {

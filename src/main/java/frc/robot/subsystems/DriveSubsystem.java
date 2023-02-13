@@ -386,6 +386,6 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));
     SmartDashboard.putNumber("Gyro Roll", Math.IEEEremainder(navx.getRoll(), 360));
 
-    SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
+    // SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
   }
 }

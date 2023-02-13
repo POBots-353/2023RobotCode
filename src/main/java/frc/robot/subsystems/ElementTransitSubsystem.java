@@ -146,7 +146,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
-    SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
+    // SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
+    // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
   }
 }

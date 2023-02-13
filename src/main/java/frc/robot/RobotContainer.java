@@ -37,6 +37,8 @@ import frc.robot.util.PathPlannerUtil;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -247,9 +249,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    String trajectoryJSON = "output/Testing.wpilib.json";
-
-    return new FollowTrajectoryCommand(trajectoryJSON, driveSubsystem);
+    return new PathPlannerCommand("Test Path", transitSubsystem, driveSubsystem);
     // return Commands.run(() -> {});
 
     // An example command will be run in autonomous

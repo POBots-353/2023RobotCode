@@ -33,6 +33,8 @@ public class PathPlannerCommand extends FollowPathWithEvents {
   private DriveSubsystem driveSubsystem;
   private ElementTransitSubsystem elementTransit;
 
+  private PathPlannerTrajectory trajectory;
+
   public static PathPlannerTrajectory loadPathPlannerTrajectory(String path) {
     PathPlannerTrajectory trajectory = PathPlanner.loadPath(path, new PathConstraints(
         AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
@@ -67,7 +69,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
         new PIDController(AutoConstants.kPDriveVel, 0, 0),
         new PIDController(AutoConstants.kPDriveVel, 0, 0),
         driveSubsystem::tankDriveVolts,
-        driveSubsystem, elementTransit);
+        driveSubsystem);
   }
 
   /** Creates a new PathPlannerCommand. */
@@ -78,11 +80,27 @@ public class PathPlannerCommand extends FollowPathWithEvents {
 
     this.elementTransit = elementTransit;
     this.driveSubsystem = driveSubsystem;
+
+    this.trajectory = trajectory;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elementTransit, driveSubsystem);
   }
 
   public PathPlannerCommand(String pathName, ElementTransitSubsystem elementTransit, DriveSubsystem driveSubsystem) {
     this(PathPlannerUtil.loadPathPlannerTrajectory(pathName), elementTransit, driveSubsystem);
+  }
+
+  @Override
+  public void initialize() {
+    driveSubsystem.resetOdometry(trajectory.getInitialPose());
+
+    super.initialize();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    driveSubsystem.tankDriveVolts(0, 0);
+    super.end(interrupted);
   }
 }

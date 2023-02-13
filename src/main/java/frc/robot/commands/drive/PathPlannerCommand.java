@@ -27,23 +27,11 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
+import frc.robot.util.PathPlannerUtil;
 
 public class PathPlannerCommand extends FollowPathWithEvents {
   private DriveSubsystem driveSubsystem;
   private ElementTransitSubsystem elementTransit;
-
-  private static HashMap<String, Command> eventMap = new HashMap<String, Command>();
-
-  public static void initializeCommands(DriveSubsystem driveSubsystem, ElementTransitSubsystem elementTransit) {
-    eventMap.put("intakeCone", Commands.run(elementTransit::intakeCone, elementTransit));
-    eventMap.put("outtakeCone", Commands.run(elementTransit::outTakeCone, elementTransit));
-    eventMap.put("intakeCube", Commands.run(elementTransit::intakeCube, elementTransit));
-    eventMap.put("outtakeCube", Commands.run(elementTransit::outTakeCube, elementTransit));
-
-    eventMap.put("elevatorLow", new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, elementTransit));
-    eventMap.put("elevatorMid", new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, elementTransit));
-    eventMap.put("elevatorLow", new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, elementTransit));
-  }
 
   public static PathPlannerTrajectory loadPathPlannerTrajectory(String path) {
     PathPlannerTrajectory trajectory = PathPlanner.loadPath(path, new PathConstraints(
@@ -86,7 +74,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
   public PathPlannerCommand(PathPlannerTrajectory trajectory, ElementTransitSubsystem elementTransit,
       DriveSubsystem driveSubsystem) {
     super(createPathFollowCommand(trajectory, elementTransit, driveSubsystem),
-        trajectory.getMarkers(), eventMap);
+        trajectory.getMarkers(), PathPlannerUtil.eventMap);
 
     this.elementTransit = elementTransit;
     this.driveSubsystem = driveSubsystem;
@@ -95,6 +83,6 @@ public class PathPlannerCommand extends FollowPathWithEvents {
   }
 
   public PathPlannerCommand(String pathName, ElementTransitSubsystem elementTransit, DriveSubsystem driveSubsystem) {
-    this(loadPathPlannerTrajectory(pathName), elementTransit, driveSubsystem);
+    this(PathPlannerUtil.loadPathPlannerTrajectory(pathName), elementTransit, driveSubsystem);
   }
 }

@@ -23,6 +23,7 @@ import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.commands.drive.FollowTrajectoryCommand;
+import frc.robot.commands.drive.PathPlannerCommand;
 import frc.robot.commands.drive.TankDriveCommand;
 import frc.robot.commands.drive.TurnToAngleCommand;
 import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
@@ -30,6 +31,8 @@ import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElementTransitSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.util.LimelightHelpers;
+import frc.robot.util.PathPlannerUtil;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -86,6 +89,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    PathPlannerUtil.initializeCommands(driveSubsystem, transitSubsystem);
+
     autoChooser.setDefaultOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
     autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(transitSubsystem, driveSubsystem));
     autoChooser.addOption("Drive Back and Balance", new DriveOnChargeStationAuto(driveSubsystem));
@@ -198,7 +203,7 @@ public class RobotContainer {
     JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton);
 
     JoystickButton elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
-    JoystickButton elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
+    JoystickButton elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleElevatorTilt, transitSubsystem));
 
@@ -230,7 +235,7 @@ public class RobotContainer {
     intakeCube.whileTrue(Commands.run(transitSubsystem::intakeCube, transitSubsystem))
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
-    outtakeCube.whileTrue(Commands.run(transitSubsystem::intakeCube, transitSubsystem))
+    outtakeCube.whileTrue(Commands.run(transitSubsystem::outTakeCube, transitSubsystem))
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));
 
     intakePiston.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleIntakePiston, transitSubsystem));

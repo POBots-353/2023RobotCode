@@ -48,23 +48,16 @@ public class TurnToAngleCommand extends CommandBase {
     double angleErrorAbs = Math.abs(angleError);
 
     if (angleErrorAbs < 15) {
-      // if (angleErrorAbs < 1.0) {
-      // pidController.setP(0.0175); // 0.0135
-      // pidController.setI(0.00405); // 0.00375
-      // } else
-      if (angleErrorAbs < 1.0) {
-        pidController.setP(0.0145); // 0.0135
-        pidController.setI(0.00395); // 0.00375
-        // pidController.setPID(0.0125, 0.00375, 0);
+      if (angleErrorAbs < 2.5) {
+        pidController.setP(0.0135); // 0.0135
+        pidController.setI(0.00375); // 0.00375
       } else {
         pidController.setP(0.0115); // 0.0115
-        pidController.setI(0.00295); // 0.00275
-        // pidController.setPID(0.0115, 0.00275, 0);
+        pidController.setI(0.00275); // 0.00275
       }
     } else {
       pidController.setP(0.0047);
       pidController.setI(0);
-      // pidController.setPID(0.0047, 0, 0);
     }
 
     // double turnSpeed = angleError * 0.0027;

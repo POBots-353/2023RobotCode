@@ -66,7 +66,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
     intakePiston.set(Value.kReverse);
 
-    manipulatorBreak.set(Value.kReverse);
+    manipulatorBreak.set(Value.kForward);
 
     initializePID(elevatorPIDController);
   }

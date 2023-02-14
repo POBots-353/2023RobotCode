@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -57,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
 
-  private AHRS navx = new AHRS(Port.kUSB1);
+  private AHRS navx = new AHRS(SPI.Port.kMXP);
 
   private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);

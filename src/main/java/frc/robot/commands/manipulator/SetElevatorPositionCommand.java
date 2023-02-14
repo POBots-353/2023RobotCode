@@ -5,7 +5,6 @@
 package frc.robot.commands.manipulator;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ElementTransitSubsystem;
 
 public class SetElevatorPositionCommand extends CommandBase {
@@ -30,18 +29,6 @@ public class SetElevatorPositionCommand extends CommandBase {
   @Override
   public void execute() {
     elementTransit.setElevatorPosition(elevatorPosition);
-
-    // if (elevatorPosition == IntakeConstants.elevatorLowSetPoint) {
-    // elementTransit.actuatorDown();
-    // } else {
-    // elementTransit.actuatorUp();
-    // }
-
-    // if (elevatorPosition == elementTransit.getElevatorPosition()) {
-    // elementTransit.toggleOnManipulatorBreak();
-    // } else {
-    // elementTransit.toggleOffManipulatorBreak();
-    // }
   }
 
   // Called once the command ends or is interrupted.
@@ -56,6 +43,5 @@ public class SetElevatorPositionCommand extends CommandBase {
   public boolean isFinished() {
     // return false;
     return Math.abs(elementTransit.getElevatorPosition() - elevatorPosition) < 0.5;
-    // return elementTransit.getElevatorPosition() == elevatorPosition;
   }
 }

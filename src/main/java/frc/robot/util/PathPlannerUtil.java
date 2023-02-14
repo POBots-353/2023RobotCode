@@ -16,7 +16,6 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -58,7 +57,7 @@ public class PathPlannerUtil {
   }
 
   public static PPRamseteCommand createPathFollowCommand(PathPlannerTrajectory trajectory,
-      ElementTransitSubsystem elementTransit, DriveSubsystem driveSubsystem) {
+      DriveSubsystem driveSubsystem) {
     return new PPRamseteCommand(trajectory,
         driveSubsystem::getPose,
         new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
@@ -69,6 +68,6 @@ public class PathPlannerUtil {
         new PIDController(AutoConstants.kPDriveVel, 0, 0),
         new PIDController(AutoConstants.kPDriveVel, 0, 0),
         driveSubsystem::tankDriveVolts,
-        driveSubsystem, elementTransit);
+        driveSubsystem);
   }
 }

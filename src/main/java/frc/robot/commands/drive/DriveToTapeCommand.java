@@ -43,15 +43,12 @@ public class DriveToTapeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // PhotonPipelineResult result = camera.getLatestResult();
-
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
-      // PhotonTrackedTarget target = result.getBestTarget();
+      double degreesOffset = driveSubsystem.getConeDistanceFromCenter() / DriveConstants.mmDegreesOffsetRatio;
 
-      yaw = LimelightHelpers.getTX(DriveConstants.limelightName);
+      yaw = LimelightHelpers.getTX(DriveConstants.limelightName) - degreesOffset;
+
       pitch = LimelightHelpers.getTY(DriveConstants.limelightName);
-      // yaw = camera.getTargetX();
-      // pitch = camera.getTargetY();
 
       double turnSpeed = -turnController.calculate(yaw, 0);
       double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);

@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -59,6 +60,10 @@ public class DriveSubsystem extends SubsystemBase {
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
+
+  private Ultrasonic coneUltrasonic = new Ultrasonic(2, 1);
+
+  private Ultrasonic cubeUltrasonic = new Ultrasonic(3, 4);
 
   private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
@@ -259,21 +264,15 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     return false;
-    // PhotonPipelineResult result = limelight.getLatestResult();
-
-    // if (result.hasTargets()) {
-    // PhotonTrackedTarget target = result.getBestTarget();
-
-    // return Math.abs(target.getPitch() - DriveConstants.tapeAlignmentPitch) <=
-    // DriveConstants.tapeAlignmentTolerance;
-    // }
-
-    // return false;
   }
 
-  // public PhotonCamera getCamera() {
-  // return limelight;
-  // }
+  public double getConeDistanceFromCenter() {
+    return coneUltrasonic.getRangeMM() - DriveConstants.coneCenterMM;
+  }
+
+  public double getCubeDistanceFromCenter() {
+    return cubeUltrasonic.getRangeMM() - DriveConstants.cubeCenterMM;
+  }
 
   public boolean distanceReached(double distanceMeters) {
     return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.006;
@@ -382,6 +381,9 @@ public class DriveSubsystem extends SubsystemBase {
         -frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
+
+    SmartDashboard.putNumber("Ultrasonic Distance", coneUltrasonic.getRangeInches());
+    SmartDashboard.putBoolean("Ultrasonic Valid", coneUltrasonic.isRangeValid());
 
     SmartDashboard.putNumber("Gyro Yaw", Math.IEEEremainder(navx.getYaw(), 360));
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));

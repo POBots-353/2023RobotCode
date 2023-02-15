@@ -71,6 +71,14 @@ public final class Constants {
     public static final double distanceToEncoderRatio = 2 * 42 / (wheelCircumference * gearBoxRatio);
     public static final double encoderToDistanceRatio = 0.5 * wheelCircumference * gearBoxRatio / 42;
 
+    public static final double coneCenterMM = 3.535353;
+    public static final double cubeCenterMM = 3.535353;
+
+    // The ratio of how many degrees we need to offset by the MM the cube/cone is
+    // from the center
+    public static final double mmDegreesOffsetRatio = 3.53535353 / 20.8; // measured millimeters vs the degrees from the
+                                                                         // center
+
     public final static int pistonBrakeForwardID = 8;
     public final static int pistonBrakeReverseID = 7;
   }

@@ -105,7 +105,7 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 4;
     public static final int manipulatorBreakReverseID = 11;
 
-    public static final double intakeSpeed = 0.50; // 0.50
+    public static final double intakeSpeed = 0.65; // 0.50
 
     public static final double elevatorTopSetPoint = -69;
     public static final double elevatorMidSetPoint = -30;

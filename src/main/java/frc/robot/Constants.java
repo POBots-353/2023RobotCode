@@ -76,14 +76,14 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 1.25;
+    public static final double kMaxSpeedMetersPerSecond = 1.75;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
 
     public static final double kRamseteB = 1.25; // 2
     public static final double kRamseteZeta = 0.7; // 0.7
-    public static final double ksVolts = 0.36108; // 0.22 0.24188 0.067503
-    public static final double kvVoltSecondsPerMeter = 2.4237; // 1.98 2.0196 1.7163
-    public static final double kaVoltSecondsSquaredPerMeter = 0.43606; // 0.2 1.3422
+    public static final double ksVolts = 0.36108; // 0.22 0.36108
+    public static final double kvVoltSecondsPerMeter = 2.4237; // 1.98 2.4237
+    public static final double kaVoltSecondsSquaredPerMeter = 0.43606; // 0.2 0.43606
 
     public static final double kPDriveVel = 0.0004;
   }
@@ -94,7 +94,7 @@ public final class Constants {
     public static final int elevatorPistonForwardID = 6;
     public static final int elevatorPistonReverseID = 9;
 
-    public static final int intakeMotorID = 8; // 7
+    public static final int intakeMotorID = 7; // 7
 
     public static final int leftActuatorID = 0;
     public static final int rightActuatorID = 0;
@@ -105,7 +105,7 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 4;
     public static final int manipulatorBreakReverseID = 11;
 
-    public static final double intakeSpeed = 0.120; // 0.50
+    public static final double intakeSpeed = 0.50; // 0.50
 
     public static final double elevatorTopSetPoint = -69;
     public static final double elevatorMidSetPoint = -30;

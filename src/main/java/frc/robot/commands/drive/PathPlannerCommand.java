@@ -39,7 +39,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
     addRequirements(driveSubsystem);
   }
 
-  public PathPlannerCommand(String pathName, ElementTransitSubsystem elementTransit, DriveSubsystem driveSubsystem) {
+  public PathPlannerCommand(String pathName, DriveSubsystem driveSubsystem) {
     this(PathPlannerUtil.loadPathPlannerTrajectory(pathName), driveSubsystem);
   }
 

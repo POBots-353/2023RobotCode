@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -26,8 +27,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   // Intake objects
   private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.intakePistonForwardID,
-      IntakeConstants.intakePistonReverseID);
+      IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
 
   private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
 
@@ -42,8 +42,10 @@ public class ElementTransitSubsystem extends SubsystemBase {
       IntakeConstants.elevatorPistonForwardID, IntakeConstants.elevatorPistonReverseID);
 
   private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.manipulatorBreakForwardID,
-      IntakeConstants.manipulatorBreakReverseID);
+      IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
+
+  private DigitalInput topLimitSwitch = new DigitalInput(0);
+  private DigitalInput bottomLimitSwitch = new DigitalInput(0);
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -95,7 +97,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
   public void intakeCone() {
     intakeMotor.set(-IntakeConstants.intakeSpeed);
   }
-  
+
   public void outTakeCone() {
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
@@ -148,5 +150,11 @@ public class ElementTransitSubsystem extends SubsystemBase {
   public void periodic() {
     // SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
+    if (topLimitSwitch.get()) {
+      elevatorEncoder.setPosition(0);
+    }
+    if (bottomLimitSwitch.get()) {
+      elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
+    }
   }
 }

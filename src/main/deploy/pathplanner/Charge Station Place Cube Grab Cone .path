@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.39723562780459,
-        "y": 4.481309795952926
+        "x": 1.9288254290794298,
+        "y": 2.705486410972822
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.39723562780459,
-        "y": 4.481309795952926
+        "x": 2.4012119452810334,
+        "y": 2.705486410972822
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -24,16 +24,41 @@
     },
     {
       "anchorPoint": {
-        "x": 7.546566759800187,
-        "y": 4.996242909152485
+        "x": 2.3725824594506335,
+        "y": 4.222849159984035
       },
       "prevControl": {
-        "x": 7.129053424773517,
-        "y": 4.9127402421471515
+        "x": 2.048816809063949,
+        "y": 3.365822438372224
       },
       "nextControl": {
-        "x": 7.129053424773517,
-        "y": 4.9127402421471515
+        "x": 2.6159330890090353,
+        "y": 4.86701259116804
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.149642584999456,
+        "y": 4.795438876592039
+      },
+      "prevControl": {
+        "x": 4.9635509271018545,
+        "y": 4.394626074966436
+      },
+      "nextControl": {
+        "x": 4.9635509271018545,
+        "y": 4.394626074966436
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -49,12 +74,12 @@
     },
     {
       "anchorPoint": {
-        "x": 6.66978875624418,
-        "y": 4.870988908644485
+        "x": 6.409339961537065,
+        "y": 3.406908813817628
       },
       "prevControl": {
-        "x": 7.309975869951739,
-        "y": 5.427673355346712
+        "x": 5.965582931165863,
+        "y": 3.4212235567328277
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -70,8 +95,15 @@
       }
     }
   ],
-  "maxVelocity": 1.5,
-  "maxAcceleration": 1.5,
+  "maxVelocity": 1.25,
+  "maxAcceleration": 1.0,
   "isReversed": null,
-  "markers": []
+  "markers": [
+    {
+      "position": 2.590909090909088,
+      "names": [
+        "intakeCube"
+      ]
+    }
+  ]
 }

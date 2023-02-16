@@ -61,7 +61,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  private Ultrasonic coneUltrasonic = new Ultrasonic(2, 1);
+  private Ultrasonic coneUltrasonic = new Ultrasonic(1, 2);
 
   private Ultrasonic cubeUltrasonic = new Ultrasonic(3, 4);
 
@@ -118,6 +118,7 @@ public class DriveSubsystem extends SubsystemBase {
     powerDistribution.clearStickyFaults();
 
     SmartDashboard.putData(field);
+
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -381,7 +382,6 @@ public class DriveSubsystem extends SubsystemBase {
         -frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
-
     SmartDashboard.putNumber("Ultrasonic Distance", coneUltrasonic.getRangeInches());
     SmartDashboard.putBoolean("Ultrasonic Valid", coneUltrasonic.isRangeValid());
 

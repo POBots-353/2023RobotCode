@@ -255,6 +255,14 @@ public class RobotContainer {
     intakePiston.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleIntakePiston, transitSubsystem));
   }
 
+  public void initializeOdometry(Command autoCommand) {
+    if (autoCommand instanceof PathPlannerCommand) {
+      return;
+    }
+
+    driveSubsystem.initializeFieldPosition(startingFieldPosition.getSelected());
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

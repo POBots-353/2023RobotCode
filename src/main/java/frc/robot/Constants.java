@@ -117,7 +117,7 @@ public final class Constants {
 
     public static final double elevatorTopSetPoint = -67.215;
     public static final double elevatorMidSetPoint = -30;
-    public static final double elevatorLowSetPoint = -19;
+    public static final double elevatorLowSetPoint = 0;
 
     public static final double elevatorSpeed = 0.25;
 

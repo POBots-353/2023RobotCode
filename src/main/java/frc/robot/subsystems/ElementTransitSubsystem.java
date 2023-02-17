@@ -44,7 +44,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
 
-  private DigitalInput topLimitSwitch = new DigitalInput(0);
+  private DigitalInput topLimitSwitch = new DigitalInput(1);
   private DigitalInput bottomLimitSwitch = new DigitalInput(0);
 
   private int smartMotionSlot = 0;
@@ -62,6 +62,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
+    elevatorMotor.restoreFactoryDefaults();
+    
     pcmCompressor.enableDigital();
 
     elevatorPiston.set(Value.kReverse);

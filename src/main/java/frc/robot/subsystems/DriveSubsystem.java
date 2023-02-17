@@ -50,6 +50,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private RelativeEncoder frontLeftEncoder = frontLeftMotor.getEncoder();
   private RelativeEncoder frontRightEncoder = frontRightMotor.getEncoder();
+  private RelativeEncoder backLeftEncoder = backLeftMotor.getEncoder();
+  private RelativeEncoder backRightEncoder = backRightMotor.getEncoder();
 
   private SparkMaxPIDController leftPIDController = frontLeftMotor.getPIDController();
   private SparkMaxPIDController rightPIDController = frontRightMotor.getPIDController();
@@ -61,9 +63,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  private Ultrasonic coneUltrasonic = new Ultrasonic(1, 2);
+  // private Ultrasonic coneUltrasonic = new Ultrasonic(1, 2);
 
-  private Ultrasonic cubeUltrasonic = new Ultrasonic(3, 4);
+  // private Ultrasonic cubeUltrasonic = new Ultrasonic(3, 4);
 
   private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
@@ -102,6 +104,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     frontLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
+    backLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
+    backRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
 
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
@@ -268,11 +272,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getConeDistanceFromCenter() {
-    return coneUltrasonic.getRangeMM() - DriveConstants.coneCenterMM;
+    // return coneUltrasonic.getRangeMM() - DriveConstants.coneCenterMM;
+    return 0;
   }
 
   public double getCubeDistanceFromCenter() {
-    return cubeUltrasonic.getRangeMM() - DriveConstants.cubeCenterMM;
+    // return cubeUltrasonic.getRangeMM() - DriveConstants.cubeCenterMM;
+    return 0;
   }
 
   public boolean distanceReached(double distanceMeters) {
@@ -382,12 +388,16 @@ public class DriveSubsystem extends SubsystemBase {
         -frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
-    SmartDashboard.putNumber("Ultrasonic Distance", coneUltrasonic.getRangeInches());
-    SmartDashboard.putBoolean("Ultrasonic Valid", coneUltrasonic.isRangeValid());
+    // SmartDashboard.putNumber("Ultrasonic Distance",
+    // coneUltrasonic.getRangeInches());
+    // SmartDashboard.putBoolean("Ultrasonic Valid", coneUltrasonic.isRangeValid());
 
     SmartDashboard.putNumber("Gyro Yaw", Math.IEEEremainder(navx.getYaw(), 360));
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));
     SmartDashboard.putNumber("Gyro Roll", Math.IEEEremainder(navx.getRoll(), 360));
+
+    SmartDashboard.putNumber("Front Velocity", frontLeftEncoder.getVelocity());
+    SmartDashboard.putNumber("Back Velocity", backLeftEncoder.getVelocity());
 
     // SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
   }

@@ -169,7 +169,7 @@ public class RobotContainer {
     // charlie was here
     Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
 
-    Trigger autoBalance = driverController.b();
+    Trigger autoBalance = driverController.rightTrigger();
 
     Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
 
@@ -226,7 +226,6 @@ public class RobotContainer {
     elevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, transitSubsystem));
 
     elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed, transitSubsystem));
-
     elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed, transitSubsystem));
   }
 

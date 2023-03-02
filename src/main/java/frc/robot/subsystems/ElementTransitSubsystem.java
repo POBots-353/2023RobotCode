@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -46,6 +47,8 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   private DigitalInput topLimitSwitch = new DigitalInput(1);
   private DigitalInput bottomLimitSwitch = new DigitalInput(0);
+
+  private Ultrasonic cubeUltrasonic = new Ultrasonic(0, 0);
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -89,6 +92,10 @@ public class ElementTransitSubsystem extends SubsystemBase {
   }
 
   public void intakeCube() {
+    double distanceInches = cubeUltrasonic.getRangeInches();
+    if (distanceInches <= 15.0) {
+      stopIntakeMotor();
+    }
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 

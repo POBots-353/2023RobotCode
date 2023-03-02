@@ -5,6 +5,8 @@
 
 package frc.robot.subsystems;
 
+import java.security.spec.EncodedKeySpec;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -152,8 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
       rightLimiter.reset(0);
     }
 
-    leftMotors.set(leftSpeed);
-    rightMotors.set(-rightSpeed);
+    frontLeftMotor.set(leftSpeed);
+    frontRightMotor.set(-rightSpeed);
   }
 
   public void arcadeDrive(double forward, double turn) {
@@ -386,7 +388,7 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
         -frontRightEncoder.getPosition());
-
+  
     field.setRobotPose(odometry.getPoseMeters());
     // SmartDashboard.putNumber("Ultrasonic Distance",
     // coneUltrasonic.getRangeInches());
@@ -398,6 +400,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Front Velocity", frontLeftEncoder.getVelocity());
     SmartDashboard.putNumber("Back Velocity", backLeftEncoder.getVelocity());
+
+    SmartDashboard.putNumber("Front Left Current", powerDistribution.getCurrent(10));
+    SmartDashboard.putNumber("Front Right Current", powerDistribution.getCurrent(9));
+
+    SmartDashboard.putNumber("Back Left Current", powerDistribution.getCurrent(14));
+    SmartDashboard.putNumber("Back Right Current", powerDistribution.getCurrent(5));
 
     // SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
   }

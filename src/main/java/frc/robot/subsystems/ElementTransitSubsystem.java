@@ -152,11 +152,11 @@ public class ElementTransitSubsystem extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
-    if (topLimitSwitch.get()) {
-      elevatorEncoder.setPosition(0);
-    }
-    if (bottomLimitSwitch.get()) {
-      elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
-    }
+    // if (topLimitSwitch.get()) {
+    //   elevatorEncoder.setPosition(0);
+    // }
+    // if (bottomLimitSwitch.get()) {
+    //   elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
+    // }
   }
 }

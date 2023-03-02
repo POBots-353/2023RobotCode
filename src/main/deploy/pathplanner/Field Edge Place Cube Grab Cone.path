@@ -17,9 +17,10 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "elevatorHigh",
           "outtakeCube"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "minimum",
         "waitTime": 0
       }
@@ -102,7 +103,7 @@
   "isReversed": true,
   "markers": [
     {
-      "position": 0.7090909090909093,
+      "position": 0.40909090909090906,
       "names": [
         "stopIntake"
       ]

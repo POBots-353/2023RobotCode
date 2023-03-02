@@ -17,10 +17,11 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "elevatorHigh",
           "outtakeCube"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "minimum",
+        "waitBehavior": "none",
         "waitTime": 1.0
       }
     },
@@ -90,7 +91,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "autoBalance"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -109,6 +112,18 @@
     },
     {
       "position": 2.3454545454545412,
+      "names": [
+        "stopIntake"
+      ]
+    },
+    {
+      "position": 0.5181818181818182,
+      "names": [
+        "elevatorLow"
+      ]
+    },
+    {
+      "position": 0.3000000000000001,
       "names": [
         "stopIntake"
       ]

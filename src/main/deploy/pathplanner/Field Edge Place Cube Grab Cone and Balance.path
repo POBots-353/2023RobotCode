@@ -13,14 +13,15 @@
       "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
-      "isLocked": false,
+      "isLocked": true,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "elevatorHigh",
           "outtakeCube"
         ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "minimum",
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
         "waitTime": 1.0
       }
     },
@@ -140,7 +141,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "autoBalance "
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -158,7 +161,19 @@
       ]
     },
     {
-      "position": 0.24545454545454537,
+      "position": 1.0,
+      "names": [
+        "elevatorLow"
+      ]
+    },
+    {
+      "position": 0.5909090909090907,
+      "names": [
+        "stopIntake"
+      ]
+    },
+    {
+      "position": 3.181818181818177,
       "names": [
         "stopIntake"
       ]

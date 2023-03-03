@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "elevatorHigh",
+          "elevatorCubeHigh",
           "outtakeCube"
         ],
         "executionBehavior": "sequential",
@@ -107,7 +107,7 @@
     {
       "position": 0.9818181818181824,
       "names": [
-        "elevatorLow"
+        "elevatorConeLow"
       ]
     },
     {

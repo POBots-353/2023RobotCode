@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "elevatorHigh",
+          "elevatorCubeHigh",
           "outtakeCube"
         ],
         "executionBehavior": "sequential",
@@ -91,9 +91,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "autoBalance"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -119,7 +117,7 @@
     {
       "position": 0.5181818181818182,
       "names": [
-        "elevatorLow"
+        "elevatorConeLow"
       ]
     },
     {

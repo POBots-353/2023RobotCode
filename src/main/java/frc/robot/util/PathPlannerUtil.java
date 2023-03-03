@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -31,10 +32,12 @@ public class PathPlannerUtil {
   public static HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
   public static void initializeCommands(DriveSubsystem driveSubsystem, ElementTransitSubsystem elementTransit) {
-    eventMap.put("intakeCone", Commands.run(elementTransit::intakeCone, elementTransit));
-    eventMap.put("outtakeCone", Commands.run(elementTransit::outTakeCone, elementTransit));
-    eventMap.put("intakeCube", Commands.run(elementTransit::intakeCube, elementTransit));
-    eventMap.put("outtakeCube", Commands.run(elementTransit::outTakeCube, elementTransit));
+    eventMap.put("intakeCone", Commands.race(Commands.run(elementTransit::intakeCone, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("outtakeCone", Commands.race(Commands.run(elementTransit::outTakeCone, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
+
+    eventMap.put("intakeCube", Commands.race(Commands.run(elementTransit::intakeCube, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("outtakeCube", Commands.race(Commands.run(elementTransit::outTakeCube, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
+
     eventMap.put("stopIntake", Commands.runOnce(elementTransit::stopIntakeMotor, elementTransit));
 
     eventMap.put("elevatorConeHigh",
@@ -43,6 +46,10 @@ public class PathPlannerUtil {
         new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elementTransit));
     eventMap.put("elevatorConeLow",
         new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elementTransit));
+
+    eventMap.put("elevatorCubeHigh", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elementTransit));
+    eventMap.put("elevatorCubeMid", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elementTransit));
+    eventMap.put("elevatorCubeLow", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elementTransit));
 
     // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
     // eventMap.put("marker2", new PrintCommand("Passed Marker 2"));

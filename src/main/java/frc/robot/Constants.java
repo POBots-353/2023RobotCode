@@ -113,7 +113,9 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 4;
     public static final int manipulatorBreakReverseID = 11;
 
-    public static final double intakeSpeed = 1;
+    public static final double intakeSpeed = 1.00;
+
+    public static final double autoIntakeTime = 1.00;
 
     public static final double elevatorConeTopSetPoint = -67.215;
     public static final double elevatorConeMidSetPoint = -30;

@@ -17,11 +17,11 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "elevatorHigh",
+          "elevatorCubeHigh",
           "outtakeCube"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "minimum",
+        "waitBehavior": "none",
         "waitTime": 1.0
       }
     },
@@ -73,8 +73,8 @@
       }
     }
   ],
-  "maxVelocity": null,
-  "maxAcceleration": null,
+  "maxVelocity": 1.25,
+  "maxAcceleration": 1.0,
   "isReversed": true,
   "markers": [
     {
@@ -92,7 +92,7 @@
     {
       "position": 0.6181818181818182,
       "names": [
-        "elevatorLow"
+        "elevatorConeLow"
       ]
     }
   ]

@@ -17,12 +17,12 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "elevatorHigh",
+          "elevatorCubeHigh",
           "outtakeCube"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "minimum",
-        "waitTime": 0
+        "waitBehavior": "none",
+        "waitTime": 1.0
       }
     },
     {
@@ -91,10 +91,12 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "stopIntake"
+        ],
         "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
+        "waitBehavior": "before",
+        "waitTime": 1.0
       }
     }
   ],

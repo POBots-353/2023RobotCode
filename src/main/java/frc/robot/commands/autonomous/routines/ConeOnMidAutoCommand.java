@@ -2,6 +2,8 @@ package frc.robot.commands.autonomous.routines;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.commands.drive.AutoDriveToTapeCommand;
 import frc.robot.commands.drive.AutoTurnToAngleCommand;
@@ -20,19 +22,14 @@ public class ConeOnMidAutoCommand extends SequentialCommandGroup {
          * When starting at position 1, 2, or 3
          * Robot will be facing the center of the field
          */
-
-        // Robot will turn around 180 degrees to face the node
-        new AutoTurnToAngleCommand(180, driveSubsystem),
-
         // Robot will drive forward a slight calculated distance to get closer to the
         // node
         new AutoDriveCommand(0.2143125, driveSubsystem),
 
         // Robot will align to the node
-        new AutoDriveToTapeCommand(driveSubsystem)
+        new AutoDriveToTapeCommand(driveSubsystem),
 
         // Robot will outtake the game piece it started with
-        // Commands.runOnce(transitSystem::openClaw, transitSystem)
-        );
+        transitSystem.autoOuttakeCone());
   }
 }

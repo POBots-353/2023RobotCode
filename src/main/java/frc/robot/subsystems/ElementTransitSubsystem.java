@@ -17,7 +17,10 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IntakeConstants;
 
 public class ElementTransitSubsystem extends SubsystemBase {
@@ -66,7 +69,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
   /** Creates a new ElementTransitSubsystem. */
   public ElementTransitSubsystem() {
     elevatorMotor.restoreFactoryDefaults();
-    
+
     pcmCompressor.enableDigital();
 
     elevatorPiston.set(Value.kReverse);
@@ -89,6 +92,26 @@ public class ElementTransitSubsystem extends SubsystemBase {
     p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
     p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+  }
+
+  public CommandBase autoIntakeCube() {
+    return Commands.race(run(this::intakeCube), new WaitCommand(IntakeConstants.autoIntakeTime))
+        .andThen(runOnce(this::stopIntakeMotor));
+  }
+
+  public CommandBase autoOuttakeCube() {
+    return Commands.race(run(this::outTakeCube), new WaitCommand(IntakeConstants.autoIntakeTime))
+        .andThen(runOnce(this::stopIntakeMotor));
+  }
+
+  public CommandBase autoIntakeCone() {
+    return Commands.race(run(this::intakeCone), new WaitCommand(IntakeConstants.autoIntakeTime))
+        .andThen(runOnce(this::stopIntakeMotor));
+  }
+
+  public CommandBase autoOuttakeCone() {
+    return Commands.race(run(this::outTakeCone), new WaitCommand(IntakeConstants.autoIntakeTime))
+        .andThen(runOnce(this::stopIntakeMotor));
   }
 
   public void intakeCube() {
@@ -160,10 +183,10 @@ public class ElementTransitSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
     // if (topLimitSwitch.get()) {
-    //   elevatorEncoder.setPosition(0);
+    // elevatorEncoder.setPosition(0);
     // }
     // if (bottomLimitSwitch.get()) {
-    //   elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
+    // elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
     // }
   }
 }

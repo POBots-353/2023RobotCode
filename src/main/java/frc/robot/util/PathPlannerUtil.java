@@ -37,12 +37,12 @@ public class PathPlannerUtil {
     eventMap.put("outtakeCube", Commands.run(elementTransit::outTakeCube, elementTransit));
     eventMap.put("stopIntake", Commands.runOnce(elementTransit::stopIntakeMotor, elementTransit));
 
-    eventMap.put("elevatorLow",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, elementTransit));
-    eventMap.put("elevatorMid",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, elementTransit));
-    eventMap.put("elevatorLow",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, elementTransit));
+    eventMap.put("elevatorConeHigh",
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elementTransit));
+    eventMap.put("elevatorConeMid",
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elementTransit));
+    eventMap.put("elevatorConeLow",
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elementTransit));
 
     // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
     // eventMap.put("marker2", new PrintCommand("Passed Marker 2"));

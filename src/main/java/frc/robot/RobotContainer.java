@@ -210,20 +210,30 @@ public class RobotContainer {
    * Configures all the buttons and triggers for the elevator
    */
   public void configureElevatorButtons() {
-    JoystickButton elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
+    Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
 
-    JoystickButton elevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton);
-    JoystickButton elevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton);
-    JoystickButton elevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton);
+    Trigger elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
 
-    JoystickButton elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
-    JoystickButton elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
+    Trigger coneElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode.negate());
+    Trigger coneElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode.negate());
+    Trigger coneElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode.negate());
+
+    Trigger cubeElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode);
+    Trigger cubeElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode);
+    Trigger cubeElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode);
+
+    Trigger elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
+    Trigger elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(transitSubsystem::toggleElevatorTilt, transitSubsystem));
 
-    elevatorHigh.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorTopSetPoint, transitSubsystem));
-    elevatorMid.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorMidSetPoint, transitSubsystem));
-    elevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorLowSetPoint, transitSubsystem));
+    coneElevatorHigh.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, transitSubsystem));
+    coneElevatorMid.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, transitSubsystem));
+    coneElevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, transitSubsystem));
+
+    cubeElevatorHigh.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, transitSubsystem));
+    cubeElevatorMid.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, transitSubsystem));
+    cubeElevatorLow.whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, transitSubsystem));
 
     elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed, transitSubsystem));
     elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed, transitSubsystem));
@@ -233,11 +243,15 @@ public class RobotContainer {
    * Configures all the buttons for the intake
    */
   public void configureIntakeButtons() {
-    JoystickButton intakeCone = new JoystickButton(operatorStick, Buttons.intakeConeButton);
-    JoystickButton outtakeCone = new JoystickButton(operatorStick, Buttons.outtakeConeButton);
-    JoystickButton intakeCube = new JoystickButton(operatorStick, Buttons.intakeCubeButton);
-    JoystickButton outtakeCube = new JoystickButton(operatorStick, Buttons.outtakeCubeButton);
-    JoystickButton intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
+    Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
+
+    Trigger intakeCone = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode.negate());
+    Trigger outtakeCone = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode.negate());
+
+    Trigger intakeCube = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode);
+    Trigger outtakeCube = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode);
+
+    Trigger intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
 
     intakeCone.whileTrue(Commands.run(transitSubsystem::intakeCone, transitSubsystem))
         .toggleOnFalse(Commands.runOnce(transitSubsystem::stopIntakeMotor, transitSubsystem));

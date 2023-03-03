@@ -25,6 +25,8 @@ public final class Constants {
   }
 
   public static class Buttons {
+    // Cone/Cube Mode
+    public static final int cubeModeButton = 16;
     // Elevator
     public static final int elevatorHighButton = 7;
     public static final int elevatorMidButton = 6;
@@ -35,10 +37,8 @@ public final class Constants {
     public static final int elevatorManualDownButton = 9;
 
     // Intake
-    public static final int intakeConeButton = 13;
-    public static final int outtakeConeButton = 12;
-    public static final int intakeCubeButton = 14;
-    public static final int outtakeCubeButton = 15;
+    public static final int intakeButton = 13;
+    public static final int outtakeButton = 12;
 
     public static final int intakeOpenClose = 11;
 
@@ -115,9 +115,13 @@ public final class Constants {
 
     public static final double intakeSpeed = 1;
 
-    public static final double elevatorTopSetPoint = -67.215;
-    public static final double elevatorMidSetPoint = -30;
-    public static final double elevatorLowSetPoint = 0;
+    public static final double elevatorConeTopSetPoint = -67.215;
+    public static final double elevatorConeMidSetPoint = -30;
+    public static final double elevatorConeLowSetPoint = 0;
+
+    public static final double elevatorCubeTopSetPoint = -67.215;
+    public static final double elevatorCubeMidSetPoint = -30;
+    public static final double elevatorCubeLowSetPoint = 0;
 
     public static final double elevatorSpeed = 0.50;
   }

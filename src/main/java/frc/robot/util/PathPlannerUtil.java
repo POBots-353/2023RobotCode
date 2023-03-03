@@ -22,7 +22,8 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElementTransitSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 /**
  * A utility class for creating path planner commands and loading path planner
@@ -31,25 +32,25 @@ import frc.robot.subsystems.ElementTransitSubsystem;
 public class PathPlannerUtil {
   public static HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
-  public static void initializeCommands(DriveSubsystem driveSubsystem, ElementTransitSubsystem elementTransit) {
-    eventMap.put("intakeCone", Commands.race(Commands.run(elementTransit::intakeCone, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
-    eventMap.put("outtakeCone", Commands.race(Commands.run(elementTransit::outTakeCone, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
+  public static void initializeCommands(DriveSubsystem driveSubsystem, ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem) {
+    eventMap.put("intakeCone", Commands.race(Commands.run(intakeSystem::intakeCone, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("outtakeCone", Commands.race(Commands.run(intakeSystem::outTakeCone, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
 
-    eventMap.put("intakeCube", Commands.race(Commands.run(elementTransit::intakeCube, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
-    eventMap.put("outtakeCube", Commands.race(Commands.run(elementTransit::outTakeCube, elementTransit), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("intakeCube", Commands.race(Commands.run(intakeSystem::intakeCube, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("outtakeCube", Commands.race(Commands.run(intakeSystem::outTakeCube, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
 
-    eventMap.put("stopIntake", Commands.runOnce(elementTransit::stopIntakeMotor, elementTransit));
+    eventMap.put("stopIntake", Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem));
 
     eventMap.put("elevatorConeHigh",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elementTransit));
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem));
     eventMap.put("elevatorConeMid",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elementTransit));
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem));
     eventMap.put("elevatorConeLow",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elementTransit));
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem));
 
-    eventMap.put("elevatorCubeHigh", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elementTransit));
-    eventMap.put("elevatorCubeMid", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elementTransit));
-    eventMap.put("elevatorCubeLow", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elementTransit));
+    eventMap.put("elevatorCubeHigh", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeMid", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeLow", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem));
 
     // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
     // eventMap.put("marker2", new PrintCommand("Passed Marker 2"));

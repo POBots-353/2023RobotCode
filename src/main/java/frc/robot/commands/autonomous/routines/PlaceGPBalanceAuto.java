@@ -1,15 +1,11 @@
 package frc.robot.commands.autonomous.routines;
 
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoBalanceCommand;
 import frc.robot.commands.drive.AutoDriveCommand;
-import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElementTransitSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -17,7 +13,7 @@ import frc.robot.subsystems.ElementTransitSubsystem;
 public class PlaceGPBalanceAuto extends SequentialCommandGroup {
 
   /** Creates a new Auto Command. */
-  public PlaceGPBalanceAuto(ElementTransitSubsystem transitSystem, DriveSubsystem driveSubsystem) {
+  public PlaceGPBalanceAuto(IntakeSubsystem intakeSystem, DriveSubsystem driveSubsystem) {
     addCommands(
         /*
          * When starting at position 2
@@ -31,7 +27,7 @@ public class PlaceGPBalanceAuto extends SequentialCommandGroup {
         new DriveToTapeCommand(driveSubsystem),
 
         // Robot will outtake the game piece it started with
-        transitSystem.autoOuttakeCone(),
+        intakeSystem.autoOuttakeCone(),
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance

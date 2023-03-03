@@ -5,39 +5,39 @@
 package frc.robot.commands.manipulator;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElementTransitSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ManualMoveElevatorCommand extends CommandBase {
-  private ElementTransitSubsystem elementTransit;
+  private ElevatorSubsystem elevatorSystem;
 
   private double speed;
 
   /** Creates a new ManualMoveElevatorCommand. */
-  public ManualMoveElevatorCommand(double speed, ElementTransitSubsystem elementTransit) {
+  public ManualMoveElevatorCommand(double speed, ElevatorSubsystem elevatorSystem) {
     this.speed = speed;
-    this.elementTransit = elementTransit;
+    this.elevatorSystem = elevatorSystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(elementTransit);
+    addRequirements(elevatorSystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elementTransit.toggleOffManipulatorBreak();
+    elevatorSystem.toggleOffManipulatorBreak();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elementTransit.setElevatorSpeed(speed);
+    elevatorSystem.setElevatorSpeed(speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elementTransit.elevatorStop();
-    elementTransit.toggleOnManipulatorBreak();
+    elevatorSystem.elevatorStop();
+    elevatorSystem.toggleOnManipulatorBreak();
   }
 
   // Returns true when the command should end.

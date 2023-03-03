@@ -10,7 +10,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElementTransitSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.util.PathPlannerUtil;
 
 public class PathPlannerCommand extends FollowPathWithEvents {

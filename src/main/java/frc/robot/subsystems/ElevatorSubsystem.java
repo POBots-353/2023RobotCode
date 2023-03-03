@@ -5,37 +5,19 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IntakeConstants;
 
-public class ElementTransitSubsystem extends SubsystemBase {
-  // Pneumatic stuff
-  private Compressor pcmCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
-
-  private PneumaticHub pneumaticHub = new PneumaticHub(1);
-
-  // Intake objects
-  private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
-      IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
-
-  private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
-
-  // Elevator objects
+public class ElevatorSubsystem extends SubsystemBase {
   private CANSparkMax elevatorMotor = new CANSparkMax(IntakeConstants.elevatorMotorID, MotorType.kBrushless);
 
   private SparkMaxPIDController elevatorPIDController = elevatorMotor.getPIDController();
@@ -49,9 +31,7 @@ public class ElementTransitSubsystem extends SubsystemBase {
       IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
 
   private DigitalInput topLimitSwitch = new DigitalInput(1);
-  private DigitalInput bottomLimitSwitch = new DigitalInput(0);
-
-  private Ultrasonic cubeUltrasonic = new Ultrasonic(0, 0);
+  private DigitalInput bottomLimitSwitch = new DigitalInput(9);
 
   private int smartMotionSlot = 0;
   private int allowedErr;
@@ -66,15 +46,11 @@ public class ElementTransitSubsystem extends SubsystemBase {
   private double maxVel = 5000; // 5000
   private double maxAcc = 3000; // 2500
 
-  /** Creates a new ElementTransitSubsystem. */
-  public ElementTransitSubsystem() {
+  /** Creates a new ElevatorSubsystem. */
+  public ElevatorSubsystem() {
     elevatorMotor.restoreFactoryDefaults();
 
-    pcmCompressor.enableDigital();
-
     elevatorPiston.set(Value.kReverse);
-
-    intakePiston.set(Value.kReverse);
 
     manipulatorBreak.set(Value.kForward);
 
@@ -92,54 +68,6 @@ public class ElementTransitSubsystem extends SubsystemBase {
     p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
     p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
-  }
-
-  public CommandBase autoIntakeCube() {
-    return Commands.race(run(this::intakeCube), new WaitCommand(IntakeConstants.autoIntakeTime))
-        .andThen(runOnce(this::stopIntakeMotor));
-  }
-
-  public CommandBase autoOuttakeCube() {
-    return Commands.race(run(this::outTakeCube), new WaitCommand(IntakeConstants.autoIntakeTime))
-        .andThen(runOnce(this::stopIntakeMotor));
-  }
-
-  public CommandBase autoIntakeCone() {
-    return Commands.race(run(this::intakeCone), new WaitCommand(IntakeConstants.autoIntakeTime))
-        .andThen(runOnce(this::stopIntakeMotor));
-  }
-
-  public CommandBase autoOuttakeCone() {
-    return Commands.race(run(this::outTakeCone), new WaitCommand(IntakeConstants.autoIntakeTime))
-        .andThen(runOnce(this::stopIntakeMotor));
-  }
-
-  public void intakeCube() {
-    double distanceInches = cubeUltrasonic.getRangeInches();
-    if (distanceInches <= 15.0) {
-      stopIntakeMotor();
-    }
-    intakeMotor.set(IntakeConstants.intakeSpeed);
-  }
-
-  public void outTakeCube() {
-    intakeMotor.set(-IntakeConstants.intakeSpeed);
-  }
-
-  public void intakeCone() {
-    intakeMotor.set(-IntakeConstants.intakeSpeed);
-  }
-
-  public void outTakeCone() {
-    intakeMotor.set(IntakeConstants.intakeSpeed);
-  }
-
-  public void stopIntakeMotor() {
-    intakeMotor.set(0);
-  }
-
-  public void toggleIntakePiston() {
-    intakePiston.toggle();
   }
 
   public void toggleElevatorTilt() {
@@ -180,13 +108,15 @@ public class ElementTransitSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
+
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
     // if (topLimitSwitch.get()) {
-    // elevatorEncoder.setPosition(0);
+    //   elevatorEncoder.setPosition(0);
     // }
     // if (bottomLimitSwitch.get()) {
-    // elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
+    //   elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
     // }
   }
 }

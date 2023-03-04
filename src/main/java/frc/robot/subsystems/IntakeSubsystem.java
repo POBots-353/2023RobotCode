@@ -33,7 +33,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
 
-  private Ultrasonic cubeUltrasonic = new Ultrasonic(0, 0);
+  private Ultrasonic cubeUltrasonic = new Ultrasonic(0, 1);
+  private Ultrasonic coneUltrasonic = new Ultrasonic(3, 4);
 
   /** Creates a new ElementTransitSubsystem. */
   public IntakeSubsystem() {
@@ -63,10 +64,10 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void intakeCube() {
-    double distanceInches = cubeUltrasonic.getRangeInches();
-    if (distanceInches <= 15.0) {
-      stopIntakeMotor();
-    }
+    // double distanceInches = cubeUltrasonic.getRangeInches();
+    // if (distanceInches <= 15.0) {
+    // stopIntakeMotor();
+    // }
     intakeMotor.set(IntakeConstants.intakeSpeed);
   }
 
@@ -96,8 +97,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // if (topLimitSwitch.get()) {
     // elevatorEncoder.setPosition(0);
     // }
-    // if (bottomLimitSwitch.get()) {
-    // elevatorEncoder.setPosition(IntakeConstants.elevatorTopSetPoint);
-    // }
+
+    SmartDashboard.putNumber("Cube Distance", cubeUltrasonic.getRangeInches());
+    SmartDashboard.putNumber("Cone Distance", coneUltrasonic.getRangeInches());
   }
 }

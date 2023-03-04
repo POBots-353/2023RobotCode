@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -153,7 +154,8 @@ public class RobotContainer {
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
         .whileTrue(
-            new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360), driveSubsystem));
+            new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
+                driveSubsystem));
 
     autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
 
@@ -165,11 +167,13 @@ public class RobotContainer {
 
     setPipelineTape
         .toggleOnTrue(
-            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 0), driveSubsystem));
+            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 0),
+                driveSubsystem));
 
     setPipelineAprilTag
         .toggleOnTrue(
-            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 1), driveSubsystem));
+            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 1),
+                driveSubsystem));
   }
 
   /**
@@ -190,6 +194,12 @@ public class RobotContainer {
 
     Trigger elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
     Trigger elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
+
+    Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
+
+    startingConfiguration.whileTrue(Commands.sequence(
+        Commands.runOnce(elevatorSubsystem::elevatorTiltIn, elevatorSubsystem), new WaitCommand(1.00),
+        new SetElevatorPositionCommand(IntakeConstants.startingConfigurationHeight, elevatorSubsystem)));
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(elevatorSubsystem::toggleElevatorTilt, elevatorSubsystem));
 

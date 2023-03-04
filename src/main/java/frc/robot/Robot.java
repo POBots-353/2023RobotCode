@@ -10,6 +10,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -43,6 +44,9 @@ public class Robot extends TimedRobot {
     PortForwarder.add(5803, "limelight.local", 5803);
     PortForwarder.add(5804, "limelight.local", 5804);
     PortForwarder.add(5805, "limelight.local", 5805);
+
+    // Allows us to use ultrasonic sensors
+    Ultrasonic.setAutomaticMode(true);
 
     // PathPlannerServer.startServer(5855);
     // Instantiate our RobotContainer. This will perform all our button bindings,

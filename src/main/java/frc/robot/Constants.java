@@ -54,7 +54,7 @@ public final class Constants {
     public static final int frontRightMotorID = 1;
     public static final int backRightMotorID = 3;
 
-    public static final double defaultSpeed = 0.50;
+    public static final double defaultSpeed = 0.60;
     public static final double slowSpeed = 0.25;
 
     public static final double tapeAlignmentTolerance = 1.50;
@@ -113,14 +113,14 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 4;
     public static final int manipulatorBreakReverseID = 11;
 
-    public static final double intakeSpeed = 0.60;
+    public static final double intakeSpeed = 0.80;
     public static final double outtakeSpeed = 1.00;
 
-    public static final double autoIntakeTime = 1.00;
+    public static final double autoIntakeTime = 2.00;
 
     public static final double elevatorConeTopSetPoint = -65.3;
     public static final double elevatorConeMidSetPoint = -24.7;
-    public static final double elevatorConeLowSetPoint = -3.38;
+    public static final double elevatorConeLowSetPoint = -7.7;
 
     public static final double elevatorCubeTopSetPoint = -55.1;
     public static final double elevatorCubeMidSetPoint = -45.8;

@@ -91,6 +91,10 @@ public class IntakeSubsystem extends SubsystemBase {
     intakePiston.toggle();
   }
 
+  public void toggleWristIn() {
+    intakePiston.set(Value.kReverse);
+  }
+
   public void toggleWristOut() {
     intakePiston.set(Value.kForward);
   }

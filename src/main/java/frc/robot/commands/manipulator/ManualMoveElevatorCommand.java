@@ -4,6 +4,7 @@
 
 package frc.robot.commands.manipulator;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorSubsystem;
 
@@ -43,6 +44,6 @@ public class ManualMoveElevatorCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return speed > 0 && elevatorSystem.getPistonState() == Value.kForward && elevatorSystem.getElevatorPosition() > 0;
   }
 }

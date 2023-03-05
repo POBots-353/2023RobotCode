@@ -55,6 +55,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     manipulatorBreak.set(Value.kForward);
 
     initializePID(elevatorPIDController);
+
+    elevatorEncoder.setPosition(IntakeConstants.startingConfigurationHeight);
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -78,6 +80,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorPiston.set(Value.kReverse);
   }
 
+  public void elevatorTiltOut() {
+    elevatorPiston.set(Value.kForward);
+  }
+
   public void setElevatorPosition(double elevatorPos) {
     elevatorPIDController.setReference(elevatorPos, CANSparkMax.ControlType.kSmartMotion);
   }
@@ -87,6 +93,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void elevatorDown() {
+    if (elevatorPiston.get() == Value.kForward && elevatorEncoder.getPosition() > 0) {
+      elevatorStop();
+      return;
+    }
+
     elevatorMotor.set(IntakeConstants.elevatorSpeed);
   }
 
@@ -112,6 +123,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void toggleOffManipulatorBreak() {
     manipulatorBreak.set(Value.kReverse);
+  }
+
+  public DoubleSolenoid.Value getPistonState() {
+    return elevatorPiston.get();
   }
 
   @Override

@@ -71,9 +71,12 @@ public class RobotContainer {
 
     autoChooser.setDefaultOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
     autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intakeSubsystem, driveSubsystem));
-    autoChooser.addOption("Drive Back and Balance", new DriveOnChargeStationAuto(driveSubsystem));
-    autoChooser.addOption("Place Cone and Drive Back", new PlaceGPAndMobilityAuto(intakeSubsystem, driveSubsystem));
-    autoChooser.addOption("Place Cone and Balance", new PlaceGPBalanceAuto(intakeSubsystem, driveSubsystem));
+    autoChooser.addOption("Drive Back and Balance",
+        new DriveOnChargeStationAuto(elevatorSubsystem, intakeSubsystem, driveSubsystem));
+    autoChooser.addOption("Place Cone and Drive Back",
+        new PlaceGPAndMobilityAuto(elevatorSubsystem, intakeSubsystem, driveSubsystem));
+    autoChooser.addOption("Place Cone and Balance",
+        new PlaceGPBalanceAuto(elevatorSubsystem, intakeSubsystem, driveSubsystem));
 
     autoChooser.addOption("(Substation Side) Place Cube, Grab Cone",
         new PathPlannerCommand("Substation Place Cube Grab Cone", driveSubsystem));
@@ -268,7 +271,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
     // return new PathPlannerCommand("Test Path", driveSubsystem);
     // return Commands.run(() -> {});
 

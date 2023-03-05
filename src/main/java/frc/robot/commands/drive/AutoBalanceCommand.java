@@ -8,6 +8,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class AutoBalanceCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
@@ -30,7 +32,7 @@ public class AutoBalanceCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double gyroPitch = driveSubsystem.getGyroPitch();
+    double gyroPitch = -driveSubsystem.getGyroPitch();
 
     if (Math.abs(gyroPitch) <= 0.5) {
       driveSubsystem.arcadeDrive(0, 0);

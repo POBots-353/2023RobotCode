@@ -115,8 +115,8 @@ public class DriveSubsystem extends SubsystemBase {
     backLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
 
-    // backLeftMotor.follow(frontLeftMotor);
-    // backRightMotor.follow(frontRightMotor);
+    backLeftMotor.follow(frontLeftMotor);
+    backRightMotor.follow(frontRightMotor);
 
     initializePID(frontLeftPIDController);
     initializePID(frontRightPIDController);
@@ -166,8 +166,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeftMotor.set(leftSpeed);
     frontRightMotor.set(-rightSpeed);
 
-    backLeftMotor.set(leftSpeed);
-    backRightMotor.set(-rightSpeed);
+    // backLeftMotor.set(leftSpeed);
+    // backRightMotor.set(-rightSpeed);
   }
 
   public void arcadeDrive(double forward, double turn) {
@@ -186,8 +186,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeftMotor.set(leftSpeed);
     frontRightMotor.set(-rightSpeed);
 
-    backLeftMotor.set(leftSpeed);
-    backRightMotor.set(-rightSpeed);
+    // backLeftMotor.set(leftSpeed);
+    // backRightMotor.set(-rightSpeed);
     // leftMotors.set(leftSpeed);
     // rightMotors.set(-rightSpeed);
   }
@@ -195,8 +195,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void autoDrive(double meters) {
     frontLeftPIDController.setReference(meters, ControlType.kSmartMotion);
     frontRightPIDController.setReference(-meters, ControlType.kSmartMotion);
-    backLeftPIDController.setReference(meters, ControlType.kSmartMotion);
-    backRightPIDController.setReference(-meters, ControlType.kSmartMotion);
+    // backLeftPIDController.setReference(meters, ControlType.kSmartMotion);
+    // backRightPIDController.setReference(-meters, ControlType.kSmartMotion);
     // leftPIDController.setReference(convertDistanceToEncoder(meters),
     // ControlType.kSmartMotion);
     // rightPIDController.setReference(-convertDistanceToEncoder(meters),
@@ -351,9 +351,8 @@ public class DriveSubsystem extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
-        convertEncoderToDistance(frontRightEncoder.getPosition()),
-        new Pose2d(startX, startY, navx.getRotation2d()));
+    odometry.resetPosition(navx.getRotation2d(), 0, 0,
+        new Pose2d(startX, startY, new Rotation2d(180)));
   }
 
   public void initializeBlueFieldPosition(int position) {
@@ -374,9 +373,8 @@ public class DriveSubsystem extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), convertEncoderToDistance(frontLeftEncoder.getPosition()),
-        convertEncoderToDistance(frontRightEncoder.getPosition()),
-        new Pose2d(startX, startY, navx.getRotation2d()));
+    odometry.resetPosition(navx.getRotation2d(), 0, 0,
+        new Pose2d(startX, startY, new Rotation2d(0)));
   }
 
   public Pose2d getPose() {
@@ -401,8 +399,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeftMotor.setVoltage(leftVolts);
     frontRightMotor.setVoltage(-rightVolts);
 
-    backLeftMotor.setVoltage(leftVolts);
-    backRightMotor.setVoltage(-rightVolts);
+    // backLeftMotor.setVoltage(leftVolts);
+    // backRightMotor.setVoltage(-rightVolts);
     // leftMotors.setVoltage(leftVolts);
     // rightMotors.setVoltage(-rightVolts);
   }

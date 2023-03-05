@@ -24,10 +24,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private RelativeEncoder elevatorEncoder = elevatorMotor.getEncoder();
 
-  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       IntakeConstants.elevatorPistonForwardID, IntakeConstants.elevatorPistonReverseID);
 
-  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
 
   // private DigitalInput topLimitSwitch = new DigitalInput(1);
@@ -102,6 +102,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     return elevatorEncoder.getPosition();
   }
 
+  public void zeroElevatorPosition() {
+    elevatorEncoder.setPosition(0);
+  }
+
   public void toggleOnManipulatorBreak() {
     manipulatorBreak.set(Value.kForward);
   }
@@ -114,11 +118,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
-    SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
+    SmartDashboard.putBoolean("Bottom Switch", bottomLimitSwitch.get());
 
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
-    if (!bottomLimitSwitch.get()) {
-      elevatorEncoder.setPosition(0);
-    }
   }
 }

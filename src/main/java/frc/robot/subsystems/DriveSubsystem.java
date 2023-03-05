@@ -73,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // private Ultrasonic cubeUltrasonic = new Ultrasonic(3, 4);
 
-  private DoubleSolenoid brakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
   private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);

@@ -199,7 +199,8 @@ public class RobotContainer {
 
     startingConfiguration.whileTrue(Commands.sequence(
         Commands.runOnce(elevatorSubsystem::elevatorTiltIn, elevatorSubsystem), new WaitCommand(1.00),
-        new SetElevatorPositionCommand(IntakeConstants.startingConfigurationHeight, elevatorSubsystem)));
+        new SetElevatorPositionCommand(IntakeConstants.startingConfigurationHeight, elevatorSubsystem),
+        Commands.runOnce(intakeSubsystem::toggleWristOut, intakeSubsystem)));
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(elevatorSubsystem::toggleElevatorTilt, elevatorSubsystem));
 
@@ -219,6 +220,9 @@ public class RobotContainer {
 
     elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed, elevatorSubsystem));
     elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed, elevatorSubsystem));
+
+    new JoystickButton(operatorStick, 15)
+        .onTrue(Commands.runOnce(elevatorSubsystem::zeroElevatorPosition, elevatorSubsystem));
   }
 
   /**
@@ -264,7 +268,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PathPlannerCommand("Test Path", driveSubsystem);
+    return null;
+    // return new PathPlannerCommand("Test Path", driveSubsystem);
     // return Commands.run(() -> {});
 
     // An example command will be run in autonomous

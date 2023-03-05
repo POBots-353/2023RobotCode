@@ -25,7 +25,7 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   // Pneumatic stuff
-  private Compressor pcmCompressor = new Compressor(1, PneumaticsModuleType.REVPH);
+  private Compressor pcmCompressor = new Compressor(16, PneumaticsModuleType.REVPH);
 
   // Intake objects
   private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,

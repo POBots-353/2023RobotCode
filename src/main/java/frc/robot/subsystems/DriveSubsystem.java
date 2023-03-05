@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double maxVel = 1750;
   private double maxAcc = 2500;
 
-  private PowerDistribution powerDistribution = new PowerDistribution(1, ModuleType.kRev);
+  private PowerDistribution powerDistribution = new PowerDistribution(15, ModuleType.kRev);
 
   private Field2d field = new Field2d();
 
@@ -165,6 +165,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     frontLeftMotor.set(leftSpeed);
     frontRightMotor.set(-rightSpeed);
+
     backLeftMotor.set(leftSpeed);
     backRightMotor.set(-rightSpeed);
   }
@@ -427,12 +428,10 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Front Velocity", frontLeftEncoder.getVelocity());
     SmartDashboard.putNumber("Back Velocity", backLeftEncoder.getVelocity());
 
-    SmartDashboard.putNumber("Front Left Current", powerDistribution.getCurrent(10));
-    SmartDashboard.putNumber("Front Right Current", powerDistribution.getCurrent(9));
-
-    SmartDashboard.putNumber("Back Left Current", powerDistribution.getCurrent(14));
-    SmartDashboard.putNumber("Back Right Current", powerDistribution.getCurrent(5));
-
+    SmartDashboard.putNumber("Front Left Position", frontLeftEncoder.getPosition());
+    SmartDashboard.putNumber("Back Left Position", backLeftEncoder.getPosition());
+    SmartDashboard.putNumber("Front Right Position", backLeftEncoder.getPosition());
+    SmartDashboard.putNumber("Back Right Position", backLeftEncoder.getPosition());
     // SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
   }
 }

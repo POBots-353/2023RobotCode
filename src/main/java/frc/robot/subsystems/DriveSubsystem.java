@@ -47,16 +47,20 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax frontRightMotor = new CANSparkMax(DriveConstants.frontRightMotorID, MotorType.kBrushless);
   private CANSparkMax backRightMotor = new CANSparkMax(DriveConstants.backRightMotorID, MotorType.kBrushless);
 
-  private MotorControllerGroup leftMotors = new MotorControllerGroup(frontLeftMotor, backLeftMotor);
-  private MotorControllerGroup rightMotors = new MotorControllerGroup(frontRightMotor, backRightMotor);
+  // private MotorControllerGroup leftMotors = new
+  // MotorControllerGroup(frontLeftMotor, backLeftMotor);
+  // private MotorControllerGroup rightMotors = new
+  // MotorControllerGroup(frontRightMotor, backRightMotor);
 
   private RelativeEncoder frontLeftEncoder = frontLeftMotor.getEncoder();
   private RelativeEncoder frontRightEncoder = frontRightMotor.getEncoder();
   private RelativeEncoder backLeftEncoder = backLeftMotor.getEncoder();
   private RelativeEncoder backRightEncoder = backRightMotor.getEncoder();
 
-  private SparkMaxPIDController leftPIDController = frontLeftMotor.getPIDController();
-  private SparkMaxPIDController rightPIDController = frontRightMotor.getPIDController();
+  private SparkMaxPIDController frontLeftPIDController = frontLeftMotor.getPIDController();
+  private SparkMaxPIDController frontRightPIDController = frontRightMotor.getPIDController();
+  private SparkMaxPIDController backLeftPIDController = backLeftMotor.getPIDController();
+  private SparkMaxPIDController backRightPIDController = backRightMotor.getPIDController();
 
   private SlewRateLimiter leftLimiter = new SlewRateLimiter(3.53);
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
@@ -103,17 +107,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     frontLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
+    backLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
+    backRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
 
     frontLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
 
-    backLeftMotor.follow(frontLeftMotor);
-    backRightMotor.follow(frontRightMotor);
+    // backLeftMotor.follow(frontLeftMotor);
+    // backRightMotor.follow(frontRightMotor);
 
-    initializePID(leftPIDController);
-    initializePID(rightPIDController);
+    initializePID(frontLeftPIDController);
+    initializePID(frontRightPIDController);
+    initializePID(backLeftPIDController);
+    initializePID(backRightPIDController);
 
     brakePiston.set(Value.kReverse);
 
@@ -125,6 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData(field);
 
+    SmartDashboard.putData(powerDistribution);
   }
 
   private void initializePID(SparkMaxPIDController p) {
@@ -156,6 +165,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     frontLeftMotor.set(leftSpeed);
     frontRightMotor.set(-rightSpeed);
+    backLeftMotor.set(leftSpeed);
+    backRightMotor.set(-rightSpeed);
   }
 
   public void arcadeDrive(double forward, double turn) {
@@ -171,13 +182,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     double rightSpeed = forward - turn;
 
-    leftMotors.set(leftSpeed);
-    rightMotors.set(-rightSpeed);
+    frontLeftMotor.set(leftSpeed);
+    frontRightMotor.set(-rightSpeed);
+
+    backLeftMotor.set(leftSpeed);
+    backRightMotor.set(-rightSpeed);
+    // leftMotors.set(leftSpeed);
+    // rightMotors.set(-rightSpeed);
   }
 
   public void autoDrive(double meters) {
-    leftPIDController.setReference(meters, ControlType.kSmartMotion);
-    rightPIDController.setReference(-meters, ControlType.kSmartMotion);
+    frontLeftPIDController.setReference(meters, ControlType.kSmartMotion);
+    frontRightPIDController.setReference(-meters, ControlType.kSmartMotion);
+    backLeftPIDController.setReference(meters, ControlType.kSmartMotion);
+    backRightPIDController.setReference(-meters, ControlType.kSmartMotion);
     // leftPIDController.setReference(convertDistanceToEncoder(meters),
     // ControlType.kSmartMotion);
     // rightPIDController.setReference(-convertDistanceToEncoder(meters),
@@ -379,8 +397,13 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
-    leftMotors.setVoltage(leftVolts);
-    rightMotors.setVoltage(-rightVolts);
+    frontLeftMotor.setVoltage(leftVolts);
+    frontRightMotor.setVoltage(-rightVolts);
+
+    backLeftMotor.setVoltage(leftVolts);
+    backRightMotor.setVoltage(-rightVolts);
+    // leftMotors.setVoltage(leftVolts);
+    // rightMotors.setVoltage(-rightVolts);
   }
 
   @Override
@@ -388,8 +411,11 @@ public class DriveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
         -frontRightEncoder.getPosition());
-  
+
     field.setRobotPose(odometry.getPoseMeters());
+
+    // Clear sticky faults
+    // powerDistribution.clearStickyFaults();
     // SmartDashboard.putNumber("Ultrasonic Distance",
     // coneUltrasonic.getRangeInches());
     // SmartDashboard.putBoolean("Ultrasonic Valid", coneUltrasonic.isRangeValid());

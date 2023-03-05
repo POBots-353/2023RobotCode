@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private Compressor pcmCompressor = new Compressor(16, PneumaticsModuleType.REVPH);
 
   // Intake objects
-  private DoubleSolenoid intakePiston = new DoubleSolenoid(PneumaticsModuleType.REVPH,
+  private DoubleSolenoid intakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
 
   private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
@@ -40,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     pcmCompressor.enableDigital();
 
-    intakePiston.set(Value.kReverse);
+    intakePiston.set(Value.kForward);
   }
 
   public CommandBase autoIntakeCube() {
@@ -72,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void outTakeCube() {
-    intakeMotor.set(-IntakeConstants.intakeSpeed);
+    intakeMotor.set(-IntakeConstants.outtakeSpeed);
   }
 
   public void intakeCone() {
@@ -80,7 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void outTakeCone() {
-    intakeMotor.set(IntakeConstants.intakeSpeed);
+    intakeMotor.set(IntakeConstants.outtakeSpeed);
   }
 
   public void stopIntakeMotor() {
@@ -89,6 +89,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void toggleIntakePiston() {
     intakePiston.toggle();
+  }
+
+  public void toggleWristOut() {
+    intakePiston.set(Value.kForward);
   }
 
   @Override

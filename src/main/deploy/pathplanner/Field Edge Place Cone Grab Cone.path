@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9797222927779201,
-        "y": 4.397807128947592
+        "x": 1.9459427154148428,
+        "y": 0.6945180150071731
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1606447379561438,
-        "y": 4.397807128947592
+        "x": 2.9459427154148425,
+        "y": 0.6945180150071731
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -17,8 +17,9 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "elevatorCubeHigh",
-          "outtakeCube"
+          "elevatorTiltOut",
+          "elevatorConeHigh",
+          "outtakeCone"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -27,64 +28,17 @@
     },
     {
       "anchorPoint": {
-        "x": 4.373465413597494,
-        "y": 5.678181356362713
+        "x": 4.5,
+        "y": 0.69
       },
       "prevControl": {
-        "x": 4.373465413597494,
-        "y": 4.678181356362713
+        "x": 3.4422995512657697,
+        "y": 0.69
       },
       "nextControl": {
-        "x": 4.373465413597494,
-        "y": 4.678181356362713
+        "x": 5.557792004713526,
+        "y": 0.69
       },
-      "holonomicAngle": 0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 6.349695199390399,
-        "y": 4.56481246295826
-      },
-      "prevControl": {
-        "x": 5.47280674952753,
-        "y": 4.56481246295826
-      },
-      "nextControl": {
-        "x": 5.47280674952753,
-        "y": 4.56481246295826
-      },
-      "holonomicAngle": 0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 5.083238083142834,
-        "y": 3.326189569045806
-      },
-      "prevControl": {
-        "x": 6.962048090762849,
-        "y": 3.326189569045806
-      },
-      "nextControl": null,
       "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
@@ -96,6 +50,55 @@
         "waitBehavior": "none",
         "waitTime": 0
       }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.626005418677504,
+        "y": 1.5030480060960134
+      },
+      "prevControl": {
+        "x": 5.626005418677504,
+        "y": 1.0984931200220271
+      },
+      "nextControl": {
+        "x": 5.626005418677504,
+        "y": 1.0984931200220271
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.3775294217255105,
+        "y": 0.9324464482262306
+      },
+      "prevControl": {
+        "x": 5.905312370896444,
+        "y": 0.9324464482262306
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "stopIntake"
+        ],
+        "executionBehavior": "parallel",
+        "waitBehavior": "before",
+        "waitTime": 1.0
+      }
     }
   ],
   "maxVelocity": 1.25,
@@ -103,27 +106,15 @@
   "isReversed": true,
   "markers": [
     {
-      "position": 1.6,
+      "position": 1.9909090909090912,
       "names": [
         "intakeCone"
       ]
     },
     {
-      "position": 2.3454545454545412,
-      "names": [
-        "stopIntake"
-      ]
-    },
-    {
-      "position": 0.5181818181818182,
+      "position": 0.5454545454545703,
       "names": [
         "elevatorConeLow"
-      ]
-    },
-    {
-      "position": 0.3000000000000001,
-      "names": [
-        "stopIntake"
       ]
     }
   ]

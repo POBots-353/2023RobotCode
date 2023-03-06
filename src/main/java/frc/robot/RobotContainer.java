@@ -83,11 +83,11 @@ public class RobotContainer {
     autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
         new PathPlannerCommand("Substation Place Cone Drive Backwards", driveSubsystem));
 
-    autoChooser.addOption("(Substation Side) Place Cube, Grab Cone",
-        new PathPlannerCommand("Substation Place Cube Grab Cone", driveSubsystem));
+    autoChooser.addOption("(Substation Side) Place Cone, Grab Cone",
+        new PathPlannerCommand("Substation Place Cone Grab Cone", driveSubsystem));
 
-    autoChooser.addOption("(Substation Side) Place Cube, Grab Cone, Balance",
-        new PathPlannerCommand("Substation Place Cube Grab Cone and Balance", driveSubsystem));
+    autoChooser.addOption("(Substation Side) Place Cone, Grab Cone, Balance",
+        new PathPlannerCommand("Substation Place Cone Grab Cone and Balance", driveSubsystem));
 
     autoChooser.addOption("(Charge Station) Place Cone, Balance",
         new PathPlannerCommand("Charge Station Place Cone Balance", driveSubsystem));
@@ -95,11 +95,11 @@ public class RobotContainer {
     autoChooser.addOption("(Field Edge) Place Cone, Drive Backwards",
         new PathPlannerCommand("Field Edge Place Cone Drive Backwards", driveSubsystem));
 
-    autoChooser.addOption("(Field Edge) Place Cube, Grab Cone",
-        new PathPlannerCommand("Field Edge Place Cube Grab Cone", driveSubsystem));
+    autoChooser.addOption("(Field Edge) Place Cone, Grab Cone",
+        new PathPlannerCommand("Field Edge Place Cone Grab Cone", driveSubsystem));
 
-    autoChooser.addOption("(Field Edge) Place Cube, Grab Cone, Balance",
-        new PathPlannerCommand("Field Edge Place Cube Grab Cone and Balance", driveSubsystem));
+    autoChooser.addOption("(Field Edge) Place Cone, Grab Cone, Balance",
+        new PathPlannerCommand("Field Edge Place Cone Grab Cone and Balance", driveSubsystem));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 

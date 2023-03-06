@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9936394039454757,
-        "y": 4.411724240115148
+        "x": 1.9367637403421316,
+        "y": 4.852593722945493
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.355484294301923,
-        "y": 4.411724240115148
+        "x": 3.6440777783523455,
+        "y": 4.852593722945493
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -17,8 +17,9 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "elevatorCubeHigh",
-          "outtakeCube"
+          "elevatorTiltOut",
+          "elevatorConeHigh",
+          "outtakeCone"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -27,16 +28,16 @@
     },
     {
       "anchorPoint": {
-        "x": 4.192542968419271,
-        "y": 5.650347134027602
+        "x": 5.020899364773203,
+        "y": 5.7154173797803765
       },
       "prevControl": {
-        "x": 4.192542968419271,
-        "y": 4.650347134027602
+        "x": 5.020899364773203,
+        "y": 4.7154173797803765
       },
       "nextControl": {
-        "x": 4.192542968419271,
-        "y": 4.650347134027602
+        "x": 5.020899364773203,
+        "y": 4.7154173797803765
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -84,13 +85,7 @@
       ]
     },
     {
-      "position": 0.2909090909090909,
-      "names": [
-        "stopIntake"
-      ]
-    },
-    {
-      "position": 0.6181818181818182,
+      "position": 0.43636363636364056,
       "names": [
         "elevatorConeLow"
       ]

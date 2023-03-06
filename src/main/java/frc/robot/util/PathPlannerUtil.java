@@ -33,10 +33,10 @@ public class PathPlannerUtil {
   public static HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
   public static void initializeCommands(DriveSubsystem driveSubsystem, ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem) {
-    eventMap.put("intakeCone", Commands.race(Commands.run(intakeSystem::intakeCone, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("intakeCone", Commands.run(intakeSystem::intakeCone, intakeSystem));
     eventMap.put("outtakeCone", Commands.race(Commands.run(intakeSystem::outTakeCone, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
 
-    eventMap.put("intakeCube", Commands.race(Commands.run(intakeSystem::intakeCube, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("intakeCube", Commands.run(intakeSystem::intakeCube, intakeSystem));
     eventMap.put("outtakeCube", Commands.race(Commands.run(intakeSystem::outTakeCube, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
 
     eventMap.put("stopIntake", Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem));
@@ -51,6 +51,9 @@ public class PathPlannerUtil {
     eventMap.put("elevatorCubeHigh", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elevatorSystem));
     eventMap.put("elevatorCubeMid", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elevatorSystem));
     eventMap.put("elevatorCubeLow", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem));
+
+    eventMap.put("elevatorTiltOut", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem), new WaitCommand(2.00)));
+    eventMap.put("elevatorTiltIn", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem), new WaitCommand(2.00)));
 
     // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
     // eventMap.put("marker2", new PrintCommand("Passed Marker 2"));

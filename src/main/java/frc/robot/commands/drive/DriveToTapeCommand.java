@@ -23,8 +23,9 @@ public class DriveToTapeCommand extends CommandBase {
 
   private double yaw = 0;
   private double pitch = 0;
+  private double area = 0;
 
-  private PIDController forwardController = new PIDController(0.0135, 0, 0);
+  private PIDController forwardController = new PIDController(0.95, 0, 0);
   private PIDController turnController = new PIDController(0.0050, 0, 0);
 
   /** Creates a new AlignToTapeCommand. */
@@ -50,14 +51,20 @@ public class DriveToTapeCommand extends CommandBase {
 
       pitch = LimelightHelpers.getTY(DriveConstants.limelightName);
 
+      area = LimelightHelpers.getTA(DriveConstants.limelightName);
+
       double turnSpeed = -turnController.calculate(yaw, 0);
-      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
+      double forwardSpeed = forwardController.calculate(area, DriveConstants.tapeAlignmentArea);
+
+      SmartDashboard.putNumber("Area Error", area - DriveConstants.tapeAlignmentArea);
+      // double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
       driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), MathUtil.clamp(turnSpeed, -0.15, 0.15));
-    } else if (Math.abs(yaw) >= 5 || Math.abs(pitch - DriveConstants.tapeAlignmentPitch) >= 5) {
+    } else if (Math.abs(yaw) >= 5 || Math.abs(area - DriveConstants.tapeAlignmentArea) >= 0.1) {
 
       double turnSpeed = -turnController.calculate(yaw, 0);
-      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
+      // double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
+      double forwardSpeed = forwardController.calculate(area, DriveConstants.tapeAlignmentArea);
 
       driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), turnSpeed);
     } else {
@@ -65,7 +72,7 @@ public class DriveToTapeCommand extends CommandBase {
     }
 
     // Vibrate the controller if the robot is aligned
-    if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapePitch()) {
+    if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapeArea()) {
       RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 1.00);
       SmartDashboard.putBoolean("Target Aligned", true);
     } else {

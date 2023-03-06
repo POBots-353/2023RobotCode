@@ -50,7 +50,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
     elevatorMotor.restoreFactoryDefaults();
 
-    elevatorPiston.set(Value.kReverse);
+    elevatorPiston.set(Value.kForward);
 
     manipulatorBreak.set(Value.kForward);
 

@@ -50,7 +50,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
     elevatorMotor.restoreFactoryDefaults();
 
-    elevatorPiston.set(Value.kForward);
+    elevatorPiston.set(Value.kReverse);
 
     manipulatorBreak.set(Value.kForward);
 
@@ -133,7 +133,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
-    SmartDashboard.putBoolean("Bottom Switch", bottomLimitSwitch.get());
+    SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
+
+    // if (!bottomLimitSwitch.get()) {
+      // elevatorEncoder.setPosition(0);
+    // }
 
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
   }

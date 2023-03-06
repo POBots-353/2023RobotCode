@@ -27,6 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
   // Pneumatic stuff
   private Compressor pcmCompressor = new Compressor(16, PneumaticsModuleType.REVPH);
 
+  private PneumaticHub pneumaticHub = new PneumaticHub(16);
+
   // Intake objects
   private DoubleSolenoid intakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
@@ -101,7 +103,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
+    SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
     // if (topLimitSwitch.get()) {
     // elevatorEncoder.setPosition(0);
     // }

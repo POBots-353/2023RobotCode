@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -53,6 +54,7 @@ public class PathPlannerUtil {
     eventMap.put("elevatorCubeLow", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem));
 
     eventMap.put("elevatorTiltOut", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem), new WaitCommand(2.00)));
+    // eventMap.put("elevatorTiltOut", new PrintCommand("Elevator Tilt Out"));
     eventMap.put("elevatorTiltIn", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem), new WaitCommand(2.00)));
 
     // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
@@ -62,7 +64,7 @@ public class PathPlannerUtil {
 
   public static PathPlannerTrajectory loadPathPlannerTrajectory(String path) {
     PathPlannerTrajectory trajectory = PathPlanner.loadPath(path, new PathConstraints(
-        AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+        AutoConstants.kMaxSpeedMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared), true);
 
     return trajectory;
   }
@@ -79,6 +81,7 @@ public class PathPlannerUtil {
         new PIDController(AutoConstants.kPDriveVel, 0, 0),
         new PIDController(AutoConstants.kPDriveVel, 0, 0),
         driveSubsystem::tankDriveVolts,
+        true,
         driveSubsystem);
   }
 }

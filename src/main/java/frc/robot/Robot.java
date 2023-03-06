@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
     // Allows us to use ultrasonic sensors
     Ultrasonic.setAutomaticMode(true);
 
-    // PathPlannerServer.startServer(5855);
+    PathPlannerServer.startServer(5855);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.

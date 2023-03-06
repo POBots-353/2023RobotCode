@@ -36,7 +36,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
     this.trajectory = trajectory;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveSubsystem);
+    // addRequirements(driveSubsystem);
   }
 
   public PathPlannerCommand(String pathName, DriveSubsystem driveSubsystem) {

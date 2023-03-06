@@ -78,6 +78,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorPiston.set(Value.kReverse);
   }
 
+  public void elevatorTiltOut() {
+    elevatorPiston.set(Value.kForward);
+  }
+
   public void setElevatorPosition(double elevatorPos) {
     elevatorPIDController.setReference(elevatorPos, CANSparkMax.ControlType.kSmartMotion);
   }

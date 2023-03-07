@@ -57,15 +57,10 @@ public final class Constants {
     public static final double defaultSpeed = 0.60;
     public static final double slowSpeed = 0.25;
 
-<<<<<<< HEAD
     public static final double tapeAlignmentPitchTolerance = 1.50;
     public static final double tapeAlignmentAreaTolerance = 0.018;
     public static final double tapeAlignmentPitch = 10.5;
     public static final double tapeAlignmentArea = 0.289;
-=======
-    public static final double tapeAlignmentTolerance = 1.50;
-    public static final double tapeAlignmentPitch = -10.0;
->>>>>>> parent of 411f7ce (Use area for tape alignment)
 
     public static final double gearBoxRatio = 8.45; // 8.41, 10.7
 
@@ -75,8 +70,8 @@ public final class Constants {
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
-    public static final double distanceToEncoderRatio = 2 * 42 / (wheelCircumference * gearBoxRatio);
-    public static final double encoderToDistanceRatio = 0.5 * wheelCircumference * gearBoxRatio / 42;
+    public static final double distanceToEncoderRatio = 1 / (wheelCircumference * gearBoxRatio);
+    public static final double encoderToDistanceRatio = wheelCircumference * gearBoxRatio;
 
     public static final double coneCenterMM = 3.535353;
     public static final double cubeCenterMM = 3.535353;
@@ -125,9 +120,9 @@ public final class Constants {
 
     public static final double autoIntakeTime = 2.00;
 
-    public static final double elevatorConeTopSetPoint = -65.3;
+    public static final double elevatorConeTopSetPoint = -63.5;
     public static final double elevatorConeMidSetPoint = -24.7;
-    public static final double elevatorConeLowSetPoint = -7.7;
+    public static final double elevatorConeLowSetPoint = -5.6;
 
     public static final double elevatorCubeTopSetPoint = -55.1;
     public static final double elevatorCubeMidSetPoint = -45.8;

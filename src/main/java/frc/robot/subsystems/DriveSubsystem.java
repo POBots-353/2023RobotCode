@@ -85,7 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double kI = 0;
   private double kD = 0;
   private double kIz = 0;
-  private double kFF = 0.000146;
+  private double kFF = 0.000156;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
   private double maxVel = 1750;
@@ -267,7 +267,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public boolean alignedToTapeYaw() {
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
-      return Math.abs(LimelightHelpers.getTX(DriveConstants.limelightName)) <= DriveConstants.tapeAlignmentTolerance;
+      return Math
+          .abs(LimelightHelpers.getTX(DriveConstants.limelightName)) <= DriveConstants.tapeAlignmentPitchTolerance;
     }
 
     return false;
@@ -286,7 +287,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
       return Math
           .abs(LimelightHelpers.getTY(DriveConstants.limelightName)
-              - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
+              - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentPitchTolerance;
     }
 
     return false;
@@ -310,14 +311,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public double convertDistanceToEncoder(double meters) {
     return meters * DriveConstants.distanceToEncoderRatio;
-    // return 2 * (meters / DriveConstants.wheelCircumference) * 42 /
-    // DriveConstants.gearBoxRatio;
   }
 
   public double convertEncoderToDistance(double encoder) {
     return encoder * DriveConstants.encoderToDistanceRatio;
-    // return 0.5 * DriveConstants.gearBoxRatio * DriveConstants.wheelCircumference
-    // * encoder / 42;
   }
 
   public void initializeFieldPosition(int position) {
@@ -386,7 +383,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(frontLeftEncoder.getVelocity(), frontRightEncoder.getVelocity());
+    return new DifferentialDriveWheelSpeeds(frontLeftEncoder.getVelocity() / 60, frontRightEncoder.getVelocity() / 60);
   }
 
   public void resetOdometry(Pose2d pose) {

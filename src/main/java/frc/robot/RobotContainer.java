@@ -154,11 +154,12 @@ public class RobotContainer {
    * Configures all drive triggers and buttons
    */
   public void configureDriveButtons() {
+    Trigger turboDrive = driverController.rightTrigger();
     Trigger slowDrive = driverController.leftTrigger();
     // charlie was here
     Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
 
-    Trigger autoBalance = driverController.rightTrigger();
+    Trigger autoBalance = driverController.b();
 
     Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
 
@@ -172,6 +173,10 @@ public class RobotContainer {
     slowDrive.whileTrue(
         Commands.run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
             -driverController.getRightY() * DriveConstants.slowSpeed), driveSubsystem));
+
+    turboDrive
+        .whileTrue(Commands.run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.turboSpeed,
+            -driverController.getRightY() * DriveConstants.turboSpeed), driveSubsystem));
 
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle

@@ -54,6 +54,7 @@ public final class Constants {
     public static final int frontRightMotorID = 1;
     public static final int backRightMotorID = 3;
 
+    public static final double turboSpeed = 0.70;
     public static final double defaultSpeed = 0.60;
     public static final double slowSpeed = 0.25;
 

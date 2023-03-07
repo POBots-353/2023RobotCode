@@ -9,10 +9,15 @@ import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.DriverStation.MatchType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,6 +32,10 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+
+  // Waits for 3 seconds, and then stops recording the shuffleboard
+  private Command stopRecordingCommand = Commands.sequence(new WaitCommand(3.00),
+      Commands.runOnce(Shuffleboard::stopRecording));
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -80,6 +89,11 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    // When the robot gets disabled, schedule the command to stop the recording
+    // after 3 seconds
+    if (DriverStation.getMatchType() != MatchType.None && !stopRecordingCommand.isScheduled()) {
+      stopRecordingCommand.schedule();
+    }
   }
 
   @Override
@@ -95,6 +109,20 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     m_robotContainer.initializeOdometry(m_autonomousCommand);
+
+    // If the command to stop recording the Shuffleboard hasn't finished executing,
+    // cancel the command to stop recording, and immediately stop recording instead
+    // of having a 3 second delay
+    if (stopRecordingCommand.isScheduled()) {
+      stopRecordingCommand.cancel();
+      Shuffleboard.stopRecording();
+    }
+
+    // Starts recording the Shuffleboard if it's a valid match and it hasn't started
+    // recording already
+    if (DriverStation.getMatchType() != MatchType.None) {
+      Shuffleboard.startRecording();
+    }
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -115,6 +143,12 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+
+    // Starts recording the Shuffleboard if it's a valid match and it hasn't started
+    // recording already
+    if (DriverStation.getMatchType() != MatchType.None) {
+      Shuffleboard.startRecording();
     }
   }
 

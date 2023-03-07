@@ -70,8 +70,8 @@ public final class Constants {
 
     public static final double wheelCircumference = 0.1524 * Math.PI;
 
-    public static final double distanceToEncoderRatio = 1 / (wheelCircumference * gearBoxRatio);
-    public static final double encoderToDistanceRatio = wheelCircumference * gearBoxRatio;
+    public static final double distanceToEncoderRatio = gearBoxRatio / wheelCircumference;
+    public static final double encoderToDistanceRatio = wheelCircumference / gearBoxRatio;
 
     public static final double coneCenterMM = 3.535353;
     public static final double cubeCenterMM = 3.535353;
@@ -120,8 +120,8 @@ public final class Constants {
 
     public static final double autoIntakeTime = 2.00;
 
-    public static final double elevatorConeTopSetPoint = -63.5;
-    public static final double elevatorConeMidSetPoint = -24.7;
+    public static final double elevatorConeTopSetPoint = -61.2;
+    public static final double elevatorConeMidSetPoint = -29.4;
     public static final double elevatorConeLowSetPoint = -5.6;
 
     public static final double elevatorCubeTopSetPoint = -55.1;

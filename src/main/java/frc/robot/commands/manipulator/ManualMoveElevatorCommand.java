@@ -44,6 +44,6 @@ public class ManualMoveElevatorCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return speed > 0 && elevatorSystem.getPistonState() == Value.kForward && elevatorSystem.getElevatorPosition() > 0;
+    return speed > 0 && elevatorSystem.getPistonState() == Value.kForward && elevatorSystem.bottomSwitchPressed();
   }
 }

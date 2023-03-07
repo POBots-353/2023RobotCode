@@ -42,6 +42,6 @@ public class SetElevatorPositionCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     // return false;
-    return Math.abs(elevatorSystem.getElevatorPosition() - elevatorPosition) < 0.5;
+    return Math.abs(elevatorSystem.getElevatorPosition() - elevatorPosition) < 0.2;
   }
 }

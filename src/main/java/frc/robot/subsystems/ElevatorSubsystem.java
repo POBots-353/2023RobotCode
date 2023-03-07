@@ -117,6 +117,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorEncoder.setPosition(0);
   }
 
+  public boolean bottomSwitchPressed() {
+    return !bottomLimitSwitch.get();
+  }
+
   public void toggleOnManipulatorBreak() {
     manipulatorBreak.set(Value.kForward);
   }
@@ -135,9 +139,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
 
-    // if (!bottomLimitSwitch.get()) {
-      // elevatorEncoder.setPosition(0);
-    // }
+    if (!bottomLimitSwitch.get()) {
+      elevatorEncoder.setPosition(0);
+    }
 
     // SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
   }

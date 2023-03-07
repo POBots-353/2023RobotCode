@@ -267,7 +267,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public boolean alignedToTapeYaw() {
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
-      return Math.abs(LimelightHelpers.getTX(DriveConstants.limelightName)) <= DriveConstants.tapeAlignmentPitchTolerance;
+      return Math.abs(LimelightHelpers.getTX(DriveConstants.limelightName)) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;
@@ -282,11 +282,11 @@ public class DriveSubsystem extends SubsystemBase {
     // return false;
   }
 
-  public boolean alignedToTapeArea() {
+  public boolean alignedToTapePitch() {
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
       return Math
-          .abs(LimelightHelpers.getTA(DriveConstants.limelightName)
-              - DriveConstants.tapeAlignmentArea) <= DriveConstants.tapeAlignmentAreaTolerance;
+          .abs(LimelightHelpers.getTY(DriveConstants.limelightName)
+              - DriveConstants.tapeAlignmentPitch) <= DriveConstants.tapeAlignmentTolerance;
     }
 
     return false;

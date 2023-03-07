@@ -23,9 +23,8 @@ public class AutoDriveToTapeCommand extends CommandBase {
 
   private double yaw = 0;
   private double pitch = 0;
-  private double area = 0;
 
-  private PIDController forwardController = new PIDController(0.95, 0, 0);
+  private PIDController forwardController = new PIDController(0.0135, 0, 0);
   private PIDController turnController = new PIDController(0.0050, 0, 0);
 
   private int timeAligned = 0;
@@ -54,16 +53,15 @@ public class AutoDriveToTapeCommand extends CommandBase {
 
       yaw = LimelightHelpers.getTX(DriveConstants.limelightName);
       pitch = LimelightHelpers.getTY(DriveConstants.limelightName);
-      area = LimelightHelpers.getTA(DriveConstants.limelightName);
 
       double turnSpeed = -turnController.calculate(yaw, 0);
-      double forwardSpeed = forwardController.calculate(area, DriveConstants.tapeAlignmentArea);
+      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
       driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), MathUtil.clamp(turnSpeed, -0.15, 0.15));
-    } else if (Math.abs(yaw) >= 5 || Math.abs(area - DriveConstants.tapeAlignmentArea) >= 0.05) {
+    } else if (Math.abs(yaw) >= 5 || Math.abs(pitch - DriveConstants.tapeAlignmentPitch) >= 5) {
 
       double turnSpeed = -turnController.calculate(yaw, 0);
-      double forwardSpeed = forwardController.calculate(area, DriveConstants.tapeAlignmentArea);
+      double forwardSpeed = forwardController.calculate(pitch, DriveConstants.tapeAlignmentPitch);
 
       driveSubsystem.arcadeDrive(MathUtil.clamp(forwardSpeed, -0.15, 0.15), turnSpeed);
     } else {
@@ -71,7 +69,7 @@ public class AutoDriveToTapeCommand extends CommandBase {
     }
 
     // Vibrate the controller if the robot is aligned
-    if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapeArea()) {
+    if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapePitch()) {
       RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 1.00);
       SmartDashboard.putBoolean("Target Aligned", true);
       timeAligned++;
@@ -95,6 +93,6 @@ public class AutoDriveToTapeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapeArea() && timeAligned >= 5;
+    return driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapePitch() && timeAligned >= 5;
   }
 }

@@ -44,7 +44,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // 640, 480
     CameraServer.startAutomaticCapture().setResolution(160, 120);
 
     PortForwarder.add(5800, "limelight.local", 5800);

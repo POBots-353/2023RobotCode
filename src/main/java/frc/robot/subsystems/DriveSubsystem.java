@@ -211,6 +211,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetEncoders() {
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
+    backLeftEncoder.setPosition(0);
+    backRightEncoder.setPosition(0);
   }
 
   public void autoBalance() {
@@ -387,9 +389,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
-    resetEncoders();
+    // resetEncoders();
     odometry.resetPosition(
-        navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
+        navx.getRotation2d(), frontLeftEncoder.getPosition(), -frontRightEncoder.getPosition(), pose);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {

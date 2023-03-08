@@ -52,7 +52,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
 
   @Override
   public void end(boolean interrupted) {
-    driveSubsystem.tankDriveVolts(0, 0);
+    driveSubsystem.tankDrive(0, 0);
     super.end(interrupted);
   }
 }

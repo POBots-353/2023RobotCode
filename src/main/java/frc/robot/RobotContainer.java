@@ -65,9 +65,13 @@ public class RobotContainer {
 
   public Command placeConeAutoStart(Command pathPlannerCommand) {
     return Commands.sequence(Commands.runOnce(elevatorSubsystem::elevatorTiltOut, elevatorSubsystem),
-        new WaitCommand(2.00),
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSubsystem),
-        intakeSubsystem.autoOuttakeCone(), pathPlannerCommand);
+        new WaitCommand(1.50),
+
+        // new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSubsystem),
+
+        intakeSubsystem.autoOuttakeCone(),
+        new WaitCommand(0.50),
+        pathPlannerCommand);
   }
 
   /**
@@ -109,7 +113,7 @@ public class RobotContainer {
         placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone and Balance",
             driveSubsystem)));
 
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", 2);
     startingFieldPosition.addOption("Substation Side", 1);
@@ -155,8 +159,9 @@ public class RobotContainer {
    */
   public void configureDriveButtons() {
     Trigger turboDrive = driverController.rightTrigger();
+
     Trigger slowDrive = driverController.leftTrigger();
-    // charlie was here
+
     Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
 
     Trigger autoBalance = driverController.b();

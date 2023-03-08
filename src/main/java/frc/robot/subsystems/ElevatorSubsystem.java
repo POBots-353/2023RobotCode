@@ -50,7 +50,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
     elevatorMotor.restoreFactoryDefaults();
 
-    elevatorPiston.set(Value.kReverse);
+    elevatorPiston.set(Value.kForward);
 
     manipulatorBreak.set(Value.kForward);
 
@@ -93,7 +93,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void elevatorDown() {
-    if (elevatorPiston.get() == Value.kForward && elevatorEncoder.getPosition() > 0) {
+    if (bottomSwitchPressed()) {
       elevatorStop();
       return;
     }

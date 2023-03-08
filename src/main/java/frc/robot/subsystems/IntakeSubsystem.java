@@ -104,9 +104,6 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
-    // if (topLimitSwitch.get()) {
-    // elevatorEncoder.setPosition(0);
-    // }
 
     SmartDashboard.putNumber("Cube Distance", cubeUltrasonic.getRangeInches());
     SmartDashboard.putNumber("Cone Distance", coneUltrasonic.getRangeInches());

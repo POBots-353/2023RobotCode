@@ -87,16 +87,16 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 1.75;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
+    public static final double kMaxSpeedMetersPerSecond = 1.50;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.00;
 
-    public static final double kRamseteB = 1.25; // 2
+    public static final double kRamseteB = 2; // 2
     public static final double kRamseteZeta = 0.7; // 0.7
-    public static final double ksVolts = 0.36108; // 0.22 0.36108
-    public static final double kvVoltSecondsPerMeter = 2.4237; // 1.98 2.4237
-    public static final double kaVoltSecondsSquaredPerMeter = 0.43606; // 0.2 0.43606
+    public static final double ksVolts = -0.34902; // 0.22 0.36108
+    public static final double kvVoltSecondsPerMeter = 2.3678; // 1.98 2.4237
+    public static final double kaVoltSecondsSquaredPerMeter = 0.45517; // 0.2 0.43606
 
-    public static final double kPDriveVel = 0.0004;
+    public static final double kPDriveVel = 0.54; // 0.0004
   }
 
   public static class IntakeConstants {
@@ -119,17 +119,17 @@ public final class Constants {
     public static final double intakeSpeed = 0.80;
     public static final double outtakeSpeed = 1.00;
 
-    public static final double autoIntakeTime = 2.00;
+    public static final double autoIntakeTime = 0.75;
 
-    public static final double elevatorConeTopSetPoint = -61.2;
+    public static final double elevatorConeTopSetPoint = -55.7;
     public static final double elevatorConeMidSetPoint = -29.4;
-    public static final double elevatorConeLowSetPoint = -5.6;
+    public static final double elevatorConeLowSetPoint = -3.47;
 
     public static final double elevatorCubeTopSetPoint = -55.1;
     public static final double elevatorCubeMidSetPoint = -45.8;
     public static final double elevatorCubeLowSetPoint = -1.85;
 
-    public static final double startingConfigurationHeight = -55.40;
+    public static final double startingConfigurationHeight = -59.0;
 
     public static final double elevatorSpeed = 0.50;
   }

@@ -14,7 +14,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class AutoBalanceCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
 
-  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125); // kD 0.00125
+  private PIDController balancePIDController = new PIDController(0.012, 0, 0.00125); // kD 0.00125
 
   /** Creates a new AutoBalanceCommand. */
   public AutoBalanceCommand(DriveSubsystem driveSubsystem) {
@@ -26,7 +26,7 @@ public class AutoBalanceCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    balancePIDController.setP(0.010);
+    balancePIDController.setP(0.012);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -45,7 +45,7 @@ public class AutoBalanceCommand extends CommandBase {
         balancePIDController.setP(0.0085);
         SmartDashboard.putBoolean("Balanced", false);
       } else {
-        balancePIDController.setP(0.0061);
+        balancePIDController.setP(0.0071);
         SmartDashboard.putBoolean("Balanced", false);
       }
     }

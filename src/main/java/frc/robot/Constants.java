@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 /**
@@ -87,16 +89,24 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 1.50;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 1.00;
+    public static final double kMaxSpeedMetersPerSecond = 0.750;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 0.75;
 
     public static final double kRamseteB = 2; // 2
     public static final double kRamseteZeta = 0.7; // 0.7
-    public static final double ksVolts = -0.34902; // 0.22 0.36108
-    public static final double kvVoltSecondsPerMeter = 2.3678; // 1.98 2.4237
-    public static final double kaVoltSecondsSquaredPerMeter = 0.45517; // 0.2 0.43606
+    public static final double ksVolts = 0.069967; // 0.22 0.36108 -0.34902
+    public static final double kvVoltSecondsPerMeter = 2.6931; // 1.98 2.4237 2.3678
+    public static final double kaVoltSecondsSquaredPerMeter = 0.45517; // 0.2 0.43606 0.45517
+    
+    public static final double kPDriveVel = 0.59315; // 0.0004 
 
-    public static final double kPDriveVel = 0.54; // 0.0004
+    public static final Pose2d blueSubstationPose = new Pose2d(1.97, 4.84, new Rotation2d(180));
+    public static final Pose2d blueChargeStationPose = new Pose2d(1.97, 3.30, new Rotation2d(180));
+    public static final Pose2d blueFieldEdgePose = new Pose2d(1.97, 0.50, new Rotation2d(180));
+
+    public static final Pose2d redSubstationPose = new Pose2d(14.59, 4.84, new Rotation2d(0));
+    public static final Pose2d redChargeStationPose = new Pose2d(14.59, 3.30, new Rotation2d(0));
+    public static final Pose2d redFieldEdgePose = new Pose2d(14.59, 0.50, new Rotation2d(0));
   }
 
   public static class IntakeConstants {
@@ -121,7 +131,7 @@ public final class Constants {
 
     public static final double autoIntakeTime = 0.75;
 
-    public static final double elevatorConeTopSetPoint = -55.7;
+    public static final double elevatorConeTopSetPoint = -60.67;
     public static final double elevatorConeMidSetPoint = -29.4;
     public static final double elevatorConeLowSetPoint = -3.47;
 

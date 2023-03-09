@@ -23,16 +23,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.util.LimelightHelpers;
@@ -47,10 +52,8 @@ public class DriveSubsystem extends SubsystemBase {
   private CANSparkMax frontRightMotor = new CANSparkMax(DriveConstants.frontRightMotorID, MotorType.kBrushless);
   private CANSparkMax backRightMotor = new CANSparkMax(DriveConstants.backRightMotorID, MotorType.kBrushless);
 
-  // private MotorControllerGroup leftMotors = new
-  // MotorControllerGroup(frontLeftMotor, backLeftMotor);
-  // private MotorControllerGroup rightMotors = new
-  // MotorControllerGroup(frontRightMotor, backRightMotor);
+  private MotorControllerGroup leftMotors = new MotorControllerGroup(frontLeftMotor, backLeftMotor);
+  private MotorControllerGroup rightMotors = new MotorControllerGroup(frontRightMotor, backRightMotor);
 
   private RelativeEncoder frontLeftEncoder = frontLeftMotor.getEncoder();
   private RelativeEncoder frontRightEncoder = frontRightMotor.getEncoder();
@@ -96,7 +99,7 @@ public class DriveSubsystem extends SubsystemBase {
   private Field2d field = new Field2d();
 
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
-      new Pose2d(2, 4.3, navx.getRotation2d()));
+      AutoConstants.blueSubstationPose);
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -130,6 +133,18 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Clear sticky faults
     powerDistribution.clearStickyFaults();
+
+    Sendable differentialDriveSendable = new Sendable() {
+      @Override
+      public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("DifferentialDrive");
+        builder.setActuator(false);
+        builder.addDoubleProperty("Left Motor Speed", leftMotors::get, leftMotors::set);
+        builder.addDoubleProperty("Right Motor Speed", rightMotors::get, rightMotors::set);
+      }
+    };
+
+    SmartDashboard.putData("Drive Train", differentialDriveSendable);
 
     SmartDashboard.putData(field);
 
@@ -248,7 +263,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getGyroYaw() {
-    return Math.IEEEremainder(navx.getYaw(), 360);
+    return Math.IEEEremainder(navx.getYaw() - 180, 360);
   }
 
   public double getGyroPitch() {
@@ -256,7 +271,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public double getAngleError(double expectedAngle) {
-    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw(), 360);
+    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw() - 180, 360);
 
     if (angleSubtract < -180) {
       return angleSubtract + 360;
@@ -333,47 +348,45 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void initializeRedFieldPosition(int position) {
-    double startX = 15.513558 - 0.9652;
-    double startY = 0;
+    Pose2d pose;
 
     switch (position) {
-      case 1:
-        startY = 4.424;
+      case 1: // Substation
+        pose = AutoConstants.redSubstationPose;
         break;
-      case 2:
-        startY = 2.748;
+      case 2: // Charge Station
+        pose = AutoConstants.redChargeStationPose;
         break;
-      case 3:
-        startY = 1.07;
+      case 3: // Field Edge
+        pose = AutoConstants.redFieldEdgePose;
         break;
       default:
+        pose = AutoConstants.redSubstationPose;
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), 0, 0,
-        new Pose2d(startX, startY, new Rotation2d(180)));
+    odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
   }
 
   public void initializeBlueFieldPosition(int position) {
-    double startX = 1.02743 + 0.9652;
-    double startY = 0;
+    Pose2d pose;
 
     switch (position) {
-      case 1:
-        startY = 4.424;
+      case 1: // Substation
+        pose = AutoConstants.blueSubstationPose;
         break;
-      case 2:
-        startY = 2.748;
+      case 2: // Charge Station
+        pose = AutoConstants.blueChargeStationPose;
         break;
-      case 3:
-        startY = 1.07;
+      case 3: // Field Edge
+        pose = AutoConstants.blueFieldEdgePose;
         break;
       default:
+        pose = AutoConstants.blueSubstationPose;
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), 0, 0,
-        new Pose2d(startX, startY, new Rotation2d(0)));
+    odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
   }
 
   public Pose2d getPose() {
@@ -394,6 +407,13 @@ public class DriveSubsystem extends SubsystemBase {
         navx.getRotation2d(), frontLeftEncoder.getPosition(), -frontRightEncoder.getPosition(), pose);
   }
 
+  public void resetOdometry(Pose2d pose, Trajectory trajectory) {
+    odometry.resetPosition(
+        navx.getRotation2d(), frontLeftEncoder.getPosition(), -frontRightEncoder.getPosition(), pose);
+
+    field.getRobotObject().setTrajectory(trajectory);
+  }
+
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     frontLeftMotor.setVoltage(leftVolts);
     frontRightMotor.setVoltage(-rightVolts);
@@ -404,13 +424,19 @@ public class DriveSubsystem extends SubsystemBase {
     // rightMotors.setVoltage(-rightVolts);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void updateOdometry() {
     odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
         -frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
+
+    field.getRobotObject();
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    updateOdometry();
 
     // Clear sticky faults
     // powerDistribution.clearStickyFaults();

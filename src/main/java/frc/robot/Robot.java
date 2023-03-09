@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import java.sql.Driver;
+
 import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Ultrasonic;
@@ -44,6 +47,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // DataLogManager.start();
+    // DriverStation.startDataLog(DataLogManager.getLog(), true);
+
     CameraServer.startAutomaticCapture().setResolution(160, 120);
 
     PortForwarder.add(5800, "limelight.local", 5800);

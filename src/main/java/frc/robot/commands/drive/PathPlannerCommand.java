@@ -45,7 +45,8 @@ public class PathPlannerCommand extends FollowPathWithEvents {
 
   @Override
   public void initialize() {
-    driveSubsystem.resetOdometry(trajectory.getInitialPose());
+    // driveSubsystem.resetOdometry(trajectory.getInitialPose());
+    driveSubsystem.resetOdometry(trajectory.getInitialPose(), trajectory);
 
     super.initialize();
   }

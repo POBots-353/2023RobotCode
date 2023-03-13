@@ -118,6 +118,12 @@ public class DriveSubsystem extends SubsystemBase {
     backLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
 
+    frontRightMotor.setInverted(true);
+    backRightMotor.setInverted(true);
+
+    frontRightEncoder.setInverted(true);
+    backRightEncoder.setInverted(true);
+
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 
@@ -133,6 +139,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Clear sticky faults
     powerDistribution.clearStickyFaults();
+
+    frontLeftMotor.clearFaults();
+    frontRightMotor.clearFaults();
+    backLeftMotor.clearFaults();
+    backRightMotor.clearFaults();
 
     Sendable differentialDriveSendable = new Sendable() {
       @Override
@@ -179,7 +190,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     frontLeftMotor.set(leftSpeed);
-    frontRightMotor.set(-rightSpeed);
+    frontRightMotor.set(rightSpeed);
 
     // backLeftMotor.set(leftSpeed);
     // backRightMotor.set(-rightSpeed);
@@ -199,7 +210,7 @@ public class DriveSubsystem extends SubsystemBase {
     double rightSpeed = forward - turn;
 
     frontLeftMotor.set(leftSpeed);
-    frontRightMotor.set(-rightSpeed);
+    frontRightMotor.set(rightSpeed);
 
     // backLeftMotor.set(leftSpeed);
     // backRightMotor.set(-rightSpeed);
@@ -209,7 +220,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void autoDrive(double meters) {
     frontLeftPIDController.setReference(meters, ControlType.kSmartMotion);
-    frontRightPIDController.setReference(-meters, ControlType.kSmartMotion);
+    frontRightPIDController.setReference(meters, ControlType.kSmartMotion);
     // backLeftPIDController.setReference(meters, ControlType.kSmartMotion);
     // backRightPIDController.setReference(-meters, ControlType.kSmartMotion);
     // leftPIDController.setReference(convertDistanceToEncoder(meters),
@@ -365,7 +376,7 @@ public class DriveSubsystem extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
+    odometry.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
   }
 
   public void initializeBlueFieldPosition(int position) {
@@ -386,7 +397,7 @@ public class DriveSubsystem extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
+    odometry.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
   }
 
   public Pose2d getPose() {
@@ -404,45 +415,32 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     // resetEncoders();
     odometry.resetPosition(
-        navx.getRotation2d(), frontLeftEncoder.getPosition(), -frontRightEncoder.getPosition(), pose);
+        navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
   }
 
   public void resetOdometry(Pose2d pose, Trajectory trajectory) {
     odometry.resetPosition(
-        navx.getRotation2d(), frontLeftEncoder.getPosition(), -frontRightEncoder.getPosition(), pose);
+        navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
 
     field.getRobotObject().setTrajectory(trajectory);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
     frontLeftMotor.setVoltage(leftVolts);
-    frontRightMotor.setVoltage(-rightVolts);
-
-    // backLeftMotor.setVoltage(leftVolts);
-    // backRightMotor.setVoltage(-rightVolts);
-    // leftMotors.setVoltage(leftVolts);
-    // rightMotors.setVoltage(-rightVolts);
+    frontRightMotor.setVoltage(rightVolts);
   }
 
   public void updateOdometry() {
     odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
-        -frontRightEncoder.getPosition());
+        frontRightEncoder.getPosition());
 
     field.setRobotPose(odometry.getPoseMeters());
-
-    field.getRobotObject();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     updateOdometry();
-
-    // Clear sticky faults
-    // powerDistribution.clearStickyFaults();
-    // SmartDashboard.putNumber("Ultrasonic Distance",
-    // coneUltrasonic.getRangeInches());
-    // SmartDashboard.putBoolean("Ultrasonic Valid", coneUltrasonic.isRangeValid());
 
     SmartDashboard.putNumber("Gyro Yaw", Math.IEEEremainder(navx.getYaw(), 360));
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));

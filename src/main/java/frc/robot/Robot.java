@@ -129,6 +129,8 @@ public class Robot extends TimedRobot {
       Shuffleboard.startRecording();
     }
 
+    m_robotContainer.initializeLEDAllianceColor();
+
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -155,6 +157,8 @@ public class Robot extends TimedRobot {
     if (DriverStation.getMatchType() != MatchType.None) {
       Shuffleboard.startRecording();
     }
+
+    m_robotContainer.initializeLEDAllianceColor();
   }
 
   /** This function is called periodically during operator control. */

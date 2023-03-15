@@ -7,14 +7,16 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
-  private DigitalOutput redOutput = new DigitalOutput(5);
-  private DigitalOutput greenOutput = new DigitalOutput(6);
-  private DigitalOutput blueOutput = new DigitalOutput(7);
+  private DigitalOutput redOutput = new DigitalOutput(LEDConstants.redOutputChannel);
+  private DigitalOutput greenOutput = new DigitalOutput(LEDConstants.greenOutputChannel);
+  private DigitalOutput blueOutput = new DigitalOutput(LEDConstants.blueOutputChannel);
 
   /** Creates a new LEDSubsystem. */
   public LEDSubsystem() {
+    setGreen();
   }
 
   public void initializeAllianceColor() {
@@ -31,14 +33,32 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setBlue() {
+    redOutput.set(true);
+    greenOutput.set(true);
+    blueOutput.set(false);
+  }
+
+  public void setRed() {
+    redOutput.set(false);
+    greenOutput.set(true);
+    blueOutput.set(true);
+  }
+
+  public void setGreen() {
+    redOutput.set(true);
+    greenOutput.set(false);
+    blueOutput.set(true);
+  }
+
+  public void setYellow() {
     redOutput.set(false);
     greenOutput.set(false);
     blueOutput.set(true);
   }
 
-  public void setRed() {
-    redOutput.set(true);
-    greenOutput.set(false);
+  public void setPurple() {
+    redOutput.set(false);
+    greenOutput.set(true);
     blueOutput.set(false);
   }
 

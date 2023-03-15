@@ -11,6 +11,7 @@ import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -18,7 +19,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class PlaceGPBalanceAuto extends SequentialCommandGroup {
 
   /** Creates a new Auto Command. */
-  public PlaceGPBalanceAuto(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem,
+  public PlaceGPBalanceAuto(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem, LEDSubsystem ledSubsystem,
       DriveSubsystem driveSubsystem) {
     addCommands(
         /*
@@ -49,6 +50,6 @@ public class PlaceGPBalanceAuto extends SequentialCommandGroup {
         new AutoDriveCommand(-1.143, driveSubsystem),
 
         // Robot will balance on the charge station
-        new AutoBalanceCommand(driveSubsystem));
+        new AutoBalanceCommand(ledSubsystem, driveSubsystem));
   }
 }

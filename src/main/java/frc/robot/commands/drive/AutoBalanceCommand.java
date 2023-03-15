@@ -10,17 +10,20 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class AutoBalanceCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
+  private LEDSubsystem ledSubsystem;
 
   private PIDController balancePIDController = new PIDController(0.012, 0, 0.00125); // kD 0.00125
 
   /** Creates a new AutoBalanceCommand. */
-  public AutoBalanceCommand(DriveSubsystem driveSubsystem) {
+  public AutoBalanceCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
+    this.ledSubsystem = ledSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveSubsystem);
+    addRequirements(driveSubsystem, ledSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -37,6 +40,7 @@ public class AutoBalanceCommand extends CommandBase {
     if (Math.abs(gyroPitch) <= 0.5) {
       driveSubsystem.arcadeDrive(0, 0);
       SmartDashboard.putBoolean("Balanced", true);
+      ledSubsystem.setGreen();
       return;
     }
 
@@ -44,9 +48,11 @@ public class AutoBalanceCommand extends CommandBase {
       if (Math.abs(gyroPitch) < 2.5) {
         balancePIDController.setP(0.0085);
         SmartDashboard.putBoolean("Balanced", false);
+        ledSubsystem.initializeAllianceColor();
       } else {
         balancePIDController.setP(0.0071);
         SmartDashboard.putBoolean("Balanced", false);
+        ledSubsystem.initializeAllianceColor();
       }
     }
 
@@ -61,6 +67,7 @@ public class AutoBalanceCommand extends CommandBase {
     driveSubsystem.arcadeDrive(0, 0);
 
     SmartDashboard.putBoolean("Balanced", false);
+    ledSubsystem.initializeAllianceColor();
   }
 
   // Returns true when the command should end.

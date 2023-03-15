@@ -143,4 +143,10 @@ public final class Constants {
 
     public static final double elevatorSpeed = 0.50;
   }
+
+  public static final class LEDConstants {
+    public static final int redOutputChannel = 6;
+    public static final int greenOutputChannel = 5;
+    public static final int blueOutputChannel = 2;
+  }
 }

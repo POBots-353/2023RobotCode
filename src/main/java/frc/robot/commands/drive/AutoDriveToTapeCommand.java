@@ -16,9 +16,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.util.LimelightHelpers;
 
 public class AutoDriveToTapeCommand extends CommandBase {
+  private LEDSubsystem ledSubsystem;
   private DriveSubsystem driveSubsystem;
 
   private double yaw = 0;
@@ -30,17 +32,19 @@ public class AutoDriveToTapeCommand extends CommandBase {
   private int timeAligned = 0;
 
   /** Creates a new AutoDriveToTape. */
-  public AutoDriveToTapeCommand(DriveSubsystem driveSubsystem) {
+  public AutoDriveToTapeCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
+    this.ledSubsystem = ledSubsystem;
     this.driveSubsystem = driveSubsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveSubsystem);
+    addRequirements(ledSubsystem, driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     timeAligned = 0;
+    ledSubsystem.initializeAllianceColor();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -73,10 +77,12 @@ public class AutoDriveToTapeCommand extends CommandBase {
     if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapeArea()) {
       RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 1.00);
       SmartDashboard.putBoolean("Target Aligned", true);
+      ledSubsystem.setGreen();
       timeAligned++;
     } else {
       RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 0);
       SmartDashboard.putBoolean("Target Aligned", false);
+      ledSubsystem.initializeAllianceColor();
 
       if (timeAligned > 0) {
         timeAligned--;
@@ -89,6 +95,7 @@ public class AutoDriveToTapeCommand extends CommandBase {
   public void end(boolean interrupted) {
     RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 0);
     SmartDashboard.putBoolean("Target Aligned", false);
+    ledSubsystem.initializeAllianceColor();
   }
 
   // Returns true when the command should end.

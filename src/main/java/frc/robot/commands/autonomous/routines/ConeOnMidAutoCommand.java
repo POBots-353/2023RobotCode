@@ -5,13 +5,14 @@ import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.commands.drive.AutoDriveToTapeCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ConeOnMidAutoCommand extends SequentialCommandGroup {
   /** Creates a new Auto Command. */
-  public ConeOnMidAutoCommand(IntakeSubsystem intakeSystem, DriveSubsystem driveSubsystem) {
+  public ConeOnMidAutoCommand(IntakeSubsystem intakeSystem, LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
 
     addCommands(
         /*
@@ -23,7 +24,7 @@ public class ConeOnMidAutoCommand extends SequentialCommandGroup {
         new AutoDriveCommand(0.2143125, driveSubsystem),
 
         // Robot will align to the node
-        new AutoDriveToTapeCommand(driveSubsystem),
+        new AutoDriveToTapeCommand(ledSubsystem, driveSubsystem),
 
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone());

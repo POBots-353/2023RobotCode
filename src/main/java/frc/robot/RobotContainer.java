@@ -23,6 +23,7 @@ import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PathPlannerUtil;
@@ -52,6 +53,7 @@ public class RobotContainer {
   private final DriveSubsystem driveSubsystem = new DriveSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public static final CommandXboxController driverController = new CommandXboxController(
@@ -63,12 +65,16 @@ public class RobotContainer {
 
   private SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
 
+  public void initializeLEDAllianceColor() {
+    ledSubsystem.initializeAllianceColor();
+  }
+
   public Command placeConeAutoStart(Command pathPlannerCommand) {
     return Commands.sequence(Commands.runOnce(elevatorSubsystem::elevatorTiltOut, elevatorSubsystem),
         new WaitCommand(1.50),
 
-        // new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint,
-        // elevatorSubsystem),
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint,
+            elevatorSubsystem),
 
         intakeSubsystem.autoOuttakeCone(),
         new WaitCommand(0.50),
@@ -84,13 +90,17 @@ public class RobotContainer {
     // autoChooser.setDefaultOption("Drive Backwards", new
     // MobilityAutoCommand(driveSubsystem));
     // autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intakeSubsystem,
+    // ledSubsystem,
     // driveSubsystem));
-    // autoChooser.addOption("Drive Back and Balance", new
-    // DriveOnChargeStationAuto(driveSubsystem));
-    // autoChooser.addOption("Place Cone and Drive Back", new
-    // PlaceGPAndMobilityAuto(intakeSubsystem, driveSubsystem));
-    // autoChooser.addOption("Place Cone and Balance", new
-    // PlaceGPBalanceAuto(intakeSubsystem, driveSubsystem));
+    // autoChooser.addOption("Drive Back and Balance",
+    // new DriveOnChargeStationAuto(elevatorSubsystem, intakeSubsystem,
+    // ledSubsystem, driveSubsystem));
+    // autoChooser.addOption("Place Cone and Drive Back",
+    // new PlaceGPAndMobilityAuto(elevatorSubsystem, intakeSubsystem,
+    // driveSubsystem));
+    // autoChooser.addOption("Place Cone and Balance",
+    // new PlaceGPBalanceAuto(elevatorSubsystem, intakeSubsystem, ledSubsystem,
+    // driveSubsystem));
 
     autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
         placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive Backwards", driveSubsystem)));
@@ -104,11 +114,11 @@ public class RobotContainer {
 
     autoChooser.addOption("(Charge Station) Place Cone, Balance",
         placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Balance", driveSubsystem))
-            .andThen(new AutoBalanceCommand(driveSubsystem)));
+            .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
 
     autoChooser.addOption("(Charge Station) Place Cone, Mobility, Balance",
         placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Mobility Balance", driveSubsystem))
-            .andThen(new AutoBalanceCommand(driveSubsystem)));
+            .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
 
     autoChooser.addOption("(Field Edge) Place Cone, Drive Backwards",
         placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Drive Backwards", driveSubsystem)));
@@ -197,11 +207,11 @@ public class RobotContainer {
             new TurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
                 driveSubsystem));
 
-    autoBalance.whileTrue(new AutoBalanceCommand(driveSubsystem));
+    autoBalance.whileTrue(new AutoBalanceCommand(ledSubsystem, driveSubsystem));
 
     toggleBrake.toggleOnTrue(Commands.runOnce(driveSubsystem::toggleBrakes, driveSubsystem));
 
-    alignToTape.whileTrue(new DriveToTapeCommand(driveSubsystem));
+    alignToTape.whileTrue(new DriveToTapeCommand(ledSubsystem, driveSubsystem));
 
     alignToAprilTag.whileTrue(new AlignToAprilTagCommand(driveSubsystem));
 

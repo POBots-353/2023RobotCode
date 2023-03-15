@@ -121,9 +121,6 @@ public class DriveSubsystem extends SubsystemBase {
     frontRightMotor.setInverted(true);
     backRightMotor.setInverted(true);
 
-    frontRightEncoder.setInverted(true);
-    backRightEncoder.setInverted(true);
-
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 

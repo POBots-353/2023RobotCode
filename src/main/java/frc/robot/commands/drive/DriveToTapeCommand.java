@@ -16,9 +16,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.util.LimelightHelpers;
 
 public class DriveToTapeCommand extends CommandBase {
+  private LEDSubsystem ledSubsystem;
   private DriveSubsystem driveSubsystem;
 
   private double yaw = 0;
@@ -28,11 +30,12 @@ public class DriveToTapeCommand extends CommandBase {
   private PIDController turnController = new PIDController(0.0050, 0, 0);
 
   /** Creates a new AlignToTapeCommand. */
-  public DriveToTapeCommand(DriveSubsystem driveSubsystem) {
+  public DriveToTapeCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
+    this.ledSubsystem = ledSubsystem;
     this.driveSubsystem = driveSubsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(driveSubsystem);
+    addRequirements(ledSubsystem, driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -69,9 +72,11 @@ public class DriveToTapeCommand extends CommandBase {
     if (driveSubsystem.alignedToTapeYaw() && driveSubsystem.alignedToTapeArea()) {
       RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 1.00);
       SmartDashboard.putBoolean("Target Aligned", true);
+      ledSubsystem.setGreen();
     } else {
       RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 0);
       SmartDashboard.putBoolean("Target Aligned", false);
+      ledSubsystem.initializeAllianceColor();
     }
   }
 

@@ -7,6 +7,7 @@ import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -14,7 +15,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class DriveOnChargeStationAuto extends SequentialCommandGroup {
   /** Creates a new Auto Command. */
   public DriveOnChargeStationAuto(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem,
-      DriveSubsystem driveSubsystem) {
+      LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
 
     addCommands(
         // drives on station
@@ -24,6 +25,6 @@ public class DriveOnChargeStationAuto extends SequentialCommandGroup {
 
         Commands.runOnce(intakeSystem::toggleWristIn),
         // balance
-        new AutoBalanceCommand(driveSubsystem));
+        new AutoBalanceCommand(ledSubsystem, driveSubsystem));
   }
 }

@@ -38,6 +38,8 @@ public final class Constants {
     public static final int elevatorManualUpButton = 10;
     public static final int elevatorManualDownButton = 9;
 
+    public static final int elevatorLimitSwitchOverride = 2;
+
     // Intake
     public static final int intakeButton = 13;
     public static final int outtakeButton = 12;

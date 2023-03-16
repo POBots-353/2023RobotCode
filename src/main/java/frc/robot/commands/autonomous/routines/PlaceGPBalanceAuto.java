@@ -47,7 +47,7 @@ public class PlaceGPBalanceAuto extends SequentialCommandGroup {
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-1.6, driveSubsystem),
+        new AutoDriveCommand(-2.5, driveSubsystem).until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 7.5),
 
         // Robot will balance on the charge station
         new AutoBalanceCommand(ledSubsystem, driveSubsystem));

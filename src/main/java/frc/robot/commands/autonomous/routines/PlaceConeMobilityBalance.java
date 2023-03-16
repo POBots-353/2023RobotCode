@@ -43,7 +43,7 @@ public class PlaceConeMobilityBalance extends SequentialCommandGroup {
 
         Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
-        new AutoDriveCommand(1.5, driveSubsystem).until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 5.5),
+        new AutoDriveCommand(2.5, driveSubsystem).until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 7.5),
 
         new AutoBalanceCommand(ledSubsystem, driveSubsystem));
   }

@@ -47,7 +47,7 @@ public final class Constants {
     public static final int intakeOpenClose = 11;
 
     // Drive
-    public static final int toggleBrakesButton = 3;
+    public static final int toggleBrakesButton = 1;
   }
 
   public static class DriveConstants {

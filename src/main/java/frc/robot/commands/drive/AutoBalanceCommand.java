@@ -5,18 +5,17 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 
 public class AutoBalanceCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
   private LEDSubsystem ledSubsystem;
 
-  private PIDController balancePIDController = new PIDController(0.012, 0, 0.00128); // kD 0.00125
+  private PIDController balancePIDController = new PIDController(0.012, 0, 0.00125); // kD 0.00125
 
   /** Creates a new AutoBalanceCommand. */
   public AutoBalanceCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
@@ -44,16 +43,16 @@ public class AutoBalanceCommand extends CommandBase {
       return;
     }
 
-    if (Math.abs(gyroPitch) < 5.5) {
-      if (Math.abs(gyroPitch) < 2.5) {
-        balancePIDController.setP(0.0085);
-        SmartDashboard.putBoolean("Balanced", false);
-        ledSubsystem.initializeAllianceColor();
-      } else {
-        balancePIDController.setP(0.0071);
-        SmartDashboard.putBoolean("Balanced", false);
-        ledSubsystem.initializeAllianceColor();
-      }
+    if (Math.abs(gyroPitch) < 10.0) {
+      // if (Math.abs(gyroPitch) < 2.5) {
+      // balancePIDController.setP(0.0085);
+      // SmartDashboard.putBoolean("Balanced", false);
+      // ledSubsystem.initializeAllianceColor();
+      // } else {
+      balancePIDController.setP(0.0071);
+      SmartDashboard.putBoolean("Balanced", false);
+      ledSubsystem.initializeAllianceColor();
+      // }
     }
 
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
@@ -73,6 +72,12 @@ public class AutoBalanceCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (DriverStation.isAutonomous() && DriverStation.getMatchTime() <= 0.75 && DriverStation.getMatchTime() >= 0) {
+      driveSubsystem.turnBrakesOn();
+
+      return true;
+    }
+
     return false;
   }
 }

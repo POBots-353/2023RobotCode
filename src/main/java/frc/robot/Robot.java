@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(160, 120);
     camera.setBrightness(42);
-    // camera.setWhiteBalanceAuto();
+    camera.setWhiteBalanceAuto();
 
     PortForwarder.add(5800, "limelight.local", 5800);
     PortForwarder.add(5801, "limelight.local", 5801);
@@ -67,7 +67,6 @@ public class Robot extends TimedRobot {
     // Allows us to use ultrasonic sensors
     Ultrasonic.setAutomaticMode(true);
 
-    PathPlannerServer.startServer(5855);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.

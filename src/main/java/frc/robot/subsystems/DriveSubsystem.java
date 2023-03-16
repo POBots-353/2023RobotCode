@@ -76,8 +76,6 @@ public class DriveSubsystem extends SubsystemBase {
   private DoubleSolenoid brakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
-  private PIDController balancePIDController = new PIDController(0.010, 0, 0.00125);
-
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -88,8 +86,8 @@ public class DriveSubsystem extends SubsystemBase {
   private double kFF = 0.000156;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 1750;
-  private double maxAcc = 2500;
+  private double maxVel = 240; // 1750
+  private double maxAcc = 180; // 2500
 
   private PowerDistribution powerDistribution = new PowerDistribution(15, ModuleType.kRev);
 
@@ -228,43 +226,19 @@ public class DriveSubsystem extends SubsystemBase {
     // Breakes pistion on toggle of button
   }
 
+  public void turnBrakesOn() {
+    brakePiston.set(Value.kForward);
+  }
+
+  public void turnBrakesOff() {
+    brakePiston.set(Value.kReverse);
+  }
+
   public void resetEncoders() {
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
     backLeftEncoder.setPosition(0);
     backRightEncoder.setPosition(0);
-  }
-
-  public void autoBalance() {
-    double gyroPitch = navx.getPitch();
-
-    if (Math.abs(gyroPitch) <= 0.5) {
-      arcadeDrive(0, 0);
-      SmartDashboard.putBoolean("Balanced", true);
-      // Stops Robot
-      return;
-    }
-
-    if (Math.abs(gyroPitch) < 5.5) {
-      if (Math.abs(gyroPitch) < 2.5) {
-        balancePIDController.setP(0.0085);
-        SmartDashboard.putBoolean("Balanced", false);
-        // Adjusts PID values
-      } else {
-        balancePIDController.setP(0.0061);
-        SmartDashboard.putBoolean("Balanced", false);
-        // Adjusts PID values
-      }
-    }
-
-    double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
-
-    arcadeDrive(forwardSpeed, 0);
-    SmartDashboard.putBoolean("Balanced", false);
-  }
-
-  public void resetBalance() {
-    balancePIDController.setP(0.010);
   }
 
   public double getGyroYaw() {

@@ -4,6 +4,8 @@
 
 package frc.robot.commands.manipulator;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -11,15 +13,25 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class ManualMoveElevatorCommand extends CommandBase {
   private ElevatorSubsystem elevatorSystem;
 
+  private BooleanSupplier limitSwitchOverride;
   private double speed;
 
   /** Creates a new ManualMoveElevatorCommand. */
-  public ManualMoveElevatorCommand(double speed, ElevatorSubsystem elevatorSystem) {
+  public ManualMoveElevatorCommand(double speed, BooleanSupplier limitSwitchOverride,
+      ElevatorSubsystem elevatorSystem) {
     this.speed = speed;
+
+    this.limitSwitchOverride = limitSwitchOverride;
+
     this.elevatorSystem = elevatorSystem;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevatorSystem);
+  }
+
+  /** Creates a new ManualMoveElevatorCommand. */
+  public ManualMoveElevatorCommand(double speed, ElevatorSubsystem elevatorSystem) {
+    this(speed, () -> false, elevatorSystem);
   }
 
   // Called when the command is initially scheduled.
@@ -44,6 +56,16 @@ public class ManualMoveElevatorCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return speed > 0 && elevatorSystem.bottomSwitchPressed();
+    if (limitSwitchOverride.getAsBoolean()) {
+      return false;
+    }
+
+    if (speed > 0) {
+      return elevatorSystem.bottomSwitchPressed();
+    } else if (speed < 0) {
+      return elevatorSystem.topSwitchPressed();
+    }
+
+    return false;
   }
 }

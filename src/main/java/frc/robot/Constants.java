@@ -94,7 +94,7 @@ public final class Constants {
 
     public static final double kRamseteB = 2; // 2
     public static final double kRamseteZeta = 0.7; // 0.7
-    public static final double ksVolts = 0.34902; // 0.22 0.36108 -0.34902
+    public static final double ksVolts = -0.34902; // 0.22 0.36108 -0.34902
     public static final double kvVoltSecondsPerMeter = 2.3678; // 1.98 2.4237 2.3678
     public static final double kaVoltSecondsSquaredPerMeter = 0.45517; // 0.2 0.43606 0.45517
     
@@ -132,12 +132,12 @@ public final class Constants {
     public static final double autoIntakeTime = 0.75;
 
     public static final double elevatorConeTopSetPoint = -60.67;
-    public static final double elevatorConeMidSetPoint = -29.4;
-    public static final double elevatorConeLowSetPoint = -3.47;
+    public static final double elevatorConeMidSetPoint = -16.4;
+    public static final double elevatorConeLowSetPoint = -5.80;
 
     public static final double elevatorCubeTopSetPoint = -55.1;
     public static final double elevatorCubeMidSetPoint = -45.8;
-    public static final double elevatorCubeLowSetPoint = -1.85;
+    public static final double elevatorCubeLowSetPoint = -3.53;
 
     public static final double startingConfigurationHeight = -59.0;
 

@@ -50,7 +50,12 @@ public class Robot extends TimedRobot {
     // DataLogManager.start();
     // DriverStation.startDataLog(DataLogManager.getLog(), true);
 
-    CameraServer.startAutomaticCapture().setResolution(160, 120);
+    // 160, 120
+    // 320, 240
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(160, 120);
+    camera.setBrightness(42);
+    // camera.setWhiteBalanceAuto();
 
     PortForwarder.add(5800, "limelight.local", 5800);
     PortForwarder.add(5801, "limelight.local", 5801);

@@ -12,6 +12,7 @@ import frc.robot.commands.apriltag.AlignToAprilTagCommand;
 import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
 import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
 import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
+import frc.robot.commands.autonomous.routines.PlaceConeMobilityBalance;
 import frc.robot.commands.autonomous.routines.PlaceGPAndMobilityAuto;
 import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.commands.drive.AutoBalanceCommand;
@@ -87,48 +88,61 @@ public class RobotContainer {
   public RobotContainer() {
     PathPlannerUtil.initializeCommands(driveSubsystem, elevatorSubsystem, intakeSubsystem);
 
-    // autoChooser.setDefaultOption("Drive Backwards", new
-    // MobilityAutoCommand(driveSubsystem));
-    // autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intakeSubsystem,
-    // ledSubsystem,
-    // driveSubsystem));
-    // autoChooser.addOption("Drive Back and Balance",
-    // new DriveOnChargeStationAuto(elevatorSubsystem, intakeSubsystem,
-    // ledSubsystem, driveSubsystem));
-    // autoChooser.addOption("Place Cone and Drive Back",
-    // new PlaceGPAndMobilityAuto(elevatorSubsystem, intakeSubsystem,
-    // driveSubsystem));
-    // autoChooser.addOption("Place Cone and Balance",
-    // new PlaceGPBalanceAuto(elevatorSubsystem, intakeSubsystem, ledSubsystem,
-    // driveSubsystem));
+    autoChooser.addOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
 
-    autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
-        placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive Backwards", driveSubsystem)));
+    autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intakeSubsystem, ledSubsystem,
+        driveSubsystem));
 
-    autoChooser.addOption("(Substation Side) Place Cone, Grab Cone",
-        placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Grab Cone", driveSubsystem)));
+    autoChooser.addOption("Place Cone, Mobility",
+        new PlaceGPAndMobilityAuto(elevatorSubsystem, intakeSubsystem,
+            driveSubsystem));
 
-    autoChooser.addOption("(Substation Side) Place Cone, Grab Cone, Balance",
-        placeConeAutoStart(
-            new PathPlannerCommand("Substation Place Cone Grab Cone and Balance", driveSubsystem)));
+    autoChooser.addOption("Drive Back, Balance",
+        new DriveOnChargeStationAuto(elevatorSubsystem, intakeSubsystem,
+            ledSubsystem, driveSubsystem));
 
-    autoChooser.addOption("(Charge Station) Place Cone, Balance",
-        placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Balance", driveSubsystem))
-            .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
+    autoChooser.addOption("Place Cone, Balance",
+        new PlaceGPBalanceAuto(elevatorSubsystem, intakeSubsystem, ledSubsystem,
+            driveSubsystem));
 
-    autoChooser.addOption("(Charge Station) Place Cone, Mobility, Balance",
-        placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Mobility Balance", driveSubsystem))
-            .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
+    autoChooser.addOption("Place Cone, Mobility, Balance",
+        new PlaceConeMobilityBalance(elevatorSubsystem, intakeSubsystem, ledSubsystem, driveSubsystem));
 
-    autoChooser.addOption("(Field Edge) Place Cone, Drive Backwards",
-        placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Drive Backwards", driveSubsystem)));
+    // autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
+    // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive
+    // Backwards", driveSubsystem)));
 
-    autoChooser.addOption("(Field Edge) Place Cone, Grab Cone",
-        placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone", driveSubsystem)));
+    // autoChooser.addOption("(Substation Side) Place Cone, Grab Cone",
+    // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Grab Cone",
+    // driveSubsystem)));
 
-    autoChooser.addOption("(Field Edge) Place Cone, Grab Cone, Balance",
-        placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone and Balance",
-            driveSubsystem)));
+    // autoChooser.addOption("(Substation Side) Place Cone, Grab Cone, Balance",
+    // placeConeAutoStart(
+    // new PathPlannerCommand("Substation Place Cone Grab Cone and Balance",
+    // driveSubsystem)));
+
+    // autoChooser.addOption("(Charge Station) Place Cone, Balance",
+    // placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone
+    // Balance", driveSubsystem))
+    // .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
+
+    // autoChooser.addOption("(Charge Station) Place Cone, Mobility, Balance",
+    // placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Mobility
+    // Balance", driveSubsystem))
+    // .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
+
+    // autoChooser.addOption("(Field Edge) Place Cone, Drive Backwards",
+    // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Drive
+    // Backwards", driveSubsystem)));
+
+    // autoChooser.addOption("(Field Edge) Place Cone, Grab Cone",
+    // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone",
+    // driveSubsystem)));
+
+    // autoChooser.addOption("(Field Edge) Place Cone, Grab Cone, Balance",
+    // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone
+    // and Balance",
+    // driveSubsystem)));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -268,8 +282,10 @@ public class RobotContainer {
     cubeElevatorLow
         .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSubsystem));
 
-    elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed, elevatorSubsystem));
-    elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed, elevatorSubsystem));
+    elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed,
+        () -> operatorStick.getRawButton(1), elevatorSubsystem));
+    elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed,
+        () -> operatorStick.getRawButton(1), elevatorSubsystem));
 
     new JoystickButton(operatorStick, 15)
         .onTrue(Commands.runOnce(elevatorSubsystem::zeroElevatorPosition, elevatorSubsystem));

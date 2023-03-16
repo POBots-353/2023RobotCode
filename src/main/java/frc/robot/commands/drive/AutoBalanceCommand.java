@@ -16,7 +16,7 @@ public class AutoBalanceCommand extends CommandBase {
   private DriveSubsystem driveSubsystem;
   private LEDSubsystem ledSubsystem;
 
-  private PIDController balancePIDController = new PIDController(0.012, 0, 0.00125); // kD 0.00125
+  private PIDController balancePIDController = new PIDController(0.012, 0, 0.00128); // kD 0.00125
 
   /** Creates a new AutoBalanceCommand. */
   public AutoBalanceCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
@@ -37,7 +37,7 @@ public class AutoBalanceCommand extends CommandBase {
   public void execute() {
     double gyroPitch = -driveSubsystem.getGyroPitch();
 
-    if (Math.abs(gyroPitch) <= 0.5) {
+    if (Math.abs(gyroPitch) <= 2.0) {
       driveSubsystem.arcadeDrive(0, 0);
       SmartDashboard.putBoolean("Balanced", true);
       ledSubsystem.setGreen();

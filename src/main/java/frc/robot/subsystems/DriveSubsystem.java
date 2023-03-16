@@ -42,7 +42,8 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.util.LimelightHelpers;
 import edu.wpi.first.wpilibj.AnalogInput;
-
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -71,10 +72,6 @@ public class DriveSubsystem extends SubsystemBase {
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
-
-  // private Ultrasonic coneUltrasonic = new Ultrasonic(1, 2);
-
-  // private Ultrasonic cubeUltrasonic = new Ultrasonic(3, 4);
 
   private DoubleSolenoid brakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
@@ -406,7 +403,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(frontLeftEncoder.getVelocity() / 60, frontRightEncoder.getVelocity() / 60);
+    return new DifferentialDriveWheelSpeeds(frontLeftEncoder.getVelocity() / 60, -frontRightEncoder.getVelocity() / 60);
   }
 
   public void resetOdometry(Pose2d pose) {

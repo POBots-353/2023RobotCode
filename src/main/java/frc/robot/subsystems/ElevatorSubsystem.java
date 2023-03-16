@@ -30,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
       IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
 
-  // private DigitalInput topLimitSwitch = new DigitalInput(1);
+  private DigitalInput topLimitSwitch = new DigitalInput(8);
   private DigitalInput bottomLimitSwitch = new DigitalInput(9);
 
   private int smartMotionSlot = 0;
@@ -117,6 +117,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorEncoder.setPosition(0);
   }
 
+  public boolean topSwitchPressed() {
+    return !topLimitSwitch.get();
+  }
+
   public boolean bottomSwitchPressed() {
     return !bottomLimitSwitch.get();
   }
@@ -137,6 +141,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
+    SmartDashboard.putBoolean("Top Switch", !topLimitSwitch.get());
     SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
 
     if (!bottomLimitSwitch.get()) {

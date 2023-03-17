@@ -17,6 +17,6 @@ public class MobilityAutoCommand extends SequentialCommandGroup {
        * Robot will be facing the center of the field */
 
       // Robot will drive forward the calculated distance to cross mobility line
-      new AutoDriveCommand(3.53, driveSubsystem));
+      new AutoDriveCommand(-3.53, driveSubsystem));
   }
 }

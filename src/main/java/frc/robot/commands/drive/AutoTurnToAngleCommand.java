@@ -17,7 +17,7 @@ public class AutoTurnToAngleCommand extends CommandBase {
 
   private DoubleSupplier angleSupplier;
 
-  private PIDController pidController = new PIDController(0.0145, 0, 0.00155); // d: 0.00115, 0.00125
+  private PIDController pidController = new PIDController(0.0145, 0, 0.00155); // p: 0.0145 d: 0.00115, 0.00125
 
   private SlewRateLimiter turnLimiter = new SlewRateLimiter(3.75);
 
@@ -52,29 +52,26 @@ public class AutoTurnToAngleCommand extends CommandBase {
 
     double angleErrorAbs = Math.abs(angleError);
 
-    // if (angleErrorAbs < 15) {
-    // if (angleErrorAbs < 3) {
-    // pidController.setP(0.0125); // 0.0135
-    // // pidController.setI(0.00375); // 0.00375
-    // // pidController.setPID(0.0125, 0.00375, 0);
-    // } else {
-    // pidController.setP(0.0065); // 0.0115
-    // // pidController.setI(0.00275);
-    // // pidController.setPID(0.0115, 0.00275, 0);
-    // }
-    // } else {
-    // pidController.setP(0.0145);
-    // pidController.setI(0);
-    // // pidController.setPID(0.0047, 0, 0);
-    // }
+    if (angleErrorAbs < 15) {
+      if (angleErrorAbs < 2.5) {
+        pidController.setP(0.0145); // 0.0135
+        pidController.setI(0.00375); // 0.00375
+      } else {
+        pidController.setP(0.0115); // 0.0115
+        pidController.setI(0.00275); // 0.00275
+      }
+    } else {
+      pidController.setP(0.0047);
+      pidController.setI(0);
+    }
 
     double turnSpeed = -pidController.calculate(angleError, 0);
-    double limitedTurnSpeed = MathUtil.clamp(turnSpeed, -0.15, 0.15);
+
     // MathUtil.clamp(turnSpeed, -0.35, 0.35)
 
-    driveSubsystem.arcadeDrive(0, turnLimiter.calculate(limitedTurnSpeed));
+    driveSubsystem.arcadeDrive(0, turnLimiter.calculate(turnSpeed));
 
-    if (angleErrorAbs <= 0.50) {
+    if (angleErrorAbs <= 2.00) {
       timeAligned++;
     } else if (timeAligned > 0) {
       timeAligned--;
@@ -90,6 +87,6 @@ public class AutoTurnToAngleCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 0.50 && timeAligned >= 10;
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 2.00 && timeAligned >= 5;
   }
 }

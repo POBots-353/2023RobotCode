@@ -53,6 +53,8 @@ public final class Constants {
   public static class DriveConstants {
     public static final String limelightName = "limelight";
 
+    public static final int powerDistributionID = 15;
+
     public static final int frontLeftMotorID = 4;
     public static final int backLeftMotorID = 2;
     public static final int frontRightMotorID = 1;
@@ -99,19 +101,21 @@ public final class Constants {
     public static final double ksVolts = -0.34902; // 0.22 0.36108 -0.34902
     public static final double kvVoltSecondsPerMeter = 2.3678; // 1.98 2.4237 2.3678
     public static final double kaVoltSecondsSquaredPerMeter = 0.45517; // 0.2 0.43606 0.45517
-    
-    public static final double kPDriveVel = 0.59315; // 0.0004 
 
-    public static final Pose2d blueSubstationPose = new Pose2d(1.97, 4.84, new Rotation2d(180));
-    public static final Pose2d blueChargeStationPose = new Pose2d(1.97, 3.30, new Rotation2d(180));
-    public static final Pose2d blueFieldEdgePose = new Pose2d(1.97, 0.50, new Rotation2d(180));
+    public static final double kPDriveVel = 0.59315; // 0.0004
 
-    public static final Pose2d redSubstationPose = new Pose2d(14.59, 4.84, new Rotation2d(0));
-    public static final Pose2d redChargeStationPose = new Pose2d(14.59, 3.30, new Rotation2d(0));
-    public static final Pose2d redFieldEdgePose = new Pose2d(14.59, 0.50, new Rotation2d(0));
+    public static final Pose2d blueSubstationPose = new Pose2d(1.97, 4.84, new Rotation2d(Math.toRadians(180)));
+    public static final Pose2d blueChargeStationPose = new Pose2d(1.97, 3.30, new Rotation2d(Math.toRadians(180)));
+    public static final Pose2d blueFieldEdgePose = new Pose2d(1.97, 0.50, new Rotation2d(Math.toRadians(180)));
+
+    public static final Pose2d redSubstationPose = new Pose2d(14.59, 4.84, new Rotation2d(Math.toRadians(0)));
+    public static final Pose2d redChargeStationPose = new Pose2d(14.59, 3.30, new Rotation2d(Math.toRadians(0)));
+    public static final Pose2d redFieldEdgePose = new Pose2d(14.59, 0.50, new Rotation2d(Math.toRadians(0)));
   }
 
   public static class IntakeConstants {
+    public static final int pneumaticHubID = 16;
+
     public static final int elevatorMotorID = 8;
 
     public static final int elevatorPistonForwardID = 6;
@@ -131,17 +135,17 @@ public final class Constants {
     public static final double intakeSpeed = 0.80;
     public static final double outtakeSpeed = 1.00;
 
-    public static final double autoIntakeTime = 0.75;
+    public static final double autoIntakeTime = 0.50;
 
     public static final double elevatorConeTopSetPoint = -60.67;
     public static final double elevatorConeMidSetPoint = -16.4;
-    public static final double elevatorConeLowSetPoint = -5.80;
+    public static final double elevatorConeLowSetPoint = -5.00;
 
     public static final double elevatorCubeTopSetPoint = -55.1;
     public static final double elevatorCubeMidSetPoint = -45.8;
     public static final double elevatorCubeLowSetPoint = -3.53;
 
-    public static final double startingConfigurationHeight = -59.0;
+    public static final double startingConfigurationHeight = -59.90;
 
     public static final double elevatorSpeed = 0.50;
   }

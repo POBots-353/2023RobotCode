@@ -13,6 +13,7 @@ import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
 import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
 import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityBalance;
+import frc.robot.commands.autonomous.routines.PlaceConeMobilityGrabConeBalance;
 import frc.robot.commands.autonomous.routines.PlaceGPAndMobilityAuto;
 import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
 import frc.robot.commands.drive.AutoBalanceCommand;
@@ -107,6 +108,9 @@ public class RobotContainer {
 
     autoChooser.addOption("Place Cone, Mobility, Balance",
         new PlaceConeMobilityBalance(elevatorSubsystem, intakeSubsystem, ledSubsystem, driveSubsystem));
+
+    autoChooser.addOption("Place Cone, Mobility, Grab Cone, Balance",
+        new PlaceConeMobilityGrabConeBalance(elevatorSubsystem, intakeSubsystem, ledSubsystem, driveSubsystem));
 
     // autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
     // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive

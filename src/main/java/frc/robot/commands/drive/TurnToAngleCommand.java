@@ -49,7 +49,7 @@ public class TurnToAngleCommand extends CommandBase {
 
     if (angleErrorAbs < 15) {
       if (angleErrorAbs < 2.5) {
-        pidController.setP(0.0135); // 0.0135
+        pidController.setP(0.0145); // 0.0135
         pidController.setI(0.00375); // 0.00375
       } else {
         pidController.setP(0.0115); // 0.0115

@@ -25,12 +25,13 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   // Pneumatic stuff
-  private Compressor pcmCompressor = new Compressor(16, PneumaticsModuleType.REVPH);
+  private Compressor pcmCompressor = new Compressor(IntakeConstants.pneumaticHubID, PneumaticsModuleType.REVPH);
 
-  private PneumaticHub pneumaticHub = new PneumaticHub(16);
+  private PneumaticHub pneumaticHub = new PneumaticHub(IntakeConstants.pneumaticHubID);
 
   // Intake objects
-  private DoubleSolenoid intakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
+  private DoubleSolenoid intakeWristPiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID,
+      PneumaticsModuleType.REVPH,
       IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
 
   private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
@@ -42,7 +43,10 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     pcmCompressor.enableDigital();
 
-    intakePiston.set(Value.kForward);
+    pneumaticHub.clearStickyFaults();
+    intakeMotor.clearFaults();
+
+    intakeWristPiston.set(Value.kForward);
   }
 
   public CommandBase autoIntakeCube() {
@@ -56,8 +60,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public CommandBase autoIntakeCone() {
-    return Commands.race(run(this::intakeCone), new WaitCommand(IntakeConstants.autoIntakeTime))
-        .andThen(runOnce(this::stopIntakeMotor));
+    return run(this::intakeCone).withTimeout(0.50).andThen(runOnce(this::stopIntakeMotor));
   }
 
   public CommandBase autoOuttakeCone() {
@@ -90,21 +93,21 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void toggleIntakePiston() {
-    intakePiston.toggle();
+    intakeWristPiston.toggle();
   }
 
   public void toggleWristIn() {
-    intakePiston.set(Value.kReverse);
+    intakeWristPiston.set(Value.kReverse);
   }
 
   public void toggleWristOut() {
-    intakePiston.set(Value.kForward);
+    intakeWristPiston.set(Value.kForward);
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
-    SmartDashboard.putNumber ("Cube Distance", cubeUltrasonic.getRangeInches());
+    SmartDashboard.putNumber("Cube Distance", cubeUltrasonic.getRangeInches());
     SmartDashboard.putNumber("Cone Distance", coneUltrasonic.getRangeInches());
   }
 }

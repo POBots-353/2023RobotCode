@@ -5,8 +5,6 @@
 
 package frc.robot.subsystems;
 
-import java.security.spec.EncodedKeySpec;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -14,7 +12,6 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -28,22 +25,15 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.drive.DriveToTapeCommand;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.LimelightHelpers;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -73,7 +63,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
-  private DoubleSolenoid brakePiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID, PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
   private int smartMotionSlot = 0;
@@ -86,10 +76,11 @@ public class DriveSubsystem extends SubsystemBase {
   private double kFF = 0.000156;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 240; // 1750
-  private double maxAcc = 180; // 2500
+  private double maxVel = 550; // 1750
+  private double maxAcc = 1000; // 2500
 
-  private PowerDistribution powerDistribution = new PowerDistribution(15, ModuleType.kRev);
+  private PowerDistribution powerDistribution = new PowerDistribution(DriveConstants.powerDistributionID,
+      ModuleType.kRev);
 
   private Field2d field = new Field2d();
 
@@ -235,10 +226,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetEncoders() {
+    Pose2d lastPose = odometry.getPoseMeters();
+
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
     backLeftEncoder.setPosition(0);
     backRightEncoder.setPosition(0);
+
+    odometry.resetPosition(navx.getRotation2d(), 0, 0, lastPose);
   }
 
   public double getGyroYaw() {
@@ -300,7 +295,16 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public boolean distanceReached(double distanceMeters) {
-    return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.006;
+    if (distanceMeters < 0) {
+      return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060
+          || frontLeftEncoder.getPosition() < distanceMeters;
+    } 
+    // else if (distanceMeters > 0) {
+    //   return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060
+    //       || frontLeftEncoder.getPosition() < distanceMeters;
+    // }
+
+    return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060;
     // return Math.abs(frontLeftEncoder.getPosition() -
     // convertDistanceToEncoder(distanceMeters)) <= 0.10;
   }
@@ -365,7 +369,7 @@ public class DriveSubsystem extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
+    odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
   }
 
   public Pose2d getPose() {

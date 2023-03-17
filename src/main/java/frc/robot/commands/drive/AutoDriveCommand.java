@@ -50,6 +50,7 @@ public class AutoDriveCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     driveSubsystem.arcadeDrive(0, 0);
+    driveSubsystem.resetEncoders();
   }
 
   // Returns true when the command should end.

@@ -67,10 +67,6 @@ public class RobotContainer {
 
   private SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
 
-  public void initializeLEDAllianceColor() {
-    ledSubsystem.initializeAllianceColor();
-  }
-
   public Command placeConeAutoStart(Command pathPlannerCommand) {
     return Commands.sequence(Commands.runOnce(elevatorSubsystem::elevatorTiltOut, elevatorSubsystem),
         new WaitCommand(1.50),
@@ -331,6 +327,17 @@ public class RobotContainer {
     }
 
     driveSubsystem.initializeFieldPosition(startingFieldPosition.getSelected());
+  }
+
+  public void initializeAutonomous() {
+    intakeSubsystem.disableCompressor();
+    ledSubsystem.initializeAllianceColor();
+  }
+
+  public void initializeTeleop() {
+    ledSubsystem.initializeAllianceColor();
+    intakeSubsystem.enableCompressor();
+    driveSubsystem.turnBrakesOff();
   }
 
   /**

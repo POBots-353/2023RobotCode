@@ -109,6 +109,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     elevatorMotor.set(0);
   }
 
+  public double getMotorCurrent() {
+    return elevatorMotor.getOutputCurrent();
+  }
+
   public double getElevatorPosition() {
     return elevatorEncoder.getPosition();
   }
@@ -143,6 +147,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     SmartDashboard.putBoolean("Top Switch", !topLimitSwitch.get());
     SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
+
+    SmartDashboard.putNumber("Elevator Current", elevatorMotor.getOutputCurrent());
 
     if (!bottomLimitSwitch.get()) {
       elevatorEncoder.setPosition(0);

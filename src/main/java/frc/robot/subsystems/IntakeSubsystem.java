@@ -68,6 +68,14 @@ public class IntakeSubsystem extends SubsystemBase {
         .andThen(runOnce(this::stopIntakeMotor));
   }
 
+  public void disableCompressor() {
+    pcmCompressor.disable();
+  }
+
+  public void enableCompressor() {
+    pcmCompressor.enableDigital();
+  }
+
   public void intakeCube() {
     // double distanceInches = cubeUltrasonic.getRangeInches();
     // if (distanceInches <= 15.0) {

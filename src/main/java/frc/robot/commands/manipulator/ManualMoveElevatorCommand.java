@@ -6,8 +6,10 @@ package frc.robot.commands.manipulator;
 
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ManualMoveElevatorCommand extends CommandBase {
@@ -15,6 +17,8 @@ public class ManualMoveElevatorCommand extends CommandBase {
 
   private BooleanSupplier limitSwitchOverride;
   private double speed;
+
+  private SlewRateLimiter rateLimiter = new SlewRateLimiter(3.53);
 
   /** Creates a new ManualMoveElevatorCommand. */
   public ManualMoveElevatorCommand(double speed, BooleanSupplier limitSwitchOverride,
@@ -38,12 +42,14 @@ public class ManualMoveElevatorCommand extends CommandBase {
   @Override
   public void initialize() {
     elevatorSystem.toggleOffManipulatorBreak();
+
+    rateLimiter.reset(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorSystem.setElevatorSpeed(speed);
+    elevatorSystem.setElevatorSpeed(rateLimiter.calculate(speed));
   }
 
   // Called once the command ends or is interrupted.

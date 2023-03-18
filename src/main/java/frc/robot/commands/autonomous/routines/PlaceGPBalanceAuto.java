@@ -34,16 +34,12 @@ public class PlaceGPBalanceAuto extends SequentialCommandGroup {
         // new DriveToTapeCommand(driveSubsystem),
         Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
 
-        new WaitCommand(1.50),
-
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem),
+        new WaitCommand(1.25),
 
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone(),
 
         Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
-
-        Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance

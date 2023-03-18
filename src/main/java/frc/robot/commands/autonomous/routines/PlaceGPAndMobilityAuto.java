@@ -43,6 +43,9 @@ public class PlaceGPAndMobilityAuto extends SequentialCommandGroup {
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to cross mobility line
-        new AutoDriveCommand(-3.53, driveSubsystem));
+        new AutoDriveCommand(-4.0, driveSubsystem),
+
+        Commands.parallel(new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem),
+            new AutoTurnToAngleCommand(90, driveSubsystem)));
   }
 }

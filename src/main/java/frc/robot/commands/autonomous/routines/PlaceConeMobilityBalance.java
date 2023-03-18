@@ -30,7 +30,8 @@ public class PlaceConeMobilityBalance extends SequentialCommandGroup {
 
         new WaitCommand(1.25),
 
-        // new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem),
+        // new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint,
+        // elevatorSystem),
 
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone(),
@@ -39,11 +40,13 @@ public class PlaceConeMobilityBalance extends SequentialCommandGroup {
         // distance to go onto the station and balance
         new AutoDriveCommand(-4.0, driveSubsystem),
 
-        // Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
+        Commands.waitSeconds(0.10),
+
+        Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
 
         // Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
-        new AutoDriveCommand(2.00, driveSubsystem),
+        new AutoDriveCommand(2.25, driveSubsystem).until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 8.5),
 
         new AutoBalanceCommand(ledSubsystem, driveSubsystem));
   }

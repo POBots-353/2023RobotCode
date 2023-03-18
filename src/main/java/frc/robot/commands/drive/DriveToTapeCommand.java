@@ -27,7 +27,7 @@ public class DriveToTapeCommand extends CommandBase {
   private double area = 0;
 
   private PIDController forwardController = new PIDController(0.95, 0, 0);
-  private PIDController turnController = new PIDController(0.0050, 0, 0);
+  private PIDController turnController = new PIDController(0.0070, 0, 0); // 0.0050
 
   /** Creates a new AlignToTapeCommand. */
   public DriveToTapeCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
@@ -85,6 +85,7 @@ public class DriveToTapeCommand extends CommandBase {
   public void end(boolean interrupted) {
     RobotContainer.driverControllerHID.setRumble(RumbleType.kRightRumble, 0);
     SmartDashboard.putBoolean("Target Aligned", false);
+    ledSubsystem.initializeAllianceColor();
   }
 
   // Returns true when the command should end.

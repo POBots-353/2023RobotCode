@@ -28,7 +28,8 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
       LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
+    addCommands(
+        Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
 
         new WaitCommand(1.25),
 
@@ -50,17 +51,24 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
             new AutoTurnToAngleCommand(0, driveSubsystem), // -10,
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem)),
 
+        Commands.runOnce(() -> driveSubsystem.setMaxVelocity(500), driveSubsystem),
+
         Commands.race(Commands.run(intakeSystem::intakeCone, intakeSystem),
-            new AutoDriveCommand(1.00, driveSubsystem)),
+            new AutoDriveCommand(0.90, driveSubsystem)),
 
-        Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem),
+        Commands.waitSeconds(0.50),
 
-        Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
+        Commands.parallel(
+            Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem),
 
-        // new AutoTurnToAngleCommand(0, driveSubsystem),
+            Commands.runOnce(() -> driveSubsystem.setMaxVelocity(600), driveSubsystem),
 
-        Commands.parallel(new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem),
-            new AutoDriveCommand(-2.5, driveSubsystem).until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 7.5)),
+            Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem)),
+
+        Commands.parallel(
+            new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem),
+            new AutoDriveCommand(-2.5, driveSubsystem)
+                .until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 8.5)),
 
         new AutoBalanceCommand(ledSubsystem, driveSubsystem));
   }

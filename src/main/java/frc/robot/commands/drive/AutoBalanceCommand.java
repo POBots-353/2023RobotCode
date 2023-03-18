@@ -17,6 +17,8 @@ public class AutoBalanceCommand extends CommandBase {
 
   private PIDController balancePIDController = new PIDController(0.012, 0, 0.00115); // kD 0.00125
 
+  private int timeBalanced = 0;
+
   /** Creates a new AutoBalanceCommand. */
   public AutoBalanceCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
@@ -40,16 +42,19 @@ public class AutoBalanceCommand extends CommandBase {
       driveSubsystem.arcadeDrive(0, 0);
       SmartDashboard.putBoolean("Balanced", true);
       ledSubsystem.setGreen();
+
+      timeBalanced++;
+
       return;
     }
 
-    if (Math.abs(gyroPitch) < 8.0) {
+    if (Math.abs(gyroPitch) < 6.0) {
       // if (Math.abs(gyroPitch) < 2.5) {
       // balancePIDController.setP(0.0085);
       // SmartDashboard.putBoolean("Balanced", false);
       // ledSubsystem.initializeAllianceColor();
       // } else {
-      balancePIDController.setP(0.0074);
+      balancePIDController.setP(0.0071);
       SmartDashboard.putBoolean("Balanced", false);
       ledSubsystem.initializeAllianceColor();
       // }
@@ -58,6 +63,10 @@ public class AutoBalanceCommand extends CommandBase {
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
 
     driveSubsystem.arcadeDrive(forwardSpeed, 0);
+
+    if (timeBalanced > 0) {
+      timeBalanced--;
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -73,6 +82,12 @@ public class AutoBalanceCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     if (DriverStation.isAutonomous() && DriverStation.getMatchTime() <= 0.353 && DriverStation.getMatchTime() >= 0) {
+      driveSubsystem.turnBrakesOn();
+
+      return true;
+    }
+
+    if (DriverStation.isAutonomous() && timeBalanced >= 30) {
       driveSubsystem.turnBrakesOn();
 
       return true;

@@ -69,15 +69,15 @@ public class DriveSubsystem extends SubsystemBase {
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
-  private double kP = 4e-4;
+  private double kP = 4.8e-4;
   private double kI = 0;
   private double kD = 0;
   private double kIz = 0;
-  private double kFF = 0.000156;
+  private double kFF = 0.000176; // 0.000156
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 550; // 1750
-  private double maxAcc = 1000; // 2500
+  private double maxVel = 600; // 1750, 550
+  private double maxAcc = 1500; // 2500, 1000
 
   private PowerDistribution powerDistribution = new PowerDistribution(DriveConstants.powerDistributionID,
       ModuleType.kRev);
@@ -114,6 +114,8 @@ public class DriveSubsystem extends SubsystemBase {
     initializePID(frontRightPIDController);
     initializePID(backLeftPIDController);
     initializePID(backRightPIDController);
+
+    navx.setAngleAdjustment(180);
 
     brakePiston.set(Value.kReverse);
 
@@ -156,6 +158,13 @@ public class DriveSubsystem extends SubsystemBase {
     p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
     p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
     p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+  }
+
+  public void setMaxVelocity(int maxVelocity) {
+    frontLeftPIDController.setSmartMotionMaxVelocity(maxVelocity, smartMotionSlot);
+    frontRightPIDController.setSmartMotionMaxVelocity(maxVelocity, smartMotionSlot);
+    backLeftPIDController.setSmartMotionMaxVelocity(maxVelocity, smartMotionSlot);
+    backRightPIDController.setSmartMotionMaxVelocity(maxVelocity, smartMotionSlot);
   }
 
   public void tankDrive(double left, double right) {
@@ -298,10 +307,10 @@ public class DriveSubsystem extends SubsystemBase {
     if (distanceMeters < 0) {
       return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060
           || frontLeftEncoder.getPosition() < distanceMeters;
-    } 
+    }
     // else if (distanceMeters > 0) {
-    //   return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060
-    //       || frontLeftEncoder.getPosition() < distanceMeters;
+    // return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060
+    // || frontLeftEncoder.getPosition() < distanceMeters;
     // }
 
     return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060;

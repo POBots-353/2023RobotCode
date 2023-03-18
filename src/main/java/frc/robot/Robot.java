@@ -36,10 +36,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  // Waits for 3 seconds, and then stops recording the shuffleboard
-  private Command stopRecordingCommand = Commands.sequence(new WaitCommand(3.00),
-      Commands.runOnce(Shuffleboard::stopRecording));
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -98,11 +94,6 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    // When the robot gets disabled, schedule the command to stop the recording
-    // after 3 seconds
-    if (DriverStation.getMatchType() != MatchType.None && !stopRecordingCommand.isScheduled()) {
-      stopRecordingCommand.schedule();
-    }
   }
 
   @Override
@@ -118,22 +109,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     m_robotContainer.initializeOdometry(m_autonomousCommand);
-
-    // If the command to stop recording the Shuffleboard hasn't finished executing,
-    // cancel the command to stop recording, and immediately stop recording instead
-    // of having a 3 second delay
-    if (stopRecordingCommand.isScheduled()) {
-      stopRecordingCommand.cancel();
-      Shuffleboard.stopRecording();
-    }
-
-    // Starts recording the Shuffleboard if it's a valid match and it hasn't started
-    // recording already
-    if (DriverStation.getMatchType() != MatchType.None) {
-      Shuffleboard.startRecording();
-    }
-
-    m_robotContainer.initializeLEDAllianceColor();
+    m_robotContainer.initializeAutonomous();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -156,13 +132,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    // Starts recording the Shuffleboard if it's a valid match and it hasn't started
-    // recording already
-    if (DriverStation.getMatchType() != MatchType.None) {
-      Shuffleboard.startRecording();
-    }
-
-    m_robotContainer.initializeLEDAllianceColor();
+    m_robotContainer.initializeTeleop();
   }
 
   /** This function is called periodically during operator control. */

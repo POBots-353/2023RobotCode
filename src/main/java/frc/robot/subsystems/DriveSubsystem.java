@@ -69,13 +69,13 @@ public class DriveSubsystem extends SubsystemBase {
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
-  private double kP = 4.8e-4;
+  private double kP = 0.02; // 4.8e-4
   private double kI = 0;
   private double kD = 0;
   private double kIz = 0;
   private double kFF = 0.000176; // 0.000156
-  private double kMaxOutput = 1;
-  private double kMinOutput = -1;
+  private double kMaxOutput = 0.6;
+  private double kMinOutput = -0.6;
   private double maxVel = 600; // 1750, 550
   private double maxAcc = 1500; // 2500, 1000
 
@@ -167,6 +167,13 @@ public class DriveSubsystem extends SubsystemBase {
     backRightPIDController.setSmartMotionMaxVelocity(maxVelocity, smartMotionSlot);
   }
 
+  public void setMaxOutput(double maxOutput) {
+    frontLeftPIDController.setOutputRange(-maxOutput, maxOutput);
+    frontRightPIDController.setOutputRange(-maxOutput, maxOutput);
+    backLeftPIDController.setOutputRange(-maxOutput, maxOutput);
+    backRightPIDController.setOutputRange(-maxOutput, maxOutput);
+  }
+
   public void tankDrive(double left, double right) {
     double leftSpeed = leftLimiter.calculate(left);
     double rightSpeed = rightLimiter.calculate(right);
@@ -211,8 +218,11 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void autoDrive(double meters) {
-    frontLeftPIDController.setReference(meters, ControlType.kSmartMotion);
-    frontRightPIDController.setReference(meters, ControlType.kSmartMotion);
+    frontLeftPIDController.setReference(meters, ControlType.kPosition);
+    frontRightPIDController.setReference(meters, ControlType.kPosition);
+    // frontLeftPIDController.setReference(meters, ControlType.kSmartMotion);
+    // frontRightPIDController.setReference(meters, ControlType.kSmartMotion);
+
     // backLeftPIDController.setReference(meters, ControlType.kSmartMotion);
     // backRightPIDController.setReference(-meters, ControlType.kSmartMotion);
     // leftPIDController.setReference(convertDistanceToEncoder(meters),

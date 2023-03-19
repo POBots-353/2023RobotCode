@@ -51,7 +51,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
             new AutoTurnToAngleCommand(0, driveSubsystem), // -10,
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem)),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxVelocity(500), driveSubsystem),
+        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.45), driveSubsystem),
 
         Commands.race(Commands.run(intakeSystem::intakeCone, intakeSystem),
             new AutoDriveCommand(0.90, driveSubsystem)),
@@ -61,7 +61,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         Commands.parallel(
             Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem),
 
-            Commands.runOnce(() -> driveSubsystem.setMaxVelocity(600), driveSubsystem),
+            Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.60), driveSubsystem),
 
             Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem)),
 

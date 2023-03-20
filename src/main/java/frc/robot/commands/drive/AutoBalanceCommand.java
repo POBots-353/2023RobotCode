@@ -6,6 +6,7 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -23,6 +24,9 @@ public class AutoBalanceCommand extends CommandBase {
   public AutoBalanceCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
     this.ledSubsystem = ledSubsystem;
+
+    Preferences.initDouble("Balance Proportional Gain", 0.0071);
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem, ledSubsystem);
   }
@@ -54,7 +58,10 @@ public class AutoBalanceCommand extends CommandBase {
       // SmartDashboard.putBoolean("Balanced", false);
       // ledSubsystem.initializeAllianceColor();
       // } else {
-      balancePIDController.setP(0.0071);
+      if (balancePIDController.getP() != Preferences.getDouble("Balance Proportional Gain", 0.0071)) {
+        balancePIDController.setP(Preferences.getDouble("Balance Proportional Gain", 0.0071));
+      }
+      // balancePIDController.setP(0.0071);
       SmartDashboard.putBoolean("Balanced", false);
       ledSubsystem.initializeAllianceColor();
       // }

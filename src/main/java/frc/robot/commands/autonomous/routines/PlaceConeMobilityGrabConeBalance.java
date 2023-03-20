@@ -39,9 +39,11 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone(),
 
+        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.25), driveSubsystem),
+
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-4.25, driveSubsystem),
+        new AutoDriveCommand(-4.5, driveSubsystem),
 
         // Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
 
@@ -51,10 +53,10 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
             new AutoTurnToAngleCommand(0, driveSubsystem), // -10,
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem)),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.45), driveSubsystem),
+        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.40), driveSubsystem),
 
         Commands.race(Commands.run(intakeSystem::intakeCone, intakeSystem),
-            new AutoDriveCommand(0.90, driveSubsystem)),
+            new AutoDriveCommand(0.65, driveSubsystem)),
 
         Commands.waitSeconds(0.50),
 

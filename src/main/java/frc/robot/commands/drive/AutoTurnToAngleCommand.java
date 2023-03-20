@@ -54,7 +54,7 @@ public class AutoTurnToAngleCommand extends CommandBase {
 
     if (angleErrorAbs < 15) {
       if (angleErrorAbs < 4.5) {
-        pidController.setP(0.0145); // 0.0135
+        pidController.setP(0.0135); // 0.0135
         pidController.setI(0.00375); // 0.00375
       } else {
         pidController.setP(0.0115); // 0.0115
@@ -67,9 +67,11 @@ public class AutoTurnToAngleCommand extends CommandBase {
 
     double turnSpeed = -pidController.calculate(angleError, 0);
 
+    double turnSpeedRateLimited = turnLimiter.calculate(turnSpeed);
+
     // MathUtil.clamp(turnSpeed, -0.35, 0.35)
 
-    driveSubsystem.arcadeDrive(0, turnLimiter.calculate(turnSpeed));
+    driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeedRateLimited, -0.40, 0.40));
 
     if (angleErrorAbs <= 2.50) {
       timeAligned++;
@@ -87,6 +89,6 @@ public class AutoTurnToAngleCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 2.50 && timeAligned >= 5;
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 2.50 && timeAligned >= 4;
   }
 }

@@ -47,9 +47,7 @@ public class DriveToTapeCommand extends CommandBase {
   @Override
   public void execute() {
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
-      double degreesOffset = driveSubsystem.getConeDistanceFromCenter() / DriveConstants.mmDegreesOffsetRatio;
-
-      yaw = LimelightHelpers.getTX(DriveConstants.limelightName) - degreesOffset;
+      yaw = LimelightHelpers.getTX(DriveConstants.limelightName);
 
       area = LimelightHelpers.getTA(DriveConstants.limelightName);
 

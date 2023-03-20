@@ -5,16 +5,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -35,9 +31,6 @@ public class IntakeSubsystem extends SubsystemBase {
       IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
 
   private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
-
-  private Ultrasonic cubeUltrasonic = new Ultrasonic(0, 1);
-  private Ultrasonic coneUltrasonic = new Ultrasonic(3, 4);
 
   /** Creates a new ElementTransitSubsystem. */
   public IntakeSubsystem() {
@@ -115,7 +108,5 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
-    SmartDashboard.putNumber("Cube Distance", cubeUltrasonic.getRangeInches());
-    SmartDashboard.putNumber("Cone Distance", coneUltrasonic.getRangeInches());
   }
 }

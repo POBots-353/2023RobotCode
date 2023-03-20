@@ -303,16 +303,6 @@ public class DriveSubsystem extends SubsystemBase {
     return false;
   }
 
-  public double getConeDistanceFromCenter() {
-    // return coneUltrasonic.getRangeMM() - DriveConstants.coneCenterMM;
-    return 0;
-  }
-
-  public double getCubeDistanceFromCenter() {
-    // return cubeUltrasonic.getRangeMM() - DriveConstants.cubeCenterMM;
-    return 0;
-  }
-
   public boolean distanceReached(double distanceMeters) {
     if (distanceMeters < 0) {
       return Math.abs(frontLeftEncoder.getPosition() - distanceMeters) <= 0.060

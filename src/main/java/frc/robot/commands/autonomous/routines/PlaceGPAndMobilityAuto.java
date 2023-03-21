@@ -1,5 +1,7 @@
 package frc.robot.commands.autonomous.routines;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -26,17 +28,9 @@ public class PlaceGPAndMobilityAuto extends SequentialCommandGroup {
          * When starting at position 1 or 3
          * Robot will be facing the node
          */
-        // Robot will drive forward a slight calculated distance to get closer to the
-        // node
-        // new AutoDriveCommand(0.2143125, driveSubsystem),
-
-        // // Robot will align to the node
-        // new AlignToTapeCommand(driveSubsystem),
         Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
 
-        new WaitCommand(1.50),
-
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem),
+        new WaitCommand(1.25),
 
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone(),
@@ -46,6 +40,7 @@ public class PlaceGPAndMobilityAuto extends SequentialCommandGroup {
         new AutoDriveCommand(-4.0, driveSubsystem),
 
         Commands.parallel(new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem),
-            new AutoTurnToAngleCommand(90, driveSubsystem)));
+            new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 90 : -90,
+                driveSubsystem)));
   }
 }

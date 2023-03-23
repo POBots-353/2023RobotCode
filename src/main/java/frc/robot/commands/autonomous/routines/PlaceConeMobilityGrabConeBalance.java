@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoBalanceCommand;
 import frc.robot.commands.drive.AutoDriveCommand;
@@ -23,6 +24,9 @@ import frc.robot.subsystems.LEDSubsystem;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
+  // private boolean cancelDriveback = true;
+  private int timeAbove10Degrees = 0;
+
   /** Creates a new PlaceConeMobilityGrabConeBalance. */
   public PlaceConeMobilityGrabConeBalance(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem,
       LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
@@ -39,23 +43,29 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone(),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.25), driveSubsystem),
+        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.28), driveSubsystem),
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-4.5, driveSubsystem),
+        new AutoDriveCommand(-4.75, driveSubsystem),
+
+        // Commands.runOnce(() -> cancelDriveback = false),
 
         // Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
 
         // Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
         Commands.parallel(
-            new AutoTurnToAngleCommand(0, driveSubsystem), // -10,
+            new AutoTurnToAngleCommand(0, driveSubsystem).withTimeout(1.75), // -10,
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem)),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.40), driveSubsystem),
+        Commands.runOnce(() -> {
+          // cancelDriveback = true;
+          driveSubsystem.setMaxOutput(0.40);
+        }, driveSubsystem),
 
-        Commands.race(Commands.run(intakeSystem::intakeCone, intakeSystem),
+        Commands.race(
+            Commands.run(intakeSystem::intakeCone, intakeSystem),
             new AutoDriveCommand(0.65, driveSubsystem)),
 
         Commands.waitSeconds(0.50),
@@ -63,15 +73,45 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         Commands.parallel(
             Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem),
 
-            Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.60), driveSubsystem),
+            Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.50), driveSubsystem),
 
-            Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem)),
+            Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
+
+            Commands.runOnce(() -> timeAbove10Degrees = 0)),
 
         Commands.parallel(
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem),
-            new AutoDriveCommand(-2.5, driveSubsystem)
-                .until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 8.5)),
+            new AutoDriveCommand(-3.5, driveSubsystem)
+                .until(() -> {
+                  if (Math.abs(driveSubsystem.getGyroPitch()) > 10) {
+                    timeAbove10Degrees++;
+                  } else if (timeAbove10Degrees > 0) {
+                    timeAbove10Degrees--;
+                  }
+                  return timeAbove10Degrees >= 18;
+                })),
 
         new AutoBalanceCommand(ledSubsystem, driveSubsystem));
+
+    // Trigger emergencyDriveBack = new Trigger(
+    // () -> DriverStation.isAutonomous() && cancelDriveback == false &&
+    // DriverStation.getMatchTime() < 5
+    // && DriverStation.getMatchTime() > 0
+    // && Math.abs(driveSubsystem.getGyroYaw()) < 20);
+
+    // emergencyDriveBack.whileTrue(
+    // Commands.sequence(
+    // Commands.parallel(
+    // Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.55), driveSubsystem),
+
+    // Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem)),
+
+    // Commands.parallel(
+    // new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint,
+    // elevatorSystem),
+    // new AutoDriveCommand(-2.5, driveSubsystem)
+    // .until(() -> Math.abs(driveSubsystem.getGyroPitch()) > 10)),
+
+    // new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
   }
 }

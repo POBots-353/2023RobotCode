@@ -25,7 +25,8 @@ public class AutoBalanceCommand extends CommandBase {
     this.driveSubsystem = driveSubsystem;
     this.ledSubsystem = ledSubsystem;
 
-    Preferences.initDouble("Balance Proportional Gain", 0.0071);
+    Preferences.initDouble("Balance Proportional Gain", 0.0066);
+    Preferences.initDouble("Balance Derivative Gain", 0.00115);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem, ledSubsystem);
@@ -52,14 +53,18 @@ public class AutoBalanceCommand extends CommandBase {
       return;
     }
 
+    if (balancePIDController.getD() != Preferences.getDouble("Balance Derivative Gain", 0.00115)) {
+      balancePIDController.setD(Preferences.getDouble("Balance Derivative Gain", 0.00115));
+    }
+
     if (Math.abs(gyroPitch) < 6.0) {
       // if (Math.abs(gyroPitch) < 2.5) {
       // balancePIDController.setP(0.0085);
       // SmartDashboard.putBoolean("Balanced", false);
       // ledSubsystem.initializeAllianceColor();
       // } else {
-      if (balancePIDController.getP() != Preferences.getDouble("Balance Proportional Gain", 0.0071)) {
-        balancePIDController.setP(Preferences.getDouble("Balance Proportional Gain", 0.0071));
+      if (balancePIDController.getP() != Preferences.getDouble("Balance Proportional Gain", 0.0066)) {
+        balancePIDController.setP(Preferences.getDouble("Balance Proportional Gain", 0.0066));
       }
       // balancePIDController.setP(0.0071);
       SmartDashboard.putBoolean("Balanced", false);

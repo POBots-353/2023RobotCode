@@ -69,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
-  private double kP = 0.45; // 4.8e-4
+  private double kP = 0.65; // 4.8e-4
   private double kI = 0;
   private double kD = 0;
   private double kIz = 0;

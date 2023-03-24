@@ -4,6 +4,8 @@
 
 package frc.robot.commands.autonomous.routines;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -36,12 +38,13 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
         // Robot will outtake the game piece it started with
         intakeSystem.autoOuttakeCone(),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.60), driveSubsystem),
+        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.45), driveSubsystem),
 
-        new AutoDriveCommand(-4.50, driveSubsystem),
+        new AutoDriveCommand(-4.25, driveSubsystem),
 
         Commands.parallel(
-            new AutoTurnToAngleCommand(0, driveSubsystem).withTimeout(2.00), // -10,
+            new AutoTurnToAngleCommand((DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5, driveSubsystem)
+                .withTimeout(2.00),
             new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem)),
 
         Commands.runOnce(() -> {
@@ -50,18 +53,18 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
 
         Commands.race(
             Commands.run(intakeSystem::intakeCube, intakeSystem),
-            new AutoDriveCommand(0.65, driveSubsystem)),
+            new AutoDriveCommand(0.85, driveSubsystem)),
 
         Commands.parallel(Commands.runOnce(
-            () -> driveSubsystem.setMaxOutput(0.60)),
+            () -> driveSubsystem.setMaxOutput(0.45)),
             Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem)),
 
         new AutoTurnToAngleCommand(180, driveSubsystem).withTimeout(2.00),
 
-        new AutoDriveCommand(5.00, driveSubsystem),
+        new AutoDriveCommand(4.50, driveSubsystem),
 
         intakeSystem.autoOuttakeCube(),
 
-        new AutoDriveCommand(-4.75, driveSubsystem));
+        new AutoDriveCommand(-4.25, driveSubsystem));
   }
 }

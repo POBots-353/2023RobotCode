@@ -43,7 +43,8 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
         new AutoDriveCommand(-4.25, driveSubsystem),
 
         Commands.parallel(
-            new AutoTurnToAngleCommand((DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5, driveSubsystem)
+            new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5,
+                driveSubsystem)
                 .withTimeout(2.00),
             new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem)),
 
@@ -53,18 +54,21 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
 
         Commands.race(
             Commands.run(intakeSystem::intakeCube, intakeSystem),
-            new AutoDriveCommand(0.85, driveSubsystem)),
+            new AutoDriveCommand(1.00, driveSubsystem)),
 
         Commands.parallel(Commands.runOnce(
-            () -> driveSubsystem.setMaxOutput(0.45)),
+            () -> driveSubsystem.setMaxOutput(0.25)),
             Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem)),
 
-        new AutoTurnToAngleCommand(180, driveSubsystem).withTimeout(2.00),
+        new AutoTurnToAngleCommand(180, driveSubsystem).withTimeout(3.00)
 
-        new AutoDriveCommand(4.50, driveSubsystem),
+    // Commands.parallel(
+    // new AutoDriveCommand(4.75, driveSubsystem),
+    // new SetElevatorPositionCommand(-15.0, elevatorSystem)),
 
-        intakeSystem.autoOuttakeCube(),
+    // intakeSystem.autoOuttakeCube(),
 
-        new AutoDriveCommand(-4.25, driveSubsystem));
+    // new AutoDriveCommand(-4.25, driveSubsystem)
+    );
   }
 }

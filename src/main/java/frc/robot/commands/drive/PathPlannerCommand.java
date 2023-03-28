@@ -9,12 +9,11 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Drive;
 import frc.robot.util.PathPlannerUtil;
 
 public class PathPlannerCommand extends FollowPathWithEvents {
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   private PathPlannerTrajectory trajectory;
 
@@ -27,7 +26,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
 
   /** Creates a new PathPlannerCommand. */
   public PathPlannerCommand(PathPlannerTrajectory trajectory,
-      DriveSubsystem driveSubsystem) {
+      Drive driveSubsystem) {
     super(PathPlannerUtil.createPathFollowCommand(trajectory, driveSubsystem),
         trajectory.getMarkers(), PathPlannerUtil.eventMap);
 
@@ -39,7 +38,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
     // addRequirements(driveSubsystem);
   }
 
-  public PathPlannerCommand(String pathName, DriveSubsystem driveSubsystem) {
+  public PathPlannerCommand(String pathName, Drive driveSubsystem) {
     this(PathPlannerUtil.loadPathPlannerTrajectory(pathName), driveSubsystem);
   }
 

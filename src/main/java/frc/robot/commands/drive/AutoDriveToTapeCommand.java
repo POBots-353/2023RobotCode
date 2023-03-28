@@ -4,10 +4,6 @@
 
 package frc.robot.commands.drive;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -15,13 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.LEDs;
 import frc.robot.util.LimelightHelpers;
 
 public class AutoDriveToTapeCommand extends CommandBase {
-  private LEDSubsystem ledSubsystem;
-  private DriveSubsystem driveSubsystem;
+  private LEDs ledSubsystem;
+  private Drive driveSubsystem;
 
   private double yaw = 0;
   private double area = 0;
@@ -32,7 +28,7 @@ public class AutoDriveToTapeCommand extends CommandBase {
   private int timeAligned = 0;
 
   /** Creates a new AutoDriveToTape. */
-  public AutoDriveToTapeCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
+  public AutoDriveToTapeCommand(LEDs ledSubsystem, Drive driveSubsystem) {
     this.ledSubsystem = ledSubsystem;
     this.driveSubsystem = driveSubsystem;
 

@@ -8,16 +8,16 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class TankDriveCommand extends CommandBase {
   private DoubleSupplier leftSupplier;
   private DoubleSupplier rightSupplier;
 
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   /** Creates a new TankDriveCommand. */
-  public TankDriveCommand(DoubleSupplier leftSupplier, DoubleSupplier rightSupplier, DriveSubsystem driveSubsystem) {
+  public TankDriveCommand(DoubleSupplier leftSupplier, DoubleSupplier rightSupplier, Drive driveSubsystem) {
     this.leftSupplier = leftSupplier;
     this.rightSupplier = rightSupplier;
 

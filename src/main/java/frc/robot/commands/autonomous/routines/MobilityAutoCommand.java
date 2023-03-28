@@ -1,7 +1,7 @@
 package frc.robot.commands.autonomous.routines;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.AutoDriveCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -10,13 +10,13 @@ public class MobilityAutoCommand extends SequentialCommandGroup {
   
 
   /** Creates a new Auto Command. */
-  public MobilityAutoCommand(DriveSubsystem driveSubsystem) {
+  public MobilityAutoCommand(Drive drive) {
 
     addCommands(
       /* When starting at position 1 or 3
        * Robot will be facing the center of the field */
 
       // Robot will drive forward the calculated distance to cross mobility line
-      new AutoDriveCommand(-3.53, driveSubsystem));
+      new AutoDriveCommand(-3.53, drive));
   }
 }

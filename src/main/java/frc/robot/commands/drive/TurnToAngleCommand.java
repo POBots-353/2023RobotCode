@@ -6,15 +6,13 @@ package frc.robot.commands.drive;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class TurnToAngleCommand extends CommandBase {
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   private DoubleSupplier angleSupplier;
 
@@ -24,7 +22,7 @@ public class TurnToAngleCommand extends CommandBase {
 
   /** Creates a new TurnToAngleCommand. */
   // Angle must be between -180 and 180
-  public TurnToAngleCommand(DoubleSupplier angleSupplier, DriveSubsystem driveSubsystem) {
+  public TurnToAngleCommand(DoubleSupplier angleSupplier, Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
     this.angleSupplier = angleSupplier;

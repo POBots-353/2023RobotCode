@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class FollowTrajectoryCommand extends RamseteCommand {
   private Trajectory trajectory;
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   /** Creates a new PathWeaverCommand. */
-  public FollowTrajectoryCommand(Trajectory trajectory, DriveSubsystem driveSubsystem) {
+  public FollowTrajectoryCommand(Trajectory trajectory, Drive driveSubsystem) {
     super(trajectory,
         driveSubsystem::getPose,
         new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
@@ -43,7 +43,7 @@ public class FollowTrajectoryCommand extends RamseteCommand {
     this.driveSubsystem = driveSubsystem;
   }
 
-  public FollowTrajectoryCommand(String path, DriveSubsystem driveSubsystem) {
+  public FollowTrajectoryCommand(String path, Drive driveSubsystem) {
     this(loadTrajectory(path), driveSubsystem);
   }
 

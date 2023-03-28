@@ -4,21 +4,18 @@
 
 package frc.robot.commands.autonomous.routines;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoBalanceCommand;
 import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -28,12 +25,11 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
   private int timeAbove10Degrees = 0;
 
   /** Creates a new PlaceConeMobilityGrabConeBalance. */
-  public PlaceConeMobilityGrabConeBalance(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem,
-      LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
+  public PlaceConeMobilityGrabConeBalance(Elevator elevator, Intake intake, LEDs leds, Drive drive) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
+        Commands.runOnce(elevator::elevatorTiltOut, elevator),
 
         new WaitCommand(1.25),
 
@@ -41,13 +37,13 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         // elevatorSystem),
 
         // Robot will outtake the game piece it started with
-        intakeSystem.autoOuttakeCone(),
+        intake.autoOuttakeCone(),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.28), driveSubsystem),
+        Commands.runOnce(() -> drive.setMaxOutput(0.28), drive),
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-4.75, driveSubsystem),
+        new AutoDriveCommand(-4.75, drive),
 
         // Commands.runOnce(() -> cancelDriveback = false),
 
@@ -56,34 +52,34 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         // Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
         Commands.parallel(
-            new AutoTurnToAngleCommand(0, driveSubsystem).withTimeout(1.75), // -10,
-            new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem)),
+            new AutoTurnToAngleCommand(0, drive).withTimeout(1.75), // -10,
+            new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevator)),
 
         Commands.runOnce(() -> {
           // cancelDriveback = true;
-          driveSubsystem.setMaxOutput(0.40);
-        }, driveSubsystem),
+          drive.setMaxOutput(0.40);
+        }, drive),
 
         Commands.race(
-            Commands.run(intakeSystem::intakeCone, intakeSystem),
-            new AutoDriveCommand(0.65, driveSubsystem)),
+            Commands.run(intake::intakeCone, intake),
+            new AutoDriveCommand(0.65, drive)),
 
         Commands.waitSeconds(0.50),
 
         Commands.parallel(
-            Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem),
+            Commands.runOnce(intake::stopIntakeMotor, intake),
 
-            Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.50), driveSubsystem),
+            Commands.runOnce(() -> drive.setMaxOutput(0.50), drive),
 
-            Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
+            Commands.runOnce(elevator::elevatorTiltIn, elevator),
 
             Commands.runOnce(() -> timeAbove10Degrees = 0)),
 
         Commands.parallel(
-            new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem),
-            new AutoDriveCommand(-3.5, driveSubsystem)
+            new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevator),
+            new AutoDriveCommand(-3.5, drive)
                 .until(() -> {
-                  if (Math.abs(driveSubsystem.getGyroPitch()) > 10) {
+                  if (Math.abs(drive.getGyroPitch()) > 10) {
                     timeAbove10Degrees++;
                   } else if (timeAbove10Degrees > 0) {
                     timeAbove10Degrees--;
@@ -91,7 +87,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
                   return timeAbove10Degrees >= 18;
                 })),
 
-        new AutoBalanceCommand(ledSubsystem, driveSubsystem));
+        new AutoBalanceCommand(leds, drive));
 
     // Trigger emergencyDriveBack = new Trigger(
     // () -> DriverStation.isAutonomous() && cancelDriveback == false &&

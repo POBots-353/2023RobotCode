@@ -7,13 +7,11 @@ package frc.robot.commands.manipulator;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.Elevator;
 
 public class ManualMoveElevatorCommand extends CommandBase {
-  private ElevatorSubsystem elevatorSystem;
+  private Elevator elevatorSystem;
 
   private BooleanSupplier limitSwitchOverride;
   private double speed;
@@ -22,7 +20,7 @@ public class ManualMoveElevatorCommand extends CommandBase {
 
   /** Creates a new ManualMoveElevatorCommand. */
   public ManualMoveElevatorCommand(double speed, BooleanSupplier limitSwitchOverride,
-      ElevatorSubsystem elevatorSystem) {
+      Elevator elevatorSystem) {
     this.speed = speed;
 
     this.limitSwitchOverride = limitSwitchOverride;
@@ -34,8 +32,8 @@ public class ManualMoveElevatorCommand extends CommandBase {
   }
 
   /** Creates a new ManualMoveElevatorCommand. */
-  public ManualMoveElevatorCommand(double speed, ElevatorSubsystem elevatorSystem) {
-    this(speed, () -> false, elevatorSystem);
+  public ManualMoveElevatorCommand(double speed, Elevator elevator) {
+    this(speed, () -> false, elevator);
   }
 
   // Called when the command is initially scheduled.
@@ -68,8 +66,6 @@ public class ManualMoveElevatorCommand extends CommandBase {
 
     if (speed > 0) {
       return elevatorSystem.bottomSwitchPressed();
-    } else if (speed < 0) {
-      return elevatorSystem.topSwitchPressed();
     }
 
     return false;

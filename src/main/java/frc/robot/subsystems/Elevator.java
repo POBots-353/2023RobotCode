@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
   private CANSparkMax elevatorMotor = new CANSparkMax(IntakeConstants.elevatorMotorID, MotorType.kBrushless);
 
   private SparkMaxPIDController elevatorPIDController = elevatorMotor.getPIDController();
@@ -47,7 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double maxAcc = 3000; // 2500
 
   /** Creates a new ElevatorSubsystem. */
-  public ElevatorSubsystem() {
+  public Elevator() {
     elevatorMotor.restoreFactoryDefaults();
 
     elevatorPiston.set(Value.kReverse);

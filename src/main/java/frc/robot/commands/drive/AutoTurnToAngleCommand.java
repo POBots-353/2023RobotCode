@@ -10,10 +10,10 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class AutoTurnToAngleCommand extends CommandBase {
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   private DoubleSupplier angleSupplier;
 
@@ -24,7 +24,7 @@ public class AutoTurnToAngleCommand extends CommandBase {
   private int timeAligned = 0;
 
   /** Creates a new AutoTurnToAngleCommand. */
-  public AutoTurnToAngleCommand(DoubleSupplier angleSupplier, DriveSubsystem driveSubsystem) {
+  public AutoTurnToAngleCommand(DoubleSupplier angleSupplier, Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
     this.angleSupplier = angleSupplier;
@@ -33,7 +33,7 @@ public class AutoTurnToAngleCommand extends CommandBase {
     addRequirements(driveSubsystem);
   }
 
-  public AutoTurnToAngleCommand(double angle, DriveSubsystem driveSubsystem) {
+  public AutoTurnToAngleCommand(double angle, Drive driveSubsystem) {
     this(() -> angle, driveSubsystem);
   }
 

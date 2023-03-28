@@ -9,19 +9,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.LEDs;
 
 public class AutoBalanceCommand extends CommandBase {
-  private DriveSubsystem driveSubsystem;
-  private LEDSubsystem ledSubsystem;
+  private Drive driveSubsystem;
+  private LEDs ledSubsystem;
 
   private PIDController balancePIDController = new PIDController(0.012, 0, 0.00115); // kD 0.00125
 
   private int timeBalanced = 0;
 
   /** Creates a new AutoBalanceCommand. */
-  public AutoBalanceCommand(LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
+  public AutoBalanceCommand(LEDs ledSubsystem, Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
     this.ledSubsystem = ledSubsystem;
 

@@ -7,17 +7,17 @@ package frc.robot.commands.drive;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class ArcadeDriveCommand extends CommandBase {
   private DoubleSupplier forwardSupplier;
   private DoubleSupplier turnSupplier;
 
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   /** Creates a new ArcadeDriveCommand. */
   public ArcadeDriveCommand(DoubleSupplier forwardSupplier, DoubleSupplier turnSupplier,
-      DriveSubsystem driveSubsystem) {
+      Drive driveSubsystem) {
     this.forwardSupplier = forwardSupplier;
     this.turnSupplier = turnSupplier;
 

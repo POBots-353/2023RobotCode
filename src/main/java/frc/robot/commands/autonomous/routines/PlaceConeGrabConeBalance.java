@@ -13,37 +13,36 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PlaceConeGrabConeBalance extends SequentialCommandGroup {
   /** Creates a new PlaceConeGrabConeBalance. */
-  public PlaceConeGrabConeBalance(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem,
-      DriveSubsystem driveSubsystem) {
+  public PlaceConeGrabConeBalance(Elevator elevator, Intake intake, Drive drive) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
+        Commands.runOnce(elevator::elevatorTiltOut, elevator),
 
         new WaitCommand(1.50),
 
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem),
+        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevator),
 
         // Robot will outtake the game piece it started with
-        intakeSystem.autoOuttakeCone(),
+        intake.autoOuttakeCone(),
 
-        new AutoDriveCommand(-4.50, driveSubsystem),
+        new AutoDriveCommand(-4.50, drive),
 
         new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 19.25 : -19.25,
-            driveSubsystem),
+            drive),
 
-        Commands.parallel(intakeSystem.autoIntakeCone(), new AutoDriveCommand(0.25, driveSubsystem)),
+        Commands.parallel(intake.autoIntakeCone(), new AutoDriveCommand(0.25, drive)),
 
         new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 19.25 + 90 : -19.25 - 90,
-            driveSubsystem));
+            drive));
   }
 }

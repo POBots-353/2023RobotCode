@@ -3,15 +3,12 @@ package frc.robot.commands.autonomous.routines;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoBalanceCommand;
 import frc.robot.commands.drive.AutoDriveCommand;
-import frc.robot.commands.drive.DriveToTapeCommand;
-import frc.robot.commands.manipulator.SetElevatorPositionCommand;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,8 +16,7 @@ import frc.robot.subsystems.LEDSubsystem;
 public class PlaceGPBalanceAuto extends SequentialCommandGroup {
 
   /** Creates a new Auto Command. */
-  public PlaceGPBalanceAuto(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem, LEDSubsystem ledSubsystem,
-      DriveSubsystem driveSubsystem) {
+  public PlaceGPBalanceAuto(Elevator elevator, Intake intake, LEDs leds, Drive drive) {
     addCommands(
         /*
          * When starting at position 2
@@ -32,20 +28,20 @@ public class PlaceGPBalanceAuto extends SequentialCommandGroup {
 
         // Robot will align to the node
         // new DriveToTapeCommand(driveSubsystem),
-        Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
+        Commands.runOnce(elevator::elevatorTiltOut, elevator),
 
         new WaitCommand(1.25),
 
         // Robot will outtake the game piece it started with
-        intakeSystem.autoOuttakeCone(),
+        intake.autoOuttakeCone(),
 
-        Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem),
+        Commands.runOnce(elevator::elevatorTiltIn, elevator),
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-2.0, driveSubsystem),
+        new AutoDriveCommand(-2.0, drive),
 
         // Robot will balance on the charge station
-        new AutoBalanceCommand(ledSubsystem, driveSubsystem));
+        new AutoBalanceCommand(leds, drive));
   }
 }

@@ -13,22 +13,21 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoDriveCommand;
 import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PlaceConePlaceCube extends SequentialCommandGroup {
   /** Creates a new PlaceConePlaceCube. */
-  public PlaceConePlaceCube(ElevatorSubsystem elevatorSystem, IntakeSubsystem intakeSystem,
-      LEDSubsystem ledSubsystem, DriveSubsystem driveSubsystem) {
+  public PlaceConePlaceCube(Elevator elevator, Intake intake, LEDs leds, Drive drive) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem),
+        Commands.runOnce(elevator::elevatorTiltOut, elevator),
 
         new WaitCommand(1.25),
 
@@ -36,31 +35,31 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
         // elevatorSystem),
 
         // Robot will outtake the game piece it started with
-        intakeSystem.autoOuttakeCone(),
+        intake.autoOuttakeCone(),
 
-        Commands.runOnce(() -> driveSubsystem.setMaxOutput(0.45), driveSubsystem),
+        Commands.runOnce(() -> drive.setMaxOutput(0.45), drive),
 
-        new AutoDriveCommand(-4.25, driveSubsystem),
+        new AutoDriveCommand(-4.25, drive),
 
         Commands.parallel(
             new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5,
-                driveSubsystem)
+                drive)
                 .withTimeout(2.00),
-            new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem)),
+            new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevator)),
 
         Commands.runOnce(() -> {
-          driveSubsystem.setMaxOutput(0.40);
-        }, driveSubsystem),
+          drive.setMaxOutput(0.40);
+        }, drive),
 
         Commands.race(
-            Commands.run(intakeSystem::intakeCube, intakeSystem),
-            new AutoDriveCommand(1.00, driveSubsystem)),
+            Commands.run(intake::intakeCube, intake),
+            new AutoDriveCommand(1.00, drive)),
 
         Commands.parallel(Commands.runOnce(
-            () -> driveSubsystem.setMaxOutput(0.25)),
-            Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem)),
+            () -> drive.setMaxOutput(0.25)),
+            Commands.runOnce(intake::stopIntakeMotor, intake)),
 
-        new AutoTurnToAngleCommand(180, driveSubsystem).withTimeout(3.00)
+        new AutoTurnToAngleCommand(180, drive).withTimeout(3.00)
 
     // Commands.parallel(
     // new AutoDriveCommand(4.75, driveSubsystem),

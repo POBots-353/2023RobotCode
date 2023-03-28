@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 
-public class LEDSubsystem extends SubsystemBase {
+public class LEDs extends SubsystemBase {
   private DigitalOutput redOutput = new DigitalOutput(LEDConstants.redOutputChannel);
   private DigitalOutput greenOutput = new DigitalOutput(LEDConstants.greenOutputChannel);
   private DigitalOutput blueOutput = new DigitalOutput(LEDConstants.blueOutputChannel);
 
   /** Creates a new LEDSubsystem. */
-  public LEDSubsystem() {
+  public LEDs() {
     setGreen();
   }
 

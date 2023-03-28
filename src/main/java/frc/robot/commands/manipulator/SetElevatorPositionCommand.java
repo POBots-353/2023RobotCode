@@ -5,16 +5,16 @@
 package frc.robot.commands.manipulator;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.Elevator;
 
 public class SetElevatorPositionCommand extends CommandBase {
-  private ElevatorSubsystem elevatorSystem;
+  private Elevator elevator;
   private double elevatorPosition;
 
   /** Creates a new LowManipulator. */
-  public SetElevatorPositionCommand(double position, ElevatorSubsystem elevator) {
+  public SetElevatorPositionCommand(double position, Elevator elevator) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.elevatorSystem = elevator;
+    this.elevator = elevator;
     elevatorPosition = position;
     addRequirements(elevator);
   }
@@ -22,26 +22,26 @@ public class SetElevatorPositionCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevatorSystem.toggleOffManipulatorBreak();
+    elevator.toggleOffManipulatorBreak();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorSystem.setElevatorPosition(elevatorPosition);
+    elevator.setElevatorPosition(elevatorPosition);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevatorSystem.toggleOnManipulatorBreak();
-    elevatorSystem.elevatorStop();
+    elevator.toggleOnManipulatorBreak();
+    elevator.elevatorStop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     // return false;
-    return Math.abs(elevatorSystem.getElevatorPosition() - elevatorPosition) < 0.2;
+    return Math.abs(elevator.getElevatorPosition() - elevatorPosition) < 0.2;
   }
 }

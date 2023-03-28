@@ -20,7 +20,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.drive.DriveToPoseCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 import frc.robot.util.LimelightHelpers;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -30,7 +30,7 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
   private Trajectory trajectory = new Trajectory();
 
   /** Creates a new AlignToAprilTagCommand. */
-  public AlignToAprilTagCommand(DriveSubsystem driveSubsystem) {
+  public AlignToAprilTagCommand(Drive driveSubsystem) {
     addCommands(
         // Trajectory generation
         Commands.runOnce(() -> {

@@ -4,23 +4,17 @@
 
 package frc.robot.commands.drive;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class AutoDriveCommand extends CommandBase {
   private DoubleSupplier distanceSupplier;
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   /** Creates a new AutoDriveCommand. */
-  public AutoDriveCommand(DoubleSupplier distance, DriveSubsystem driveSubsystem) {
+  public AutoDriveCommand(DoubleSupplier distance, Drive driveSubsystem) {
     this.distanceSupplier = distance;
 
     driveSubsystem.resetEncoders();
@@ -30,7 +24,7 @@ public class AutoDriveCommand extends CommandBase {
     addRequirements(driveSubsystem);
   }
 
-  public AutoDriveCommand(double distance, DriveSubsystem driveSubsystem) {
+  public AutoDriveCommand(double distance, Drive driveSubsystem) {
     this(() -> distance, driveSubsystem);
   }
 

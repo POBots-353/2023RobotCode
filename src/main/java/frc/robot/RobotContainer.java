@@ -22,13 +22,12 @@ import frc.robot.commands.drive.AutoTurnToAngleCommand;
 import frc.robot.commands.drive.DriveToTapeCommand;
 import frc.robot.commands.drive.PathPlannerCommand;
 import frc.robot.commands.drive.TankDriveCommand;
-import frc.robot.commands.drive.TurnToAngleCommand;
 import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.Elevator;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PathPlannerUtil;
 
@@ -54,10 +53,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
-  private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+  private final Drive drive = new Drive();
+  private final Intake intake = new Intake();
+  private final Elevator elevator = new Elevator();
+  private final LEDs leds = new LEDs();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public static final CommandXboxController driverController = new CommandXboxController(
@@ -70,13 +69,13 @@ public class RobotContainer {
   private SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
 
   public Command placeConeAutoStart(Command pathPlannerCommand) {
-    return Commands.sequence(Commands.runOnce(elevatorSubsystem::elevatorTiltOut, elevatorSubsystem),
+    return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
         new WaitCommand(1.50),
 
         new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint,
-            elevatorSubsystem),
+            elevator),
 
-        intakeSubsystem.autoOuttakeCone(),
+        intake.autoOuttakeCone(),
         new WaitCommand(0.50),
         pathPlannerCommand);
   }
@@ -85,33 +84,29 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    PathPlannerUtil.initializeCommands(driveSubsystem, elevatorSubsystem, intakeSubsystem);
+    PathPlannerUtil.initializeCommands(drive, elevator, intake);
 
-    autoChooser.addOption("Drive Backwards", new MobilityAutoCommand(driveSubsystem));
+    autoChooser.addOption("Drive Backwards", new MobilityAutoCommand(drive));
 
-    autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intakeSubsystem, ledSubsystem,
-        driveSubsystem));
+    autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility",
-        new PlaceGPAndMobilityAuto(elevatorSubsystem, intakeSubsystem,
-            driveSubsystem));
+        new PlaceGPAndMobilityAuto(elevator, intake,
+            drive));
 
-    autoChooser.addOption("Drive Back, Balance",
-        new DriveOnChargeStationAuto(elevatorSubsystem, intakeSubsystem,
-            ledSubsystem, driveSubsystem));
+    autoChooser.addOption("Drive Back, Balance", new DriveOnChargeStationAuto(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Balance",
-        new PlaceGPBalanceAuto(elevatorSubsystem, intakeSubsystem, ledSubsystem,
-            driveSubsystem));
+        new PlaceGPBalanceAuto(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Place Cube",
-        new PlaceConePlaceCube(elevatorSubsystem, intakeSubsystem, ledSubsystem, driveSubsystem));
+        new PlaceConePlaceCube(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Balance",
-        new PlaceConeMobilityBalance(elevatorSubsystem, intakeSubsystem, ledSubsystem, driveSubsystem));
+        new PlaceConeMobilityBalance(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Grab Cone, Balance",
-        new PlaceConeMobilityGrabConeBalance(elevatorSubsystem, intakeSubsystem, ledSubsystem, driveSubsystem));
+        new PlaceConeMobilityGrabConeBalance(elevator, intake, leds, drive));
 
     // autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
     // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive
@@ -164,8 +159,8 @@ public class RobotContainer {
     // new ArcadeDriveCommand(driverController::getLeftY,
     // driverController::getRightX, driveSubsystem));
 
-    driveSubsystem.setDefaultCommand(
-        new TankDriveCommand(driverController::getLeftY, driverController::getRightY, driveSubsystem));
+    drive.setDefaultCommand(
+        new TankDriveCommand(driverController::getLeftY, driverController::getRightY, drive));
   }
 
   /**
@@ -212,37 +207,37 @@ public class RobotContainer {
     Trigger setPipelineAprilTag = driverController.back();
 
     slowDrive.whileTrue(
-        Commands.run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
-            -driverController.getRightY() * DriveConstants.slowSpeed), driveSubsystem));
+        Commands.run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
+            -driverController.getRightY() * DriveConstants.slowSpeed), drive));
 
     turboDrive
         .whileTrue(Commands
-            .run(() -> driveSubsystem.tankDrive(-driverController.getLeftY() * DriveConstants.turboSpeed,
-                -driverController.getRightY() * DriveConstants.turboSpeed), driveSubsystem));
+            .run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.turboSpeed,
+                -driverController.getRightY() * DriveConstants.turboSpeed), drive));
 
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
         .whileTrue(
             new AutoTurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
-                driveSubsystem));
+                drive));
 
-    autoBalance.whileTrue(new AutoBalanceCommand(ledSubsystem, driveSubsystem));
+    autoBalance.whileTrue(new AutoBalanceCommand(leds, drive));
 
-    toggleBrake.toggleOnTrue(Commands.runOnce(driveSubsystem::toggleBrakes, driveSubsystem));
+    toggleBrake.toggleOnTrue(Commands.runOnce(drive::toggleBrakes, drive));
 
-    alignToTape.whileTrue(new DriveToTapeCommand(ledSubsystem, driveSubsystem));
+    alignToTape.whileTrue(new DriveToTapeCommand(leds, drive));
 
-    alignToAprilTag.whileTrue(new AlignToAprilTagCommand(driveSubsystem));
+    alignToAprilTag.whileTrue(new AlignToAprilTagCommand(drive));
 
     setPipelineTape
         .toggleOnTrue(
             Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 0),
-                driveSubsystem));
+                drive));
 
     setPipelineAprilTag
         .toggleOnTrue(
             Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 1),
-                driveSubsystem));
+                drive));
   }
 
   /**
@@ -267,33 +262,33 @@ public class RobotContainer {
     Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
 
     startingConfiguration.whileTrue(Commands.sequence(
-        Commands.runOnce(elevatorSubsystem::elevatorTiltIn, elevatorSubsystem), new WaitCommand(1.00),
-        new SetElevatorPositionCommand(IntakeConstants.startingConfigurationHeight, elevatorSubsystem),
-        Commands.runOnce(intakeSubsystem::toggleWristOut, intakeSubsystem)));
+        Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
+        new SetElevatorPositionCommand(IntakeConstants.startingConfigurationHeight, elevator),
+        Commands.runOnce(intake::toggleWristOut, intake)));
 
-    elevatorTilt.toggleOnTrue(Commands.runOnce(elevatorSubsystem::toggleElevatorTilt, elevatorSubsystem));
+    elevatorTilt.toggleOnTrue(Commands.runOnce(elevator::toggleElevatorTilt, elevator));
 
     coneElevatorHigh
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSubsystem));
+        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevator));
     coneElevatorMid
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSubsystem));
+        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevator));
     coneElevatorLow
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSubsystem));
+        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevator));
 
     cubeElevatorHigh
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elevatorSubsystem));
+        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elevator));
     cubeElevatorMid
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elevatorSubsystem));
+        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elevator));
     cubeElevatorLow
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSubsystem));
+        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevator));
 
     elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed,
-        () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevatorSubsystem));
+        () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
     elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed,
-        () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevatorSubsystem));
+        () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
 
     new JoystickButton(operatorStick, 15)
-        .onTrue(Commands.runOnce(elevatorSubsystem::zeroElevatorPosition, elevatorSubsystem));
+        .onTrue(Commands.runOnce(elevator::zeroElevatorPosition, elevator));
   }
 
   /**
@@ -311,19 +306,19 @@ public class RobotContainer {
 
     Trigger intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
 
-    intakeCone.whileTrue(Commands.run(intakeSubsystem::intakeCone, intakeSubsystem))
-        .toggleOnFalse(Commands.runOnce(intakeSubsystem::stopIntakeMotor, intakeSubsystem));
+    intakeCone.whileTrue(Commands.run(intake::intakeCone, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
-    outtakeCone.whileTrue(Commands.run(intakeSubsystem::outTakeCone, intakeSubsystem))
-        .toggleOnFalse(Commands.runOnce(intakeSubsystem::stopIntakeMotor, intakeSubsystem));
+    outtakeCone.whileTrue(Commands.run(intake::outTakeCone, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
-    intakeCube.whileTrue(Commands.run(intakeSubsystem::intakeCube, intakeSubsystem))
-        .toggleOnFalse(Commands.runOnce(intakeSubsystem::stopIntakeMotor, intakeSubsystem));
+    intakeCube.whileTrue(Commands.run(intake::intakeCube, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
-    outtakeCube.whileTrue(Commands.run(intakeSubsystem::outTakeCube, intakeSubsystem))
-        .toggleOnFalse(Commands.runOnce(intakeSubsystem::stopIntakeMotor, intakeSubsystem));
+    outtakeCube.whileTrue(Commands.run(intake::outTakeCube, intake))
+        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
-    intakePiston.toggleOnTrue(Commands.runOnce(intakeSubsystem::toggleIntakePiston, intakeSubsystem));
+    intakePiston.toggleOnTrue(Commands.runOnce(intake::toggleIntakePiston, intake));
   }
 
   public void initializeOdometry(Command autoCommand) {
@@ -331,18 +326,18 @@ public class RobotContainer {
       return;
     }
 
-    driveSubsystem.initializeFieldPosition(startingFieldPosition.getSelected());
+    drive.initializeFieldPosition(startingFieldPosition.getSelected());
   }
 
   public void initializeAutonomous() {
-    intakeSubsystem.disableCompressor();
-    ledSubsystem.initializeAllianceColor();
+    intake.disableCompressor();
+    leds.initializeAllianceColor();
   }
 
   public void initializeTeleop() {
-    ledSubsystem.initializeAllianceColor();
-    intakeSubsystem.enableCompressor();
-    driveSubsystem.turnBrakesOff();
+    leds.initializeAllianceColor();
+    intake.enableCompressor();
+    drive.turnBrakesOff();
   }
 
   /**

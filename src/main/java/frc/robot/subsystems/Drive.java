@@ -37,7 +37,7 @@ import frc.robot.util.LimelightHelpers;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class DriveSubsystem extends SubsystemBase {
+public class Drive extends SubsystemBase {
   private CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
   private CANSparkMax backLeftMotor = new CANSparkMax(DriveConstants.backLeftMotorID, MotorType.kBrushless);
   private CANSparkMax frontRightMotor = new CANSparkMax(DriveConstants.frontRightMotorID, MotorType.kBrushless);
@@ -88,7 +88,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoConstants.blueSubstationPose);
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public Drive() {
     frontLeftMotor.restoreFactoryDefaults();
     frontRightMotor.restoreFactoryDefaults();
     backLeftMotor.restoreFactoryDefaults();

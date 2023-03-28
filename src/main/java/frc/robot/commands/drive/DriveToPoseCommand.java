@@ -6,26 +6,21 @@ package frc.robot.commands.drive;
 
 import java.util.function.Supplier;
 
-import javax.xml.crypto.dsig.Transform;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Drive;
 
 public class DriveToPoseCommand extends CommandBase {
-  private DriveSubsystem driveSubsystem;
+  private Drive driveSubsystem;
 
   private RamseteController ramseteController = new RamseteController(AutoConstants.kRamseteB,
       AutoConstants.kRamseteZeta);
@@ -49,7 +44,7 @@ public class DriveToPoseCommand extends CommandBase {
   Pose2d goal;
 
   /** Creates a new DriveToPoseCommand. */
-  public DriveToPoseCommand(Supplier<Trajectory> trajectory, DriveSubsystem driveSubsystem) {
+  public DriveToPoseCommand(Supplier<Trajectory> trajectory, Drive driveSubsystem) {
     trajectorySupplier = trajectory;
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.

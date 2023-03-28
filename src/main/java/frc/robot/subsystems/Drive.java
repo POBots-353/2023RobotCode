@@ -255,26 +255,6 @@ public class Drive extends SubsystemBase {
     odometry.resetPosition(navx.getRotation2d(), 0, 0, lastPose);
   }
 
-  public double getGyroYaw() {
-    return Math.IEEEremainder(navx.getYaw() - 180, 360);
-  }
-
-  public double getGyroPitch() {
-    return Math.IEEEremainder(navx.getPitch(), 360);
-  }
-
-  public double getAngleError(double expectedAngle) {
-    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw() - 180, 360);
-
-    if (angleSubtract < -180) {
-      return angleSubtract + 360;
-    } else if (angleSubtract > 180) {
-      return angleSubtract - 360;
-    }
-
-    return angleSubtract;
-  }
-
   public boolean alignedToTapeYaw() {
     if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
       return Math
@@ -385,6 +365,30 @@ public class Drive extends SubsystemBase {
     return odometry.getPoseMeters();
   }
 
+  public void zeroGyro() {
+    navx.zeroYaw();
+  }
+
+  public double getGyroYaw() {
+    return Math.IEEEremainder(navx.getYaw() - 180, 360);
+  }
+
+  public double getGyroPitch() {
+    return Math.IEEEremainder(navx.getPitch(), 360);
+  }
+
+  public double getAngleError(double expectedAngle) {
+    double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw() - 180, 360);
+
+    if (angleSubtract < -180) {
+      return angleSubtract + 360;
+    } else if (angleSubtract > 180) {
+      return angleSubtract - 360;
+    }
+
+    return angleSubtract;
+  }
+
   public Rotation2d getRotation() {
     return navx.getRotation2d();
   }
@@ -394,7 +398,6 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
-    // resetEncoders();
     odometry.resetPosition(
         navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
   }

@@ -330,6 +330,7 @@ public class RobotContainer {
   }
 
   public void initializeAutonomous() {
+    drive.zeroGyro();
     intake.disableCompressor();
     leds.initializeAllianceColor();
   }

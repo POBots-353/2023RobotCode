@@ -155,4 +155,10 @@ public final class Constants {
     public static final int greenOutputChannel = 5;
     public static final int blueOutputChannel = 2;
   }
+
+  public static final class CubeIntakeConstants {
+    public static final double lowCubeIntakePos = 0;
+    public static final double middleCubeIntakePos = 3;
+    public static final double highCubeIntakePos = 6;
+  }
 }

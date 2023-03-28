@@ -26,11 +26,11 @@ import frc.robot.util.LimelightHelpers;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AlignToAprilTagCommand extends SequentialCommandGroup {
+public class AlignToAprilTag extends SequentialCommandGroup {
   private Trajectory trajectory = new Trajectory();
 
   /** Creates a new AlignToAprilTagCommand. */
-  public AlignToAprilTagCommand(Drive driveSubsystem) {
+  public AlignToAprilTag(Drive driveSubsystem) {
     addCommands(
         // Trajectory generation
         Commands.runOnce(() -> {

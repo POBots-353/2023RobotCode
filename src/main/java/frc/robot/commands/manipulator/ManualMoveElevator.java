@@ -10,7 +10,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Elevator;
 
-public class ManualMoveElevatorCommand extends CommandBase {
+public class ManualMoveElevator extends CommandBase {
   private Elevator elevatorSystem;
 
   private BooleanSupplier limitSwitchOverride;
@@ -19,7 +19,7 @@ public class ManualMoveElevatorCommand extends CommandBase {
   private SlewRateLimiter rateLimiter = new SlewRateLimiter(3.53);
 
   /** Creates a new ManualMoveElevatorCommand. */
-  public ManualMoveElevatorCommand(double speed, BooleanSupplier limitSwitchOverride,
+  public ManualMoveElevator(double speed, BooleanSupplier limitSwitchOverride,
       Elevator elevatorSystem) {
     this.speed = speed;
 
@@ -32,7 +32,7 @@ public class ManualMoveElevatorCommand extends CommandBase {
   }
 
   /** Creates a new ManualMoveElevatorCommand. */
-  public ManualMoveElevatorCommand(double speed, Elevator elevator) {
+  public ManualMoveElevator(double speed, Elevator elevator) {
     this(speed, () -> false, elevator);
   }
 

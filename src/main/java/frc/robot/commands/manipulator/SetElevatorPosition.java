@@ -7,12 +7,12 @@ package frc.robot.commands.manipulator;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Elevator;
 
-public class SetElevatorPositionCommand extends CommandBase {
+public class SetElevatorPosition extends CommandBase {
   private Elevator elevator;
   private double elevatorPosition;
 
   /** Creates a new LowManipulator. */
-  public SetElevatorPositionCommand(double position, Elevator elevator) {
+  public SetElevatorPosition(double position, Elevator elevator) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevator = elevator;
     elevatorPosition = position;

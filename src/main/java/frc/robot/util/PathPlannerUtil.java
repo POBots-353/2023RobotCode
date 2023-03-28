@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.commands.manipulator.SetElevatorPositionCommand;
+import frc.robot.commands.manipulator.SetElevatorPosition;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Elevator;
@@ -42,15 +42,15 @@ public class PathPlannerUtil {
     eventMap.put("stopIntake", Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem));
 
     eventMap.put("elevatorConeHigh",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem));
+        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem));
     eventMap.put("elevatorConeMid",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem));
+        new SetElevatorPosition(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem));
     eventMap.put("elevatorConeLow",
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem));
+        new SetElevatorPosition(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem));
 
-    eventMap.put("elevatorCubeHigh", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elevatorSystem));
-    eventMap.put("elevatorCubeMid", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elevatorSystem));
-    eventMap.put("elevatorCubeLow", new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeHigh", new SetElevatorPosition(IntakeConstants.elevatorCubeTopSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeMid", new SetElevatorPosition(IntakeConstants.elevatorCubeMidSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeLow", new SetElevatorPosition(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem));
 
     eventMap.put("elevatorTiltOut", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem), new WaitCommand(2.00)));
     // eventMap.put("elevatorTiltOut", new PrintCommand("Elevator Tilt Out"));

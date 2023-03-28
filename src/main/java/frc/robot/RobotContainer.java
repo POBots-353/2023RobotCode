@@ -8,13 +8,13 @@ import frc.robot.Constants.Buttons;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.apriltag.AlignToAprilTagCommand;
+import frc.robot.commands.apriltag.AlignToAprilTag;
 import frc.robot.commands.autonomous.routines.PlaceConeAuto;
 import frc.robot.commands.autonomous.routines.BalanceAuto;
 import frc.robot.commands.autonomous.routines.MobilityAuto;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityBalance;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityGrabConeBalance;
-import frc.robot.commands.autonomous.routines.PlaceConePlaceCube;
+import frc.robot.commands.autonomous.routines.PlaceConePlaceCubeLow;
 import frc.robot.commands.autonomous.routines.PlaceConeMobility;
 import frc.robot.commands.autonomous.routines.PlaceConeBalance;
 import frc.robot.commands.drive.AutoBalance;
@@ -22,8 +22,8 @@ import frc.robot.commands.drive.AutoTurnToAngle;
 import frc.robot.commands.drive.DriveToTape;
 import frc.robot.commands.drive.FollowPathPlanner;
 import frc.robot.commands.drive.TankDrive;
-import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
-import frc.robot.commands.manipulator.SetElevatorPositionCommand;
+import frc.robot.commands.manipulator.ManualMoveElevator;
+import frc.robot.commands.manipulator.SetElevatorPosition;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
@@ -72,7 +72,7 @@ public class RobotContainer {
     return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
         new WaitCommand(1.50),
 
-        new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint,
+        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint,
             elevator),
 
         intake.autoOuttakeCone(),
@@ -100,7 +100,7 @@ public class RobotContainer {
         new PlaceConeBalance(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Place Cube",
-        new PlaceConePlaceCube(elevator, intake, leds, drive));
+        new PlaceConePlaceCubeLow(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Balance",
         new PlaceConeMobilityBalance(elevator, intake, leds, drive));
@@ -227,7 +227,7 @@ public class RobotContainer {
 
     alignToTape.whileTrue(new DriveToTape(leds, drive));
 
-    alignToAprilTag.whileTrue(new AlignToAprilTagCommand(drive));
+    alignToAprilTag.whileTrue(new AlignToAprilTag(drive));
 
     setPipelineTape
         .toggleOnTrue(
@@ -263,28 +263,28 @@ public class RobotContainer {
 
     startingConfiguration.whileTrue(Commands.sequence(
         Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
-        new SetElevatorPositionCommand(IntakeConstants.startingConfigurationHeight, elevator),
+        new SetElevatorPosition(IntakeConstants.startingConfigurationHeight, elevator),
         Commands.runOnce(intake::toggleWristOut, intake)));
 
     elevatorTilt.toggleOnTrue(Commands.runOnce(elevator::toggleElevatorTilt, elevator));
 
     coneElevatorHigh
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeTopSetPoint, elevator));
+        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator));
     coneElevatorMid
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevator));
+        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeMidSetPoint, elevator));
     coneElevatorLow
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevator));
+        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeLowSetPoint, elevator));
 
     cubeElevatorHigh
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeTopSetPoint, elevator));
+        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorCubeTopSetPoint, elevator));
     cubeElevatorMid
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeMidSetPoint, elevator));
+        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorCubeMidSetPoint, elevator));
     cubeElevatorLow
-        .whileTrue(new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevator));
+        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorCubeLowSetPoint, elevator));
 
-    elevatorUp.whileTrue(new ManualMoveElevatorCommand(-IntakeConstants.elevatorSpeed,
+    elevatorUp.whileTrue(new ManualMoveElevator(-IntakeConstants.elevatorSpeed,
         () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
-    elevatorDown.whileTrue(new ManualMoveElevatorCommand(IntakeConstants.elevatorSpeed,
+    elevatorDown.whileTrue(new ManualMoveElevator(IntakeConstants.elevatorSpeed,
         () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
 
     new JoystickButton(operatorStick, 15)

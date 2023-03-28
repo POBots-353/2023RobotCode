@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.LEDs;
 
-public class AutoBalanceCommand extends CommandBase {
+public class AutoBalance extends CommandBase {
   private Drive driveSubsystem;
   private LEDs ledSubsystem;
 
@@ -21,7 +21,7 @@ public class AutoBalanceCommand extends CommandBase {
   private int timeBalanced = 0;
 
   /** Creates a new AutoBalanceCommand. */
-  public AutoBalanceCommand(LEDs ledSubsystem, Drive driveSubsystem) {
+  public AutoBalance(LEDs ledSubsystem, Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
     this.ledSubsystem = ledSubsystem;
 

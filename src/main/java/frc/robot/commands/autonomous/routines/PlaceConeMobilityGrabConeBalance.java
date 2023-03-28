@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.commands.drive.AutoBalanceCommand;
-import frc.robot.commands.drive.AutoDriveCommand;
-import frc.robot.commands.drive.AutoTurnToAngleCommand;
+import frc.robot.commands.drive.AutoBalance;
+import frc.robot.commands.drive.AutoDrive;
+import frc.robot.commands.drive.AutoTurnToAngle;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
@@ -43,7 +43,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-4.75, drive),
+        new AutoDrive(-4.75, drive),
 
         // Commands.runOnce(() -> cancelDriveback = false),
 
@@ -52,7 +52,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
         // Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
         Commands.parallel(
-            new AutoTurnToAngleCommand(0, drive).withTimeout(1.75), // -10,
+            new AutoTurnToAngle(0, drive).withTimeout(1.75), // -10,
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeLowSetPoint, elevator)),
 
         Commands.runOnce(() -> {
@@ -62,7 +62,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
 
         Commands.race(
             Commands.run(intake::intakeCone, intake),
-            new AutoDriveCommand(0.65, drive)),
+            new AutoDrive(0.65, drive)),
 
         Commands.waitSeconds(0.50),
 
@@ -77,7 +77,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
 
         Commands.parallel(
             new SetElevatorPositionCommand(IntakeConstants.elevatorConeMidSetPoint, elevator),
-            new AutoDriveCommand(-3.5, drive)
+            new AutoDrive(-3.5, drive)
                 .until(() -> {
                   if (Math.abs(drive.getGyroPitch()) > 10) {
                     timeAbove10Degrees++;
@@ -87,7 +87,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
                   return timeAbove10Degrees >= 18;
                 })),
 
-        new AutoBalanceCommand(leds, drive));
+        new AutoBalance(leds, drive));
 
     // Trigger emergencyDriveBack = new Trigger(
     // () -> DriverStation.isAutonomous() && cancelDriveback == false &&

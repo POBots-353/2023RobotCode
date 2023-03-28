@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.drive.AutoTurnToAngleCommand;
-import frc.robot.commands.drive.DriveToPoseCommand;
+import frc.robot.commands.drive.AutoTurnToAngle;
+import frc.robot.commands.drive.DriveToPose;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.LimelightHelpers;
 
@@ -66,7 +66,7 @@ public class AlignToAprilTagCommand extends SequentialCommandGroup {
           trajectory = TrajectoryGenerator.generateTrajectory(driveSubsystem.getPose(), List.of(),
               finalPose, config);
         }, driveSubsystem),
-        new DriveToPoseCommand(() -> trajectory, driveSubsystem),
-        new AutoTurnToAngleCommand(0, driveSubsystem));
+        new DriveToPose(() -> trajectory, driveSubsystem),
+        new AutoTurnToAngle(0, driveSubsystem));
   }
 }

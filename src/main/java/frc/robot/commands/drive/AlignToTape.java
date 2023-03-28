@@ -11,7 +11,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.LimelightHelpers;
 
-public class AlignToTapeCommand extends CommandBase {
+public class AlignToTape extends CommandBase {
   private Drive driveSubsystem;
 
   private PIDController turnController = new PIDController(0.0050, 0.00155, 0.00025);
@@ -21,7 +21,7 @@ public class AlignToTapeCommand extends CommandBase {
   private double timeAligned = 0;
 
   /** Creates a new AlignToTapeCommand. */
-  public AlignToTapeCommand(Drive driveSubsystem) {
+  public AlignToTape(Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.

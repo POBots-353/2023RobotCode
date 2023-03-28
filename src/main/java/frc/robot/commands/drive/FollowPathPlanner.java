@@ -12,7 +12,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Drive;
 import frc.robot.util.PathPlannerUtil;
 
-public class PathPlannerCommand extends FollowPathWithEvents {
+public class FollowPathPlanner extends FollowPathWithEvents {
   private Drive driveSubsystem;
 
   private PathPlannerTrajectory trajectory;
@@ -25,7 +25,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
   }
 
   /** Creates a new PathPlannerCommand. */
-  public PathPlannerCommand(PathPlannerTrajectory trajectory,
+  public FollowPathPlanner(PathPlannerTrajectory trajectory,
       Drive driveSubsystem) {
     super(PathPlannerUtil.createPathFollowCommand(trajectory, driveSubsystem),
         trajectory.getMarkers(), PathPlannerUtil.eventMap);
@@ -38,7 +38,7 @@ public class PathPlannerCommand extends FollowPathWithEvents {
     // addRequirements(driveSubsystem);
   }
 
-  public PathPlannerCommand(String pathName, Drive driveSubsystem) {
+  public FollowPathPlanner(String pathName, Drive driveSubsystem) {
     this(PathPlannerUtil.loadPathPlannerTrajectory(pathName), driveSubsystem);
   }
 

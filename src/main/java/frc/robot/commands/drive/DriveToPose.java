@@ -19,7 +19,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
 
-public class DriveToPoseCommand extends CommandBase {
+public class DriveToPose extends CommandBase {
   private Drive driveSubsystem;
 
   private RamseteController ramseteController = new RamseteController(AutoConstants.kRamseteB,
@@ -44,7 +44,7 @@ public class DriveToPoseCommand extends CommandBase {
   Pose2d goal;
 
   /** Creates a new DriveToPoseCommand. */
-  public DriveToPoseCommand(Supplier<Trajectory> trajectory, Drive driveSubsystem) {
+  public DriveToPose(Supplier<Trajectory> trajectory, Drive driveSubsystem) {
     trajectorySupplier = trajectory;
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.

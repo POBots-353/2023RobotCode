@@ -11,7 +11,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 
-public class TurnToAngleCommand extends CommandBase {
+public class TurnToAngle extends CommandBase {
   private Drive driveSubsystem;
 
   private DoubleSupplier angleSupplier;
@@ -22,7 +22,7 @@ public class TurnToAngleCommand extends CommandBase {
 
   /** Creates a new TurnToAngleCommand. */
   // Angle must be between -180 and 180
-  public TurnToAngleCommand(DoubleSupplier angleSupplier, Drive driveSubsystem) {
+  public TurnToAngle(DoubleSupplier angleSupplier, Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
 
     this.angleSupplier = angleSupplier;

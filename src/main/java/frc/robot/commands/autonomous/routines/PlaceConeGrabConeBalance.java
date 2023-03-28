@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.commands.drive.AutoDriveCommand;
-import frc.robot.commands.drive.AutoTurnToAngleCommand;
+import frc.robot.commands.drive.AutoDrive;
+import frc.robot.commands.drive.AutoTurnToAngle;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
@@ -35,14 +35,14 @@ public class PlaceConeGrabConeBalance extends SequentialCommandGroup {
         // Robot will outtake the game piece it started with
         intake.autoOuttakeCone(),
 
-        new AutoDriveCommand(-4.50, drive),
+        new AutoDrive(-4.50, drive),
 
-        new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 19.25 : -19.25,
+        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 19.25 : -19.25,
             drive),
 
-        Commands.parallel(intake.autoIntakeCone(), new AutoDriveCommand(0.25, drive)),
+        Commands.parallel(intake.autoIntakeCone(), new AutoDrive(0.25, drive)),
 
-        new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 19.25 + 90 : -19.25 - 90,
+        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 19.25 + 90 : -19.25 - 90,
             drive));
   }
 }

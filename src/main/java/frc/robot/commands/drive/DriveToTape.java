@@ -15,7 +15,7 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.LEDs;
 import frc.robot.util.LimelightHelpers;
 
-public class DriveToTapeCommand extends CommandBase {
+public class DriveToTape extends CommandBase {
   private LEDs ledSubsystem;
   private Drive driveSubsystem;
 
@@ -26,7 +26,7 @@ public class DriveToTapeCommand extends CommandBase {
   private PIDController turnController = new PIDController(0.0070, 0, 0); // 0.0050
 
   /** Creates a new AlignToTapeCommand. */
-  public DriveToTapeCommand(LEDs ledSubsystem, Drive driveSubsystem) {
+  public DriveToTape(LEDs ledSubsystem, Drive driveSubsystem) {
     this.ledSubsystem = ledSubsystem;
     this.driveSubsystem = driveSubsystem;
 

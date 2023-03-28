@@ -9,12 +9,12 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 
-public class AutoDriveCommand extends CommandBase {
+public class AutoDrive extends CommandBase {
   private DoubleSupplier distanceSupplier;
   private Drive driveSubsystem;
 
   /** Creates a new AutoDriveCommand. */
-  public AutoDriveCommand(DoubleSupplier distance, Drive driveSubsystem) {
+  public AutoDrive(DoubleSupplier distance, Drive driveSubsystem) {
     this.distanceSupplier = distance;
 
     driveSubsystem.resetEncoders();
@@ -24,7 +24,7 @@ public class AutoDriveCommand extends CommandBase {
     addRequirements(driveSubsystem);
   }
 
-  public AutoDriveCommand(double distance, Drive driveSubsystem) {
+  public AutoDrive(double distance, Drive driveSubsystem) {
     this(() -> distance, driveSubsystem);
   }
 

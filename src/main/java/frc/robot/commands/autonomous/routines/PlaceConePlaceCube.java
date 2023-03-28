@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.commands.drive.AutoDriveCommand;
-import frc.robot.commands.drive.AutoTurnToAngleCommand;
+import frc.robot.commands.drive.AutoDrive;
+import frc.robot.commands.drive.AutoTurnToAngle;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
@@ -39,10 +39,10 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
 
         Commands.runOnce(() -> drive.setMaxOutput(0.45), drive),
 
-        new AutoDriveCommand(-4.25, drive),
+        new AutoDrive(-4.25, drive),
 
         Commands.parallel(
-            new AutoTurnToAngleCommand(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5,
+            new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5,
                 drive)
                 .withTimeout(2.00),
             new SetElevatorPositionCommand(IntakeConstants.elevatorCubeLowSetPoint, elevator)),
@@ -53,13 +53,13 @@ public class PlaceConePlaceCube extends SequentialCommandGroup {
 
         Commands.race(
             Commands.run(intake::intakeCube, intake),
-            new AutoDriveCommand(1.00, drive)),
+            new AutoDrive(1.00, drive)),
 
         Commands.parallel(Commands.runOnce(
             () -> drive.setMaxOutput(0.25)),
             Commands.runOnce(intake::stopIntakeMotor, intake)),
 
-        new AutoTurnToAngleCommand(180, drive).withTimeout(3.00)
+        new AutoTurnToAngle(180, drive).withTimeout(3.00)
 
     // Commands.parallel(
     // new AutoDriveCommand(4.75, driveSubsystem),

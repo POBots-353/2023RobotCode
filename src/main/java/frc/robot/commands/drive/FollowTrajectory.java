@@ -18,12 +18,12 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
 
-public class FollowTrajectoryCommand extends RamseteCommand {
+public class FollowTrajectory extends RamseteCommand {
   private Trajectory trajectory;
   private Drive driveSubsystem;
 
   /** Creates a new PathWeaverCommand. */
-  public FollowTrajectoryCommand(Trajectory trajectory, Drive driveSubsystem) {
+  public FollowTrajectory(Trajectory trajectory, Drive driveSubsystem) {
     super(trajectory,
         driveSubsystem::getPose,
         new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
@@ -43,7 +43,7 @@ public class FollowTrajectoryCommand extends RamseteCommand {
     this.driveSubsystem = driveSubsystem;
   }
 
-  public FollowTrajectoryCommand(String path, Drive driveSubsystem) {
+  public FollowTrajectory(String path, Drive driveSubsystem) {
     this(loadTrajectory(path), driveSubsystem);
   }
 

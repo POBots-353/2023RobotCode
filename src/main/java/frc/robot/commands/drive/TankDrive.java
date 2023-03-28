@@ -7,19 +7,19 @@ package frc.robot.commands.drive;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Drive;
 
-public class ArcadeDriveCommand extends CommandBase {
-  private DoubleSupplier forwardSupplier;
-  private DoubleSupplier turnSupplier;
+public class TankDrive extends CommandBase {
+  private DoubleSupplier leftSupplier;
+  private DoubleSupplier rightSupplier;
 
   private Drive driveSubsystem;
 
-  /** Creates a new ArcadeDriveCommand. */
-  public ArcadeDriveCommand(DoubleSupplier forwardSupplier, DoubleSupplier turnSupplier,
-      Drive driveSubsystem) {
-    this.forwardSupplier = forwardSupplier;
-    this.turnSupplier = turnSupplier;
+  /** Creates a new TankDriveCommand. */
+  public TankDrive(DoubleSupplier leftSupplier, DoubleSupplier rightSupplier, Drive driveSubsystem) {
+    this.leftSupplier = leftSupplier;
+    this.rightSupplier = rightSupplier;
 
     this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -34,7 +34,8 @@ public class ArcadeDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveSubsystem.arcadeDrive(-forwardSupplier.getAsDouble() * 0.45, turnSupplier.getAsDouble() * 0.45); 
+    driveSubsystem.tankDrive(-leftSupplier.getAsDouble() * DriveConstants.defaultSpeed,
+        -rightSupplier.getAsDouble() * DriveConstants.defaultSpeed);
   }
 
   // Called once the command ends or is interrupted.

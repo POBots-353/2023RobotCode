@@ -7,8 +7,8 @@ package frc.robot.commands.autonomous.routines;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.drive.AutoBalanceCommand;
-import frc.robot.commands.drive.AutoDriveCommand;
+import frc.robot.commands.drive.AutoBalance;
+import frc.robot.commands.drive.AutoDrive;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
@@ -37,7 +37,7 @@ public class PlaceConeMobilityBalance extends SequentialCommandGroup {
 
         // Robot will be facing the node, and will drive backward the calculated
         // distance to go onto the station and balance
-        new AutoDriveCommand(-4.25, drive),
+        new AutoDrive(-4.25, drive),
 
         Commands.waitSeconds(0.10),
 
@@ -47,8 +47,8 @@ public class PlaceConeMobilityBalance extends SequentialCommandGroup {
 
         // Commands.runOnce(intakeSystem::toggleWristIn, intakeSystem),
 
-        new AutoDriveCommand(2.25, drive).until(() -> Math.abs(drive.getGyroPitch()) > 10),
+        new AutoDrive(2.25, drive).until(() -> Math.abs(drive.getGyroPitch()) > 10),
 
-        new AutoBalanceCommand(leds, drive));
+        new AutoBalance(leds, drive));
   }
 }

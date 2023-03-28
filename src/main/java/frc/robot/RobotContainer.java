@@ -9,19 +9,19 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.apriltag.AlignToAprilTagCommand;
-import frc.robot.commands.autonomous.routines.ConeOnMidAutoCommand;
-import frc.robot.commands.autonomous.routines.DriveOnChargeStationAuto;
-import frc.robot.commands.autonomous.routines.MobilityAutoCommand;
+import frc.robot.commands.autonomous.routines.PlaceConeAuto;
+import frc.robot.commands.autonomous.routines.BalanceAuto;
+import frc.robot.commands.autonomous.routines.MobilityAuto;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityBalance;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityGrabConeBalance;
 import frc.robot.commands.autonomous.routines.PlaceConePlaceCube;
-import frc.robot.commands.autonomous.routines.PlaceGPAndMobilityAuto;
-import frc.robot.commands.autonomous.routines.PlaceGPBalanceAuto;
-import frc.robot.commands.drive.AutoBalanceCommand;
-import frc.robot.commands.drive.AutoTurnToAngleCommand;
-import frc.robot.commands.drive.DriveToTapeCommand;
-import frc.robot.commands.drive.PathPlannerCommand;
-import frc.robot.commands.drive.TankDriveCommand;
+import frc.robot.commands.autonomous.routines.PlaceConeMobility;
+import frc.robot.commands.autonomous.routines.PlaceConeBalance;
+import frc.robot.commands.drive.AutoBalance;
+import frc.robot.commands.drive.AutoTurnToAngle;
+import frc.robot.commands.drive.DriveToTape;
+import frc.robot.commands.drive.FollowPathPlanner;
+import frc.robot.commands.drive.TankDrive;
 import frc.robot.commands.manipulator.ManualMoveElevatorCommand;
 import frc.robot.commands.manipulator.SetElevatorPositionCommand;
 import frc.robot.subsystems.Drive;
@@ -86,18 +86,18 @@ public class RobotContainer {
   public RobotContainer() {
     PathPlannerUtil.initializeCommands(drive, elevator, intake);
 
-    autoChooser.addOption("Drive Backwards", new MobilityAutoCommand(drive));
+    autoChooser.addOption("Drive Backwards", new MobilityAuto(drive));
 
-    autoChooser.addOption("Place Cone", new ConeOnMidAutoCommand(intake, leds, drive));
+    autoChooser.addOption("Place Cone", new PlaceConeAuto(intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility",
-        new PlaceGPAndMobilityAuto(elevator, intake,
+        new PlaceConeMobility(elevator, intake,
             drive));
 
-    autoChooser.addOption("Drive Back, Balance", new DriveOnChargeStationAuto(elevator, intake, leds, drive));
+    autoChooser.addOption("Drive Back, Balance", new BalanceAuto(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Balance",
-        new PlaceGPBalanceAuto(elevator, intake, leds, drive));
+        new PlaceConeBalance(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Place Cube",
         new PlaceConePlaceCube(elevator, intake, leds, drive));
@@ -160,7 +160,7 @@ public class RobotContainer {
     // driverController::getRightX, driveSubsystem));
 
     drive.setDefaultCommand(
-        new TankDriveCommand(driverController::getLeftY, driverController::getRightY, drive));
+        new TankDrive(driverController::getLeftY, driverController::getRightY, drive));
   }
 
   /**
@@ -218,14 +218,14 @@ public class RobotContainer {
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
         .whileTrue(
-            new AutoTurnToAngleCommand(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
+            new AutoTurnToAngle(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
                 drive));
 
-    autoBalance.whileTrue(new AutoBalanceCommand(leds, drive));
+    autoBalance.whileTrue(new AutoBalance(leds, drive));
 
     toggleBrake.toggleOnTrue(Commands.runOnce(drive::toggleBrakes, drive));
 
-    alignToTape.whileTrue(new DriveToTapeCommand(leds, drive));
+    alignToTape.whileTrue(new DriveToTape(leds, drive));
 
     alignToAprilTag.whileTrue(new AlignToAprilTagCommand(drive));
 
@@ -322,7 +322,7 @@ public class RobotContainer {
   }
 
   public void initializeOdometry(Command autoCommand) {
-    if (autoCommand instanceof PathPlannerCommand) {
+    if (autoCommand instanceof FollowPathPlanner) {
       return;
     }
 

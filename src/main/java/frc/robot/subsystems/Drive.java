@@ -358,7 +358,7 @@ public class Drive extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), 0, 0, pose);
+    odometry.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
   }
 
   public Pose2d getPose() {
@@ -394,7 +394,7 @@ public class Drive extends SubsystemBase {
   }
 
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(frontLeftEncoder.getVelocity() / 60, -frontRightEncoder.getVelocity() / 60);
+    return new DifferentialDriveWheelSpeeds(frontLeftEncoder.getVelocity() / 60, frontRightEncoder.getVelocity() / 60);
   }
 
   public void resetOdometry(Pose2d pose) {

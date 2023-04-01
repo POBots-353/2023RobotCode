@@ -15,6 +15,7 @@ import frc.robot.commands.autonomous.routines.MobilityAuto;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityBalance;
 import frc.robot.commands.autonomous.routines.PlaceConeMobilityGrabConeBalance;
 import frc.robot.commands.autonomous.routines.PlaceConePlaceCubeLow;
+import frc.robot.commands.autonomous.routines.PlaceConePlaceCubeMid;
 import frc.robot.commands.autonomous.routines.PlaceConeMobility;
 import frc.robot.commands.autonomous.routines.PlaceConeBalance;
 import frc.robot.commands.drive.AutoBalance;
@@ -99,8 +100,11 @@ public class RobotContainer {
     autoChooser.addOption("Place Cone, Balance",
         new PlaceConeBalance(elevator, intake, leds, drive));
 
-    autoChooser.addOption("Place Cone, Mobility, Place Cube",
+    autoChooser.addOption("Place Cone, Mobility, Place Cube Low",
         new PlaceConePlaceCubeLow(elevator, intake, leds, drive));
+
+    autoChooser.addOption("Place Cone, Mobility, Place Cube Mid",
+        new PlaceConePlaceCubeMid(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility, Balance",
         new PlaceConeMobilityBalance(elevator, intake, leds, drive));

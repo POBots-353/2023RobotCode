@@ -139,11 +139,11 @@ public final class Constants {
 
     public static final double elevatorConeTopSetPoint = -59.9;
     public static final double elevatorConeMidSetPoint = -41.0;
-    public static final double elevatorConeLowSetPoint = -7.50;
+    public static final double elevatorConeLowSetPoint = -2.90;
 
-    public static final double elevatorCubeTopSetPoint = -55.1;
+    public static final double elevatorCubeTopSetPoint = -59.0;
     public static final double elevatorCubeMidSetPoint = -45.8;
-    public static final double elevatorCubeLowSetPoint = -5.5;
+    public static final double elevatorCubeLowSetPoint = -1.5;
 
     public static final double startingConfigurationHeight = -59.30;
 

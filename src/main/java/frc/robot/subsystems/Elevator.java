@@ -36,21 +36,21 @@ public class Elevator extends SubsystemBase {
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
-  private double kP = 4e-4;
+  private double kP = 5.15e-4;
   private double kI = 0;
   private double kD = 0;
   private double kIz = 0;
-  private double kFF = 0.000156;
+  private double kFF = 0.000206;
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
   private double maxVel = 5000; // 5000
-  private double maxAcc = 3000; // 2500
+  private double maxAcc = 4000; // 2500
 
   /** Creates a new ElevatorSubsystem. */
   public Elevator() {
     elevatorMotor.restoreFactoryDefaults();
 
-    elevatorPiston.set(Value.kReverse);
+    elevatorPiston.set(Value.kForward);
 
     manipulatorBreak.set(Value.kForward);
 

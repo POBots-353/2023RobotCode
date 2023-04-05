@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
 
@@ -21,7 +22,7 @@ public class AutoTurnToAngle extends CommandBase {
 
   private SlewRateLimiter turnLimiter = new SlewRateLimiter(3.75);
 
-  private int timeAligned = 0;
+  private Timer timeAligned = new Timer();
 
   /** Creates a new AutoTurnToAngleCommand. */
   public AutoTurnToAngle(DoubleSupplier angleSupplier, Drive driveSubsystem) {
@@ -41,7 +42,9 @@ public class AutoTurnToAngle extends CommandBase {
   @Override
   public void initialize() {
     turnLimiter.reset(0);
-    timeAligned = 0;
+    pidController.reset();
+    timeAligned.stop();
+    timeAligned.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -53,16 +56,16 @@ public class AutoTurnToAngle extends CommandBase {
     double angleErrorAbs = Math.abs(angleError);
 
     // if (angleErrorAbs < 15) {
-    //   // if (angleErrorAbs < 4.5) {
-    //   //   pidController.setP(0.0125); // 0.0135
-    //   //   pidController.setI(0.00375); // 0.00375
-    //   // } else {
-    //     pidController.setP(0.0095); // 0.0115
-    //     pidController.setI(0); // 0.00275
-    //   // }
+    // // if (angleErrorAbs < 4.5) {
+    // // pidController.setP(0.0125); // 0.0135
+    // // pidController.setI(0.00375); // 0.00375
+    // // } else {
+    // pidController.setP(0.0095); // 0.0115
+    // pidController.setI(0); // 0.00275
+    // // }
     // } else {
-    //   pidController.setP(0.0095);
-    //   pidController.setI(0);
+    // pidController.setP(0.0095);
+    // pidController.setI(0);
     // }
 
     double turnSpeed = MathUtil.clamp(-pidController.calculate(angleError, 0), -0.27, 0.27);
@@ -74,9 +77,10 @@ public class AutoTurnToAngle extends CommandBase {
     driveSubsystem.arcadeDrive(0, turnSpeed);
 
     if (angleErrorAbs <= 2.50) {
-      timeAligned++;
-    } else if (timeAligned > 0) {
-      timeAligned--;
+      timeAligned.start();
+    } else {
+      timeAligned.stop();
+      timeAligned.reset();
     }
   }
 
@@ -89,6 +93,6 @@ public class AutoTurnToAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 2.50 && timeAligned >= 10;
+    return Math.abs(driveSubsystem.getAngleError(angleSupplier.getAsDouble())) <= 2.50 && timeAligned.hasElapsed(0.50);
   }
 }

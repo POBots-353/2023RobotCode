@@ -221,9 +221,7 @@ public class RobotContainer {
 
     // Uses IEEEremainder to get the angle between -180 and 180
     turnToAngle
-        .whileTrue(
-            new AutoTurnToAngle(() -> Math.IEEEremainder(driverControllerHID.getPOV(), 360),
-                drive));
+        .whileTrue(new AutoTurnToAngle(() -> driverControllerHID.getPOV(), drive));
 
     autoBalance.whileTrue(new AutoBalance(leds, drive));
 
@@ -266,11 +264,14 @@ public class RobotContainer {
     Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
 
     startingConfiguration.whileTrue(Commands.sequence(
+        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator),
         Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
-        new SetElevatorPosition(IntakeConstants.startingConfigurationHeight, elevator),
+        // new SetElevatorPosition(IntakeConstants.startingConfigurationHeight,
+        // elevator),
         Commands.runOnce(intake::toggleWristOut, intake)));
 
-    elevatorTilt.toggleOnTrue(Commands.runOnce(elevator::toggleElevatorTilt, elevator));
+    elevatorTilt.toggleOnTrue(
+        Commands.runOnce(elevator::toggleElevatorTilt, elevator));
 
     coneElevatorHigh
         .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator));

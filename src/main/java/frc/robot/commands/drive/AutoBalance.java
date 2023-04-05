@@ -7,6 +7,7 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive;
@@ -18,7 +19,7 @@ public class AutoBalance extends CommandBase {
 
   private PIDController balancePIDController = new PIDController(0.012, 0, 0.00115); // kD 0.00125
 
-  private int timeBalanced = 0;
+  private Timer timeBalanced = new Timer();
 
   /** Creates a new AutoBalanceCommand. */
   public AutoBalance(LEDs ledSubsystem, Drive driveSubsystem) {
@@ -36,6 +37,10 @@ public class AutoBalance extends CommandBase {
   @Override
   public void initialize() {
     balancePIDController.setP(0.012);
+    balancePIDController.reset();
+
+    timeBalanced.stop();
+    timeBalanced.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -48,7 +53,7 @@ public class AutoBalance extends CommandBase {
       SmartDashboard.putBoolean("Balanced", true);
       ledSubsystem.setGreen();
 
-      timeBalanced++;
+      timeBalanced.start();
 
       return;
     }
@@ -76,9 +81,8 @@ public class AutoBalance extends CommandBase {
 
     driveSubsystem.arcadeDrive(forwardSpeed, 0);
 
-    if (timeBalanced > 0) {
-      timeBalanced--;
-    }
+    timeBalanced.stop();
+    timeBalanced.reset();
   }
 
   // Called once the command ends or is interrupted.
@@ -99,7 +103,7 @@ public class AutoBalance extends CommandBase {
       return true;
     }
 
-    if (DriverStation.isAutonomous() && timeBalanced >= 30) {
+    if (DriverStation.isAutonomous() && timeBalanced.hasElapsed(0.6)) {
       driveSubsystem.turnBrakesOn();
 
       return true;

@@ -12,6 +12,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -24,12 +25,14 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -380,13 +383,15 @@ public class Drive extends SubsystemBase {
   public double getAngleError(double expectedAngle) {
     double angleSubtract = Math.IEEEremainder(expectedAngle, 360) - Math.IEEEremainder(navx.getYaw() - 180, 360);
 
-    if (angleSubtract < -180) {
-      return angleSubtract + 360;
-    } else if (angleSubtract > 180) {
-      return angleSubtract - 360;
-    }
+    // if (angleSubtract < -180) {
+    // return angleSubtract + 360;
+    // } else if (angleSubtract > 180) {
+    // return angleSubtract - 360;
+    // }
 
-    return angleSubtract;
+    return MathUtil.inputModulus(angleSubtract, -180, 180);
+
+    // return angleSubtract;
   }
 
   public Rotation2d getRotation() {
@@ -437,6 +442,10 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("Back Left Position", backLeftEncoder.getPosition());
     SmartDashboard.putNumber("Front Right Position", backLeftEncoder.getPosition());
     SmartDashboard.putNumber("Back Right Position", backLeftEncoder.getPosition());
-    // SmartDashboard.putNumber("Voltage", powerDistribution.getVoltage());
+
+    SmartDashboard.putNumber("Left Motor Temperature", frontLeftMotor.getMotorTemperature());
+    SmartDashboard.putNumber("Right Motor Temperature", frontRightMotor.getMotorTemperature());
+
+    SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
   }
 }

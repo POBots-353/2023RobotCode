@@ -137,9 +137,9 @@ public final class Constants {
 
     public static final double autoIntakeTime = 0.50;
 
-    public static final double elevatorConeTopSetPoint = -59.9;
+    public static final double elevatorConeTopSetPoint = -59.0;
     public static final double elevatorConeMidSetPoint = -41.0;
-    public static final double elevatorConeLowSetPoint = -2.90;
+    public static final double elevatorConeLowSetPoint = -3.70;
 
     public static final double elevatorCubeTopSetPoint = -59.0;
     public static final double elevatorCubeMidSetPoint = -45.8;

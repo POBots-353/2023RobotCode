@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.Buttons;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldPositionConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.apriltag.AlignToAprilTag;
@@ -33,8 +34,11 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PathPlannerUtil;
 
+import java.text.FieldPosition;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,7 +72,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  private SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
+  private static SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
 
   public Command placeConeAutoStart(Command pathPlannerCommand) {
     return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
@@ -154,9 +158,9 @@ public class RobotContainer {
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", 2);
-    startingFieldPosition.addOption("Substation Side", 1);
-    startingFieldPosition.addOption("Perimeter Side", 3);
+    startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", FieldPositionConstants.CHARGE_STATION);
+    startingFieldPosition.addOption("Substation Side", FieldPositionConstants.SUBSTATION_SIDE);
+    startingFieldPosition.addOption("Perimeter Side", FieldPositionConstants.FIELD_EDGE);
 
     SmartDashboard.putData("Starting Field Position", startingFieldPosition);
 
@@ -268,7 +272,10 @@ public class RobotContainer {
     Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
 
     startingConfiguration.whileTrue(Commands.sequence(
-        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator),
+        new SetElevatorPosition(
+            () -> (elevator.getPistonState() == Value.kForward) ? IntakeConstants.elevatorConeTopSetPoint
+                : IntakeConstants.startingConfigurationHeight,
+            elevator),
         Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
         // new SetElevatorPosition(IntakeConstants.startingConfigurationHeight,
         // elevator),
@@ -328,6 +335,10 @@ public class RobotContainer {
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
     intakePiston.toggleOnTrue(Commands.runOnce(intake::toggleIntakePiston, intake));
+  }
+
+  public static int getStartingFieldPosition() {
+    return startingFieldPosition.getSelected();
   }
 
   public void initializeOdometry(Command autoCommand) {

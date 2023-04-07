@@ -36,15 +36,15 @@ public class Elevator extends SubsystemBase {
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
-  private double kP = 1.05e-4; // 5.15e-4 4.05e-4 1.05e-4
+  private double kP = 5.9721E-05; // 5.15e-4 4.05e-4 1.05e-4
   private double kI = 0;
-  private double kD = 1.05e-4; // 0, 4.05e-4 1.05e-4
+  private double kD = 0; // 0, 4.05e-4 1.05e-4
   private double kIz = 0;
-  private double kFF = 0.000750; // 0.000206 0.000750
+  private double kFF = 0.0004429; // 0.000206 0.000750
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
   private double maxVel = 2800; // 5000 2800
-  private double maxAcc = 3000; // 2500, 4000
+  private double maxAcc = 4000; // 2500, 4000
 
   /** Creates a new ElevatorSubsystem. */
   public Elevator() {
@@ -145,6 +145,7 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
+    SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());
     SmartDashboard.putBoolean("Top Switch", !topLimitSwitch.get());
     SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
 

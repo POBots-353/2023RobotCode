@@ -60,8 +60,8 @@ public final class Constants {
     public static final int frontRightMotorID = 1;
     public static final int backRightMotorID = 3;
 
-    public static final double turboSpeed = 0.80;
-    public static final double defaultSpeed = 0.65;
+    public static final double turboSpeed = 0.825;
+    public static final double defaultSpeed = 0.7;//0.65
     public static final double slowSpeed = 0.25;
 
     public static final double tapeAlignmentPitchTolerance = 1.50;
@@ -137,8 +137,8 @@ public final class Constants {
 
     public static final double autoIntakeTime = 0.50;
 
-    public static final double elevatorConeTopSetPoint = -59.0;
-    public static final double elevatorConeMidSetPoint = -41.0;
+    public static final double elevatorConeTopSetPoint = -59.6;
+    public static final double elevatorConeMidSetPoint = -40.4;
     public static final double elevatorConeLowSetPoint = -3.70;
 
     public static final double elevatorCubeTopSetPoint = -59.0;

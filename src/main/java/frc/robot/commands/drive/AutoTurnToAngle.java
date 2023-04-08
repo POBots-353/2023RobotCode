@@ -20,7 +20,7 @@ public class AutoTurnToAngle extends CommandBase {
   private double angle;
 
   private PIDController pidController = new PIDController(0.0145, 0, 0.00085); // p: 0.0145, 0.0115 d: 0.00115, 0.00125
-  private double minSpeed = 0.030;
+  private double minSpeed = 0.050;
 
   private SlewRateLimiter turnLimiter = new SlewRateLimiter(3.75);
 

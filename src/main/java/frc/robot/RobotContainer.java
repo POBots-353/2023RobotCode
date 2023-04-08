@@ -25,6 +25,7 @@ import frc.robot.commands.drive.AutoTurnToAngle;
 import frc.robot.commands.drive.DriveToTape;
 import frc.robot.commands.drive.FollowPathPlanner;
 import frc.robot.commands.drive.TankDrive;
+import frc.robot.commands.drive.TurnToAngle;
 import frc.robot.commands.manipulator.ManualMoveElevator;
 import frc.robot.commands.manipulator.SetElevatorPosition;
 import frc.robot.subsystems.Drive;
@@ -211,9 +212,12 @@ public class RobotContainer {
 
     Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
 
-    Trigger alignToTape = driverController.rightBumper();
+    // Trigger alignToTape = driverController.rightBumper();
 
-    Trigger alignToAprilTag = driverController.leftBumper();
+    // Trigger alignToAprilTag = driverController.leftBumper();
+
+    Trigger turnToSubstation = driverController.rightBumper();
+    Trigger turnToNode = driverController.leftBumper();
 
     Trigger setPipelineTape = driverController.start();
     Trigger setPipelineAprilTag = driverController.back();
@@ -231,13 +235,17 @@ public class RobotContainer {
     turnToAngle
         .whileTrue(new AutoTurnToAngle(() -> driverControllerHID.getPOV(), drive));
 
+    turnToSubstation.whileTrue(new TurnToAngle(0, drive));
+
+    turnToNode.whileTrue(new TurnToAngle(180, drive));
+
     autoBalance.whileTrue(new AutoBalance(leds, drive));
 
     toggleBrake.toggleOnTrue(Commands.runOnce(drive::toggleBrakes, drive));
 
-    alignToTape.whileTrue(new DriveToTape(leds, drive));
+    // alignToTape.whileTrue(new DriveToTape(leds, drive));
 
-    alignToAprilTag.whileTrue(new AlignToAprilTag(drive));
+    // alignToAprilTag.whileTrue(new AlignToAprilTag(drive));
 
     setPipelineTape
         .toggleOnTrue(

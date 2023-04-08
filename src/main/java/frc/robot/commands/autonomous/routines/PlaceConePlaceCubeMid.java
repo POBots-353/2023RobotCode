@@ -50,7 +50,7 @@ public class PlaceConePlaceCubeMid extends SequentialCommandGroup {
 
         Commands.race(
             Commands.run(intake::intakeCube, intake),
-            new AutoDrive(1.00, drive)),
+            new AutoDrive(1.10, drive)),
 
         Commands.parallel(Commands.runOnce(
             () -> drive.setMaxOutput(0.45)),

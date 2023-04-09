@@ -31,7 +31,7 @@ import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Elevator;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.PathPlannerUtil;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -79,6 +79,10 @@ public class RobotContainer {
         intake.autoOuttakeCone(),
         new WaitCommand(0.50),
         pathPlannerCommand);
+  }
+
+  public double getPneumaticPressure() {
+    return (double) Math.round(intake.getPSI() * 100) / 100;
   }
 
   /**
@@ -165,6 +169,13 @@ public class RobotContainer {
 
     drive.setDefaultCommand(
         new TankDrive(driverController::getLeftY, driverController::getRightY, drive));
+
+    Command printPSI = Commands.repeatingSequence(
+        Commands.waitSeconds(10.0),
+        Commands.runOnce(
+            () -> DriverStation.reportWarning("Pneumatic Pressure is " + getPneumaticPressure() + " PSI", false)));
+
+    printPSI.schedule();
   }
 
   /**

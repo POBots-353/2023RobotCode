@@ -42,34 +42,44 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class Drive extends SubsystemBase {
+  // Creates motors
   private CANSparkMax frontLeftMotor = new CANSparkMax(DriveConstants.frontLeftMotorID, MotorType.kBrushless);
   private CANSparkMax backLeftMotor = new CANSparkMax(DriveConstants.backLeftMotorID, MotorType.kBrushless);
   private CANSparkMax frontRightMotor = new CANSparkMax(DriveConstants.frontRightMotorID, MotorType.kBrushless);
   private CANSparkMax backRightMotor = new CANSparkMax(DriveConstants.backRightMotorID, MotorType.kBrushless);
-
+  
+  // Creates motor groups that control BOTH left/right motors
   private MotorControllerGroup leftMotors = new MotorControllerGroup(frontLeftMotor, backLeftMotor);
   private MotorControllerGroup rightMotors = new MotorControllerGroup(frontRightMotor, backRightMotor);
 
+  // Creates encoders that are used to get info about the robot (such as speed)
   private RelativeEncoder frontLeftEncoder = frontLeftMotor.getEncoder();
   private RelativeEncoder frontRightEncoder = frontRightMotor.getEncoder();
   private RelativeEncoder backLeftEncoder = backLeftMotor.getEncoder();
   private RelativeEncoder backRightEncoder = backRightMotor.getEncoder();
 
+  // Creates PID controllers that use PID to control the motors
   private SparkMaxPIDController frontLeftPIDController = frontLeftMotor.getPIDController();
   private SparkMaxPIDController frontRightPIDController = frontRightMotor.getPIDController();
   private SparkMaxPIDController backLeftPIDController = backLeftMotor.getPIDController();
   private SparkMaxPIDController backRightPIDController = backRightMotor.getPIDController();
 
+  /*Creates SlewRateLimiters, which are used to dampen the effects of sudden changes to the motors
+  (such as when the speed suddenly changes, it prevents the robot from going to a sudden stop)
+  */
   private SlewRateLimiter leftLimiter = new SlewRateLimiter(3.53);
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
 
   // private PhotonCamera limelight = new PhotonCamera("gloworm");
 
+  // Creates Gyroscope
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
+  // Creates brake pistion
   private DoubleSolenoid brakePiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID, PneumaticsModuleType.REVPH,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
+  // Creates the initial variabes for PID, acceleration, speed, etc. for later use
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
@@ -83,37 +93,48 @@ public class Drive extends SubsystemBase {
   private double maxVel = 600; // 1750, 550
   private double maxAcc = 1500; // 2500, 1000
 
+  /*Creates PowerDistribution object, which is used for measuring power usage in the robot, 
+  as well as what is using the power*/
   private PowerDistribution powerDistribution = new PowerDistribution(DriveConstants.powerDistributionID,
       ModuleType.kRev);
 
+  //Creates field object, which is used to display the robot's position on the field.
   private Field2d field = new Field2d();
 
+  // Creates odometry object, which is used to track the position of a robot using encoders and sensors
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       AutoConstants.blueSubstationPose);
 
   /** Creates a new DriveSubsystem. */
   public Drive() {
+    //Resets motor to factory defaults, essentially reseting the motor until controlled.
     frontLeftMotor.restoreFactoryDefaults();
     frontRightMotor.restoreFactoryDefaults();
     backLeftMotor.restoreFactoryDefaults();
     backRightMotor.restoreFactoryDefaults();
 
+    //Sets the conversion factor for the position of the encoder.
     frontLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     backLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
-
+    
+    //Sets the conversion factor for the velocity of the encoder
     frontLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
 
+    //Sets the phase of the AbsoluteEndoder so that it is set to be in phase witht he motor itself
     frontRightMotor.setInverted(true);
     backRightMotor.setInverted(true);
 
+    /*Causes the back motors to imitate the output of the leader motors (front motors) so that the back and 
+    front motors are in sync*/
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 
+    // Initializes the PID contorllers for each of the motors
     initializePID(frontLeftPIDController);
     initializePID(frontRightPIDController);
     initializePID(backLeftPIDController);
@@ -121,6 +142,7 @@ public class Drive extends SubsystemBase {
 
     navx.setAngleAdjustment(180);
 
+    // Sets the brakepistion position to its retracted state
     brakePiston.set(Value.kReverse);
 
     // Put the gyro on the dashboard
@@ -129,11 +151,13 @@ public class Drive extends SubsystemBase {
     // Clear sticky faults
     powerDistribution.clearStickyFaults();
 
+    // Clears sticky faults
     frontLeftMotor.clearFaults();
     frontRightMotor.clearFaults();
     backLeftMotor.clearFaults();
     backRightMotor.clearFaults();
 
+    //Creates Sendable class
     Sendable differentialDriveSendable = new Sendable() {
       @Override
       public void initSendable(SendableBuilder builder) {
@@ -144,6 +168,7 @@ public class Drive extends SubsystemBase {
       }
     };
 
+    //Sends data about Drive train, field, and powerdistribution to smartdashboard
     SmartDashboard.putData("Drive Train", differentialDriveSendable);
 
     SmartDashboard.putData(field);
@@ -152,16 +177,19 @@ public class Drive extends SubsystemBase {
   }
 
   private void initializePID(SparkMaxPIDController p) {
-    p.setP(kP);
-    p.setI(kI);
-    p.setD(kD);
-    p.setIZone(kIz);
-    p.setFF(kFF);
-    p.setOutputRange(kMinOutput, kMaxOutput);
-    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
-    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+    p.setP(kP); // Sets the Proportional Gain constat of the PIDF contorller
+    p.setI(kI); // Sets the Integral Gain constant of the PIDF contoller
+    p.setD(kD); // Sets the Derivative Gain constant of the PIDF controller
+    p.setIZone(kIz); // Sets the IZone range 
+    p.setFF(kFF); // Sets the Feed-forward Gain constant of the PIDF controller
+    /*Feed-forward is a prediction technique that estimates the output from a PID controller without waiting
+    for the PID algorithm to respond. They are useful for reducing the error fastor or keeps the error smaller
+    rather than making the PID algorithm do it by itself*/
+    p.setOutputRange(kMinOutput, kMaxOutput); /*Sets the minimum and maximum output of the PID controller */
+    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot); /*Sets the maximum velocity of the SmartMotion mode */
+    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot); /*Sets the minimum velocity of the Smartmotion mode */
+    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot); /*Sets the maximum acceleration of the SmartMotion mode */
+    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot); /*Sets the allowed error for the motor */
   }
 
   public void setMaxVelocity(int maxVelocity) {

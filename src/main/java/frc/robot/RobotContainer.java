@@ -85,10 +85,6 @@ public class RobotContainer {
         pathPlannerCommand);
   }
 
-  public double getPneumaticPressure() {
-    return (double) Math.round(intake.getPSI() * 100) / 100;
-  }
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -180,7 +176,7 @@ public class RobotContainer {
     Command printPSI = Commands.repeatingSequence(
         Commands.waitSeconds(10.0),
         Commands.runOnce(
-            () -> DriverStation.reportWarning("Pneumatic Pressure is " + getPneumaticPressure() + " PSI", false)));
+            () -> DriverStation.reportWarning("Pneumatic Pressure is " + intake.getPSI() + " PSI", false)));
 
     printPSI.schedule();
   }

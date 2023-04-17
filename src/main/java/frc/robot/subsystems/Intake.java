@@ -70,7 +70,7 @@ public class Intake extends SubsystemBase {
   }
 
   public double getPSI() {
-    return pneumaticHub.getPressure(0);
+    return (double) Math.round(pneumaticHub.getPressure(0) * 100) / 100;
   }
 
   public void intakeCube() {
@@ -111,6 +111,6 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Pressure", pneumaticHub.getPressure(0));
+    SmartDashboard.putNumber("Pressure", getPSI());
   }
 }

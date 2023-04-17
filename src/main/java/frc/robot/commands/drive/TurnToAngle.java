@@ -80,7 +80,7 @@ public class TurnToAngle extends CommandBase {
 
     // MathUtil.clamp(turnSpeed, -0.35, 0.35)
 
-    driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.353, 0.353));
+    driveSubsystem.arcadeDrive(0, MathUtil.clamp(turnSpeed, -0.450, 0.450));
   }
 
   // Called once the command ends or is interrupted.

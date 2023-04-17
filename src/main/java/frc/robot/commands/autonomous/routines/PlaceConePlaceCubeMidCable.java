@@ -21,9 +21,9 @@ import frc.robot.subsystems.LEDs;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class PlaceConePlaceCubeMid extends SequentialCommandGroup {
+public class PlaceConePlaceCubeMidCable extends SequentialCommandGroup {
   /** Creates a new PlaceConePlaceCubeMid. */
-  public PlaceConePlaceCubeMid(Elevator elevator, Intake intake, LEDs leds, Drive drive) {
+  public PlaceConePlaceCubeMidCable(Elevator elevator, Intake intake, LEDs leds, Drive drive) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
@@ -39,7 +39,7 @@ public class PlaceConePlaceCubeMid extends SequentialCommandGroup {
         new AutoDrive(-4.25, drive),
 
         Commands.parallel(
-            new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 18.5 : -18.5,
+            new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? -18.5 : 18.5,
                 drive)
                 .withTimeout(2.00),
             new SetElevatorPosition(IntakeConstants.elevatorCubeLowSetPoint, elevator)),
@@ -50,7 +50,7 @@ public class PlaceConePlaceCubeMid extends SequentialCommandGroup {
 
         Commands.race(
             Commands.run(intake::intakeCube, intake),
-            new AutoDrive(1.10, drive)),
+            new AutoDrive(1.00, drive)),
 
         Commands.parallel(Commands.runOnce(
             () -> drive.setMaxOutput(0.45)),
@@ -58,7 +58,7 @@ public class PlaceConePlaceCubeMid extends SequentialCommandGroup {
 
         // new AutoTurnToAngle(180, drive).withTimeout(3.00),
 
-        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 178 : -178, drive)
+        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? -178 : 178, drive)
             .withTimeout(3.25),
 
         Commands.parallel(

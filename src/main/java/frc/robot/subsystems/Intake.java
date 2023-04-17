@@ -69,6 +69,10 @@ public class Intake extends SubsystemBase {
     pcmCompressor.enableDigital();
   }
 
+  public double getPSI() {
+    return pneumaticHub.getPressure(0);
+  }
+
   public void intakeCube() {
     // double distanceInches = cubeUltrasonic.getRangeInches();
     // if (distanceInches <= 15.0) {

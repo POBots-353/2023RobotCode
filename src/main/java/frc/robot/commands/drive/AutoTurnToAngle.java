@@ -17,8 +17,10 @@ public class AutoTurnToAngle extends CommandBase {
   private Drive driveSubsystem;
 
   private DoubleSupplier angleSupplier;
+  private double angle;
 
   private PIDController pidController = new PIDController(0.0145, 0, 0.00085); // p: 0.0145, 0.0115 d: 0.00115, 0.00125
+  private double minSpeed = 0.050;
 
   private SlewRateLimiter turnLimiter = new SlewRateLimiter(3.75);
 
@@ -45,13 +47,14 @@ public class AutoTurnToAngle extends CommandBase {
     pidController.reset();
     timeAligned.stop();
     timeAligned.reset();
+
+    angle = angleSupplier.getAsDouble();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double expectedAngle = angleSupplier.getAsDouble();
-    double angleError = driveSubsystem.getAngleError(expectedAngle);
+    double angleError = driveSubsystem.getAngleError(angle);
 
     double angleErrorAbs = Math.abs(angleError);
 
@@ -69,6 +72,10 @@ public class AutoTurnToAngle extends CommandBase {
     // }
 
     double turnSpeed = MathUtil.clamp(-pidController.calculate(angleError, 0), -0.27, 0.27);
+
+    // if (Math.abs(turnSpeed) < minSpeed) {
+    // turnSpeed = Math.copySign(minSpeed, turnSpeed)
+    // }
 
     // double turnSpeedRateLimited = turnLimiter.calculate(turnSpeed);
 

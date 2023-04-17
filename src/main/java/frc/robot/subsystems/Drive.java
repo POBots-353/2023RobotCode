@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldPositionConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.LimelightHelpers;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -354,13 +355,13 @@ public class Drive extends SubsystemBase {
     Pose2d pose;
 
     switch (position) {
-      case 1: // Substation
+      case FieldPositionConstants.SUBSTATION_SIDE: // Substation
         pose = AutoConstants.redSubstationPose;
         break;
-      case 2: // Charge Station
+      case FieldPositionConstants.CHARGE_STATION: // Charge Station
         pose = AutoConstants.redChargeStationPose;
         break;
-      case 3: // Field Edge
+      case FieldPositionConstants.FIELD_EDGE: // Field Edge
         pose = AutoConstants.redFieldEdgePose;
         break;
       default:
@@ -375,13 +376,13 @@ public class Drive extends SubsystemBase {
     Pose2d pose;
 
     switch (position) {
-      case 1: // Substation
+      case FieldPositionConstants.SUBSTATION_SIDE: // Substation
         pose = AutoConstants.blueSubstationPose;
         break;
-      case 2: // Charge Station
+      case FieldPositionConstants.CHARGE_STATION: // Charge Station
         pose = AutoConstants.blueChargeStationPose;
         break;
-      case 3: // Field Edge
+      case FieldPositionConstants.FIELD_EDGE: // Field Edge
         pose = AutoConstants.blueFieldEdgePose;
         break;
       default:
@@ -459,6 +460,11 @@ public class Drive extends SubsystemBase {
     // This method will be called once per scheduler run
     updateOdometry();
 
+    if (DriverStation.isTeleopEnabled() && DriverStation.getMatchTime() <= 0.40 && DriverStation.getMatchTime() > 0
+        && Math.abs(getGyroPitch()) > 3.0) {
+      turnBrakesOn();
+    }
+
     SmartDashboard.putNumber("Gyro Yaw", Math.IEEEremainder(navx.getYaw(), 360));
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));
     SmartDashboard.putNumber("Gyro Roll", Math.IEEEremainder(navx.getRoll(), 360));
@@ -474,6 +480,7 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("Left Motor Temperature", frontLeftMotor.getMotorTemperature());
     SmartDashboard.putNumber("Right Motor Temperature", frontRightMotor.getMotorTemperature());
 
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
   }
 }

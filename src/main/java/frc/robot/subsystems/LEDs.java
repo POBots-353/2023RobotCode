@@ -16,7 +16,7 @@ public class LEDs extends SubsystemBase {
 
   /** Creates a new LEDSubsystem. */
   public LEDs() {
-    setGreen();
+    initializeAllianceColor();
   }
 
   public void initializeAllianceColor() {
@@ -28,6 +28,7 @@ public class LEDs extends SubsystemBase {
         setBlue();
         break;
       default:
+        setGreen();
         break;
     }
   }

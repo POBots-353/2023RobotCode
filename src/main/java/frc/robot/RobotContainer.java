@@ -73,16 +73,30 @@ public class RobotContainer {
 
   private static SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
 
-  public Command placeConeAutoStart(Command pathPlannerCommand) {
-    return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
-        new WaitCommand(1.50),
+  // Command to print the pneumatic PSI every 10 seconds
+  private Command printPSI = Commands.repeatingSequence(
+      Commands.waitSeconds(10.0),
+      Commands.runOnce(
+          () -> DriverStation.reportWarning("Pneumatic Pressure is " + intake.getPSI() + " PSI", false)));
 
-        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint,
-            elevator),
+  public void initializeAutonomous() {
+    drive.zeroGyro();
+    intake.disableCompressor();
+    leds.initializeAllianceColor();
 
-        intake.autoOuttakeCone(),
-        new WaitCommand(0.50),
-        pathPlannerCommand);
+    if (!printPSI.isScheduled()) {
+      printPSI.schedule();
+    }
+  }
+
+  public void initializeTeleop() {
+    leds.initializeAllianceColor();
+    intake.enableCompressor();
+    drive.turnBrakesOff();
+
+    if (!printPSI.isScheduled()) {
+      printPSI.schedule();
+    }
   }
 
   /**
@@ -172,11 +186,6 @@ public class RobotContainer {
 
     drive.setDefaultCommand(
         new TankDrive(driverController::getLeftY, driverController::getRightY, drive));
-
-    Command printPSI = Commands.repeatingSequence(
-        Commands.waitSeconds(10.0),
-        Commands.runOnce(
-            () -> DriverStation.reportWarning("Pneumatic Pressure is " + intake.getPSI() + " PSI", false)));
 
     printPSI.schedule();
   }
@@ -362,16 +371,16 @@ public class RobotContainer {
     drive.initializeFieldPosition(startingFieldPosition.getSelected());
   }
 
-  public void initializeAutonomous() {
-    drive.zeroGyro();
-    intake.disableCompressor();
-    leds.initializeAllianceColor();
-  }
+  public Command placeConeAutoStart(Command pathPlannerCommand) {
+    return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
+        new WaitCommand(1.50),
 
-  public void initializeTeleop() {
-    leds.initializeAllianceColor();
-    intake.enableCompressor();
-    drive.turnBrakesOff();
+        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint,
+            elevator),
+
+        intake.autoOuttakeCone(),
+        new WaitCommand(0.50),
+        pathPlannerCommand);
   }
 
   /**

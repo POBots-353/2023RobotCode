@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 
 public class LEDs extends SubsystemBase {
-  private DigitalOutput redOutput = new DigitalOutput(LEDConstants.redOutputChannel);
-  private DigitalOutput greenOutput = new DigitalOutput(LEDConstants.greenOutputChannel);
-  private DigitalOutput blueOutput = new DigitalOutput(LEDConstants.blueOutputChannel);
+  // private DigitalOutput redOutput = new DigitalOutput(LEDConstants.redOutputChannel);
+  // private DigitalOutput greenOutput = new DigitalOutput(LEDConstants.greenOutputChannel);
+  // private DigitalOutput blueOutput = new DigitalOutput(LEDConstants.blueOutputChannel);
 
   /** Creates a new LEDSubsystem. */
   public LEDs() {
@@ -34,33 +34,33 @@ public class LEDs extends SubsystemBase {
   }
 
   public void setBlue() {
-    redOutput.set(true);
-    greenOutput.set(true);
-    blueOutput.set(false);
+    // redOutput.set(true);
+    // greenOutput.set(true);
+    // blueOutput.set(false);
   }
 
   public void setRed() {
-    redOutput.set(false);
-    greenOutput.set(true);
-    blueOutput.set(true);
+    // redOutput.set(false);
+    // greenOutput.set(true);
+    // blueOutput.set(true);
   }
 
   public void setGreen() {
-    redOutput.set(true);
-    greenOutput.set(false);
-    blueOutput.set(true);
+    // redOutput.set(true);
+    // greenOutput.set(false);
+    // blueOutput.set(true);
   }
 
   public void setYellow() {
-    redOutput.set(false);
-    greenOutput.set(false);
-    blueOutput.set(true);
+    // redOutput.set(false);
+    // greenOutput.set(false);
+    // blueOutput.set(true);
   }
 
   public void setPurple() {
-    redOutput.set(false);
-    greenOutput.set(true);
-    blueOutput.set(false);
+    // redOutput.set(false);
+    // greenOutput.set(true);
+    // blueOutput.set(false);
   }
 
   @Override

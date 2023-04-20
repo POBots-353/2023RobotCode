@@ -58,18 +58,23 @@ public class PlaceConePlaceCubeMid extends SequentialCommandGroup {
 
         // new AutoTurnToAngle(180, drive).withTimeout(3.00),
 
-        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 178 : -178, drive)
-            .withTimeout(3.25),
+        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 174 : -174, drive)
+            .withTimeout(2.75),
 
         Commands.parallel(
-            new AutoDrive(5.25, drive),
+            new AutoDrive(5.35, drive),
             new SetElevatorPosition(IntakeConstants.elevatorCubeTopSetPoint, elevator)),
+
+        new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 145 : -145, drive).withTimeout(1.00),
 
         // Commands.runOnce(intake::toggleWristIn, intake),
         // new AutoDrive(4.4, drive),
 
         intake.autoOuttakeCube(),
 
-        new AutoDrive(-5.00, drive));
+        new AutoTurnToAngle(180, drive)
+
+    // new AutoDrive(-5.00, drive)
+    );
   }
 }

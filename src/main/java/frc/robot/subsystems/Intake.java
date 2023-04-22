@@ -112,5 +112,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Pressure", getPSI());
+
+    SmartDashboard.putBoolean("Compressor On", pcmCompressor.isEnabled());
   }
 }

@@ -105,9 +105,12 @@ public class RobotContainer {
   public RobotContainer() {
     PathPlannerUtil.initializeCommands(drive, elevator, intake);
 
+    autoChooser.addOption("No Auto", Commands.runOnce(() -> {
+    }));
+
     autoChooser.addOption("Drive Backwards", new MobilityAuto(drive));
 
-    autoChooser.addOption("Place Cone", new PlaceConeAuto(intake, leds, drive));
+    autoChooser.addOption("Place Cone", new PlaceConeAuto(elevator, intake, leds, drive));
 
     autoChooser.addOption("Place Cone, Mobility",
         new PlaceConeMobility(elevator, intake,

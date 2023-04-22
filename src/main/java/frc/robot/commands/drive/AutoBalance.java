@@ -21,6 +21,8 @@ public class AutoBalance extends CommandBase {
 
   private Timer timeBalanced = new Timer();
 
+  private double minSpeed = 0.05;
+
   /** Creates a new AutoBalanceCommand. */
   public AutoBalance(LEDs ledSubsystem, Drive driveSubsystem) {
     this.driveSubsystem = driveSubsystem;
@@ -78,6 +80,10 @@ public class AutoBalance extends CommandBase {
     }
 
     double forwardSpeed = balancePIDController.calculate(gyroPitch, 0);
+
+    // if (Math.abs(forwardSpeed) < minSpeed) {
+    //   forwardSpeed = Math.copySign(minSpeed, forwardSpeed);
+    // }
 
     driveSubsystem.arcadeDrive(forwardSpeed, 0);
 

@@ -5,6 +5,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -13,26 +15,33 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldPositionConstants;
@@ -47,7 +56,7 @@ public class Drive extends SubsystemBase {
   private CANSparkMax backLeftMotor = new CANSparkMax(DriveConstants.backLeftMotorID, MotorType.kBrushless);
   private CANSparkMax frontRightMotor = new CANSparkMax(DriveConstants.frontRightMotorID, MotorType.kBrushless);
   private CANSparkMax backRightMotor = new CANSparkMax(DriveConstants.backRightMotorID, MotorType.kBrushless);
-  
+
   // Creates motor groups that control BOTH left/right motors
   private MotorControllerGroup leftMotors = new MotorControllerGroup(frontLeftMotor, backLeftMotor);
   private MotorControllerGroup rightMotors = new MotorControllerGroup(frontRightMotor, backRightMotor);
@@ -64,9 +73,12 @@ public class Drive extends SubsystemBase {
   private SparkMaxPIDController backLeftPIDController = backLeftMotor.getPIDController();
   private SparkMaxPIDController backRightPIDController = backRightMotor.getPIDController();
 
-  /*Creates SlewRateLimiters, which are used to dampen the effects of sudden changes to the motors
-  (such as when the speed suddenly changes, it prevents the robot from going to a sudden stop)
-  */
+  /*
+   * Creates SlewRateLimiters, which are used to dampen the effects of sudden
+   * changes to the motors
+   * (such as when the speed suddenly changes, it prevents the robot from going to
+   * a sudden stop)
+   */
   private SlewRateLimiter leftLimiter = new SlewRateLimiter(3.53);
   private SlewRateLimiter rightLimiter = new SlewRateLimiter(3.53);
 
@@ -93,44 +105,64 @@ public class Drive extends SubsystemBase {
   private double maxVel = 600; // 1750, 550
   private double maxAcc = 1500; // 2500, 1000
 
-  /*Creates PowerDistribution object, which is used for measuring power usage in the robot, 
-  as well as what is using the power*/
+  /*
+   * Creates PowerDistribution object, which is used for measuring power usage in
+   * the robot,
+   * as well as what is using the power
+   */
   private PowerDistribution powerDistribution = new PowerDistribution(DriveConstants.powerDistributionID,
       ModuleType.kRev);
 
-  //Creates field object, which is used to display the robot's position on the field.
+  // Creates field object, which is used to display the robot's position on the
+  // field.
   private Field2d field = new Field2d();
 
-  // Creates odometry object, which is used to track the position of a robot using encoders and sensors
+  // Creates odometry object, which is used to track the position of a robot using
+  // encoders and sensors
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       AutoConstants.blueSubstationPose);
 
+  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(30));
+  private final Vector<N3> largeDistanceDeviation = VecBuilder.fill(3.53, 3.53, Units.degreesToRadians(45));
+
+  private DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
+      DriveConstants.driveKinematics, navx.getRotation2d(), frontLeftEncoder.getPosition(),
+      frontRightEncoder.getPosition(), AutoConstants.blueChargeStationPose,
+      VecBuilder.fill(0.1, 0.1, 0.1), smallDistanceDeviation);
+
+  private Pose3d lastVisionPose;
+
   /** Creates a new DriveSubsystem. */
   public Drive() {
-    //Resets motor to factory defaults, essentially reseting the motor until controlled.
+    // Resets motor to factory defaults, essentially reseting the motor until
+    // controlled.
     frontLeftMotor.restoreFactoryDefaults();
     frontRightMotor.restoreFactoryDefaults();
     backLeftMotor.restoreFactoryDefaults();
     backRightMotor.restoreFactoryDefaults();
 
-    //Sets the conversion factor for the position of the encoder.
+    // Sets the conversion factor for the position of the encoder.
     frontLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     backLeftEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setPositionConversionFactor(DriveConstants.encoderToDistanceRatio);
-    
-    //Sets the conversion factor for the velocity of the encoder
+
+    // Sets the conversion factor for the velocity of the encoder
     frontLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     frontRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backLeftEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
     backRightEncoder.setVelocityConversionFactor(DriveConstants.encoderToDistanceRatio);
 
-    //Sets the phase of the AbsoluteEndoder so that it is set to be in phase witht he motor itself
+    // Sets the phase of the AbsoluteEndoder so that it is set to be in phase witht
+    // he motor itself
     frontRightMotor.setInverted(true);
     backRightMotor.setInverted(true);
 
-    /*Causes the back motors to imitate the output of the leader motors (front motors) so that the back and 
-    front motors are in sync*/
+    /*
+     * Causes the back motors to imitate the output of the leader motors (front
+     * motors) so that the back and
+     * front motors are in sync
+     */
     backLeftMotor.follow(frontLeftMotor);
     backRightMotor.follow(frontRightMotor);
 
@@ -157,7 +189,7 @@ public class Drive extends SubsystemBase {
     backLeftMotor.clearFaults();
     backRightMotor.clearFaults();
 
-    //Creates Sendable class
+    // Creates Sendable class
     Sendable differentialDriveSendable = new Sendable() {
       @Override
       public void initSendable(SendableBuilder builder) {
@@ -168,7 +200,7 @@ public class Drive extends SubsystemBase {
       }
     };
 
-    //Sends data about Drive train, field, and powerdistribution to smartdashboard
+    // Sends data about Drive train, field, and powerdistribution to smartdashboard
     SmartDashboard.putData("Drive Train", differentialDriveSendable);
 
     SmartDashboard.putData(field);
@@ -180,16 +212,20 @@ public class Drive extends SubsystemBase {
     p.setP(kP); // Sets the Proportional Gain constat of the PIDF contorller
     p.setI(kI); // Sets the Integral Gain constant of the PIDF contoller
     p.setD(kD); // Sets the Derivative Gain constant of the PIDF controller
-    p.setIZone(kIz); // Sets the IZone range 
+    p.setIZone(kIz); // Sets the IZone range
     p.setFF(kFF); // Sets the Feed-forward Gain constant of the PIDF controller
-    /*Feed-forward is a prediction technique that estimates the output from a PID controller without waiting
-    for the PID algorithm to respond. They are useful for reducing the error fastor or keeps the error smaller
-    rather than making the PID algorithm do it by itself*/
-    p.setOutputRange(kMinOutput, kMaxOutput); /*Sets the minimum and maximum output of the PID controller */
-    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot); /*Sets the maximum velocity of the SmartMotion mode */
-    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot); /*Sets the minimum velocity of the Smartmotion mode */
-    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot); /*Sets the maximum acceleration of the SmartMotion mode */
-    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot); /*Sets the allowed error for the motor */
+    /*
+     * Feed-forward is a prediction technique that estimates the output from a PID
+     * controller without waiting
+     * for the PID algorithm to respond. They are useful for reducing the error
+     * fastor or keeps the error smaller
+     * rather than making the PID algorithm do it by itself
+     */
+    p.setOutputRange(kMinOutput, kMaxOutput); /* Sets the minimum and maximum output of the PID controller */
+    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot); /* Sets the maximum velocity of the SmartMotion mode */
+    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot); /* Sets the minimum velocity of the Smartmotion mode */
+    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot); /* Sets the maximum acceleration of the SmartMotion mode */
+    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot); /* Sets the allowed error for the motor */
   }
 
   public void setMaxVelocity(int maxVelocity) {
@@ -277,14 +313,14 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetEncoders() {
-    Pose2d lastPose = odometry.getPoseMeters();
+    Pose2d lastPose = poseEstimator.getEstimatedPosition();
 
     frontLeftEncoder.setPosition(0);
     frontRightEncoder.setPosition(0);
     backLeftEncoder.setPosition(0);
     backRightEncoder.setPosition(0);
 
-    odometry.resetPosition(navx.getRotation2d(), 0, 0, lastPose);
+    poseEstimator.resetPosition(navx.getRotation2d(), 0, 0, lastPose);
   }
 
   public boolean alignedToTapeYaw() {
@@ -448,11 +484,76 @@ public class Drive extends SubsystemBase {
     frontRightMotor.setVoltage(rightVolts);
   }
 
+  public boolean validTarget(int aprilTagID, Pose3d targetPose) {
+    if (aprilTagID < 1 || aprilTagID > 8) {
+      return false;
+    }
+
+    double distance = Math.abs(targetPose.getZ());
+    double angle = MathUtil.inputModulus(Math.toDegrees(targetPose.getRotation().getY()), -90.0, 90.0);
+
+    if (distance < 0.30 || distance > 3.0) {
+      return false;
+    }
+
+    if (Math.abs(angle) > 80) {
+      return false;
+    }
+
+    if (lastVisionPose != null
+        && Math.abs(targetPose.getRotation().getY() - lastVisionPose.getRotation().getY()) > 40) {
+      lastVisionPose = targetPose;
+
+      return false;
+    }
+
+    return true;
+  }
+
+  public void updateVisionPoseEstimates() {
+    clearDetectedTarget();
+
+    if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
+      Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue(DriveConstants.limelightName);
+      double[] botPoseRaw = LimelightHelpers.getBotPose_wpiBlue(DriveConstants.limelightName);
+
+      Pose3d targetPose = LimelightHelpers.getTargetPose3d_CameraSpace(DriveConstants.limelightName);
+
+      int aprilTagID = (int) LimelightHelpers.getFiducialID(DriveConstants.limelightName);
+
+      double latency = Timer.getFPGATimestamp() - (botPoseRaw[6] / 1000);
+
+      if (!validTarget(aprilTagID, targetPose)) {
+        return;
+      }
+
+      double distance = Math.abs(targetPose.getZ());
+
+      if (distance < 2.0) {
+        poseEstimator.addVisionMeasurement(robotPose, latency, smallDistanceDeviation);
+      } else {
+        poseEstimator.addVisionMeasurement(robotPose, latency, largeDistanceDeviation);
+      }
+
+      if (aprilTagID >= 1 && aprilTagID <= 8) {
+        field.getObject("Detected Target").setPose(FieldPositionConstants.aprilTags.get(aprilTagID).toPose2d());
+      }
+    }
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
+  }
+
+  public void clearDetectedTarget() {
+    field.getObject("Detected Target").setPoses(List.of());
+  }
+
   public void updateOdometry() {
     odometry.update(navx.getRotation2d(), frontLeftEncoder.getPosition(),
         frontRightEncoder.getPosition());
 
-    field.setRobotPose(odometry.getPoseMeters());
+    poseEstimator.update(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition());
+
+    updateVisionPoseEstimates();
   }
 
   @Override
@@ -469,8 +570,8 @@ public class Drive extends SubsystemBase {
     SmartDashboard.putNumber("Gyro Pitch", Math.IEEEremainder(navx.getPitch(), 360));
     SmartDashboard.putNumber("Gyro Roll", Math.IEEEremainder(navx.getRoll(), 360));
 
-    SmartDashboard.putNumber("Front Velocity", frontLeftEncoder.getVelocity());
-    SmartDashboard.putNumber("Back Velocity", backLeftEncoder.getVelocity());
+    SmartDashboard.putNumber("Left Velocity", frontLeftEncoder.getVelocity());
+    SmartDashboard.putNumber("Right Velocity", frontRightEncoder.getVelocity());
 
     SmartDashboard.putNumber("Front Left Position", frontLeftEncoder.getPosition());
     SmartDashboard.putNumber("Back Left Position", backLeftEncoder.getPosition());

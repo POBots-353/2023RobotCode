@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.numbers.N3;
@@ -131,6 +130,7 @@ public class Drive extends SubsystemBase {
       VecBuilder.fill(0.1, 0.1, 0.1), smallDistanceDeviation);
 
   private Pose3d lastVisionPose;
+  private int lastDetectedID = -1;
 
   /** Creates a new DriveSubsystem. */
   public Drive() {
@@ -500,11 +500,13 @@ public class Drive extends SubsystemBase {
       return false;
     }
 
-    if (lastVisionPose != null
-        && Math.abs(targetPose.getRotation().getY() - lastVisionPose.getRotation().getY()) > 40) {
-      lastVisionPose = targetPose;
+    if (lastVisionPose != null && lastDetectedID == aprilTagID) {
+      double previousRotation = lastVisionPose.getRotation().getY();
+      double currentRotation = targetPose.getRotation().getY();
 
-      return false;
+      if (Math.abs(previousRotation - currentRotation) > 30) {
+        return false;
+      }
     }
 
     return true;
@@ -523,7 +525,15 @@ public class Drive extends SubsystemBase {
 
       double latency = Timer.getFPGATimestamp() - (botPoseRaw[6] / 1000);
 
-      if (!validTarget(aprilTagID, targetPose)) {
+      boolean validTarget = validTarget(aprilTagID, targetPose);
+
+      lastVisionPose = targetPose;
+      if (aprilTagID != lastDetectedID) {
+        lastVisionPose = null;
+      }
+      lastDetectedID = aprilTagID;
+
+      if (!validTarget) {
         return;
       }
 
@@ -539,8 +549,6 @@ public class Drive extends SubsystemBase {
         field.getObject("Detected Target").setPose(FieldPositionConstants.aprilTags.get(aprilTagID).toPose2d());
       }
     }
-
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   public void clearDetectedTarget() {
@@ -554,6 +562,8 @@ public class Drive extends SubsystemBase {
     poseEstimator.update(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition());
 
     updateVisionPoseEstimates();
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   @Override

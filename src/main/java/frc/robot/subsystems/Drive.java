@@ -5,6 +5,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -46,6 +47,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldPositionConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.LimelightHelpers.LimelightTarget_Fiducial;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -121,8 +123,8 @@ public class Drive extends SubsystemBase {
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       AutoConstants.blueSubstationPose);
 
-  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(30));
-  private final Vector<N3> largeDistanceDeviation = VecBuilder.fill(3.53, 3.53, Units.degreesToRadians(45));
+  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.00, 1.00, Units.degreesToRadians(30));
+  private final Vector<N3> largeDistanceDeviation = VecBuilder.fill(2.50, 2.50, Units.degreesToRadians(45));
 
   private DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
       DriveConstants.driveKinematics, navx.getRotation2d(), frontLeftEncoder.getPosition(),
@@ -513,45 +515,62 @@ public class Drive extends SubsystemBase {
   }
 
   public void updateVisionPoseEstimates() {
-    clearDetectedTarget();
+    LimelightHelpers.Results results = LimelightHelpers.getLatestResults(DriveConstants.limelightName).targetingResults;
 
-    if (LimelightHelpers.getTV(DriveConstants.limelightName)) {
-      Pose2d robotPose = LimelightHelpers.getBotPose2d_wpiBlue(DriveConstants.limelightName);
-      double[] botPoseRaw = LimelightHelpers.getBotPose_wpiBlue(DriveConstants.limelightName);
-
-      Pose3d targetPose = LimelightHelpers.getTargetPose3d_CameraSpace(DriveConstants.limelightName);
-
-      int aprilTagID = (int) LimelightHelpers.getFiducialID(DriveConstants.limelightName);
-
-      double latency = Timer.getFPGATimestamp() - (botPoseRaw[6] / 1000);
-
-      boolean validTarget = validTarget(aprilTagID, targetPose);
-
-      lastVisionPose = targetPose;
-      if (aprilTagID != lastDetectedID) {
-        lastVisionPose = null;
-      }
-      lastDetectedID = aprilTagID;
-
-      if (!validTarget) {
-        return;
-      }
-
-      double distance = Math.abs(targetPose.getZ());
-
-      if (distance < 2.0) {
-        poseEstimator.addVisionMeasurement(robotPose, latency, smallDistanceDeviation);
-      } else {
-        poseEstimator.addVisionMeasurement(robotPose, latency, largeDistanceDeviation);
-      }
-
-      if (aprilTagID >= 1 && aprilTagID <= 8) {
-        field.getObject("Detected Target").setPose(FieldPositionConstants.aprilTags.get(aprilTagID).toPose2d());
-      }
+    if (!results.valid || results.targets_Fiducials.length == 0) {
+      clearDetectedTargets();
+      return;
     }
+
+    Pose2d robotPose = results.getBotPose2d_wpiBlue();
+
+    Pose3d closestTargetPose = results.targets_Fiducials[0].getTargetPose_CameraSpace();
+
+    int closestTagID = (int) results.targets_Fiducials[0].fiducialID;
+
+    List<Pose2d> detectedTargets = new ArrayList<>();
+
+    for (LimelightTarget_Fiducial target : results.targets_Fiducials) {
+      int targetID = (int) (target.fiducialID);
+      if (targetID < 1 || targetID > 8) {
+        continue;
+      }
+
+      if (target.getTargetPose_CameraSpace().getZ() < closestTargetPose.getZ()) {
+        closestTargetPose = target.getTargetPose_CameraSpace();
+        closestTagID = targetID;
+      }
+
+      detectedTargets.add(FieldPositionConstants.aprilTags.get(targetID).toPose2d());
+    }
+
+    boolean validTarget = validTarget(closestTagID, closestTargetPose);
+
+    lastVisionPose = closestTargetPose;
+    if (closestTagID != lastDetectedID) {
+      lastVisionPose = null;
+    }
+    lastDetectedID = closestTagID;
+
+    if (!validTarget) {
+      clearDetectedTargets();
+      return;
+    }
+
+    double distance = Math.abs(closestTargetPose.getZ());
+    double latency = results.timestamp_LIMELIGHT_publish
+        - (results.latency_capture + results.latency_pipeline + results.latency_jsonParse) / 1000.0;
+
+    if (distance < 2.0 || detectedTargets.size() > 1) {
+      poseEstimator.addVisionMeasurement(robotPose, latency, smallDistanceDeviation);
+    } else {
+      poseEstimator.addVisionMeasurement(robotPose, latency, largeDistanceDeviation);
+    }
+
+    field.getObject("Detected Target").setPoses(detectedTargets);
   }
 
-  public void clearDetectedTarget() {
+  public void clearDetectedTargets() {
     field.getObject("Detected Target").setPoses(List.of());
   }
 

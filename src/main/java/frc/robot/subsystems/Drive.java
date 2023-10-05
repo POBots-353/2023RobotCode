@@ -536,11 +536,6 @@ public class Drive extends SubsystemBase {
         continue;
       }
 
-      if (target.getTargetPose_CameraSpace().getZ() < closestTargetPose.getZ()) {
-        closestTargetPose = target.getTargetPose_CameraSpace();
-        closestTagID = targetID;
-      }
-
       detectedTargets.add(FieldPositionConstants.aprilTags.get(targetID).toPose2d());
     }
 

@@ -36,7 +36,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -123,13 +122,12 @@ public class Drive extends SubsystemBase {
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       AutoConstants.blueSubstationPose);
 
-  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.00, 1.00, Units.degreesToRadians(30));
-  private final Vector<N3> largeDistanceDeviation = VecBuilder.fill(2.50, 2.50, Units.degreesToRadians(45));
+  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.00, 1.00, Units.degreesToRadians(10));
 
   private DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
       DriveConstants.driveKinematics, navx.getRotation2d(), frontLeftEncoder.getPosition(),
       frontRightEncoder.getPosition(), AutoConstants.blueChargeStationPose,
-      VecBuilder.fill(0.1, 0.1, 0.1), smallDistanceDeviation);
+      VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.25)), smallDistanceDeviation);
 
   private Pose3d lastVisionPose;
   private int lastDetectedID = -1;
@@ -491,7 +489,7 @@ public class Drive extends SubsystemBase {
       return false;
     }
 
-    double distance = Math.abs(targetPose.getZ());
+    double distance = targetPose.getTranslation().getNorm();
     double angle = MathUtil.inputModulus(Math.toDegrees(targetPose.getRotation().getY()), -90.0, 90.0);
 
     if (distance < 0.30 || distance > 3.0) {
@@ -552,14 +550,16 @@ public class Drive extends SubsystemBase {
       return;
     }
 
-    double distance = Math.abs(closestTargetPose.getZ());
+    double distance = closestTargetPose.getTranslation().getNorm();
     double latency = results.timestamp_LIMELIGHT_publish
         - (results.latency_capture + results.latency_pipeline + results.latency_jsonParse) / 1000.0;
 
     if (distance < 2.0 || detectedTargets.size() > 1) {
       poseEstimator.addVisionMeasurement(robotPose, latency, smallDistanceDeviation);
     } else {
-      poseEstimator.addVisionMeasurement(robotPose, latency, largeDistanceDeviation);
+      poseEstimator.addVisionMeasurement(robotPose, latency,
+          VecBuilder.fill(Math.pow(distance, 2.0) * 0.5, Math.pow(distance, 2.0) * 0.5,
+              Units.degreesToRadians(15.0)));
     }
 
     field.getObject("Detected Target").setPoses(detectedTargets);

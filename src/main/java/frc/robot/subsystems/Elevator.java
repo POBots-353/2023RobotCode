@@ -21,21 +21,25 @@ public class Elevator extends SubsystemBase {
   // Creates elevator motor
   private CANSparkMax elevatorMotor = new CANSparkMax(IntakeConstants.elevatorMotorID, MotorType.kBrushless);
 
-  //Creates PID controller for elevatorMotor, which uses PID to control the elevator
+  // Creates PID controller for elevatorMotor, which uses PID to control the
+  // elevator
   private SparkMaxPIDController elevatorPIDController = elevatorMotor.getPIDController();
 
-  //Creates RelativeEncoder for elevator motor, which gets info about the it (such as speed)
+  // Creates RelativeEncoder for elevator motor, which gets info about the it
+  // (such as speed)
   private RelativeEncoder elevatorEncoder = elevatorMotor.getEncoder();
 
-  //Creates elevatorPiston, which is used in the startingConfiguration
-  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
+  // Creates elevatorPiston, which is used in the startingConfiguration
+  private DoubleSolenoid elevatorPiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID,
+      PneumaticsModuleType.CTREPCM,
       IntakeConstants.elevatorPistonForwardID, IntakeConstants.elevatorPistonReverseID);
 
-  //Creates manipulatorBreak
-  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(16, PneumaticsModuleType.REVPH,
+  // Creates manipulatorBreak
+  private DoubleSolenoid manipulatorBreak = new DoubleSolenoid(IntakeConstants.pneumaticHubID,
+      PneumaticsModuleType.CTREPCM,
       IntakeConstants.manipulatorBreakForwardID, IntakeConstants.manipulatorBreakReverseID);
 
-  //Creates the limit switches, which limits the range of motion of the elevator.
+  // Creates the limit switches, which limits the range of motion of the elevator.
   private DigitalInput topLimitSwitch = new DigitalInput(8);
   private DigitalInput bottomLimitSwitch = new DigitalInput(9);
 
@@ -55,40 +59,44 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new ElevatorSubsystem. */
   public Elevator() {
-    
+
     elevatorMotor.restoreFactoryDefaults();
 
-    //Sets the default position of the elevator position to piston out
+    // Sets the default position of the elevator position to piston out
     elevatorPiston.set(Value.kForward);
 
-    //Sets the default position of the manipularbreak to piston out
+    // Sets the default position of the manipularbreak to piston out
     manipulatorBreak.set(Value.kForward);
 
-    //Initializes the PId for the elevator
+    // Initializes the PId for the elevator
     initializePID(elevatorPIDController);
 
-    //Sets the elevator position to the startingConfiguration height
+    // Sets the elevator position to the startingConfiguration height
     elevatorEncoder.setPosition(IntakeConstants.startingConfigurationHeight);
   }
 
-  //Initializes PID
+  // Initializes PID
   private void initializePID(SparkMaxPIDController p) {
     p.setP(kP); // Sets the Proportional Gain constat of the PIDF contorller
     p.setI(kI); // Sets the Integral Gain constant of the PIDF contoller
     p.setD(kD); // Sets the Derivative Gain constant of the PIDF controller
-    p.setIZone(kIz); // Sets the IZone range 
+    p.setIZone(kIz); // Sets the IZone range
     p.setFF(kFF); // Sets the Feed-forward Gain constant of the PIDF controller
-    /*Feed-forward is a prediction technique that estimates the output from a PID controller without waiting
-    for the PID algorithm to respond. They are useful for reducing the error fastor or keeps the error smaller
-    rather than making the PID algorithm do it by itself*/
-    p.setOutputRange(kMinOutput, kMaxOutput); /*Sets the minimum and maximum output of the PID controller */
-    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot); /*Sets the maximum velocity of the SmartMotion mode */
-    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot); /*Sets the minimum velocity of the Smartmotion mode */
-    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot); /*Sets the maximum acceleration of the SmartMotion mode */
-    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot); /*Sets the allowed error for the motor */
+    /*
+     * Feed-forward is a prediction technique that estimates the output from a PID
+     * controller without waiting
+     * for the PID algorithm to respond. They are useful for reducing the error
+     * fastor or keeps the error smaller
+     * rather than making the PID algorithm do it by itself
+     */
+    p.setOutputRange(kMinOutput, kMaxOutput); /* Sets the minimum and maximum output of the PID controller */
+    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot); /* Sets the maximum velocity of the SmartMotion mode */
+    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot); /* Sets the minimum velocity of the Smartmotion mode */
+    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot); /* Sets the maximum acceleration of the SmartMotion mode */
+    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot); /* Sets the allowed error for the motor */
   }
 
-  //The methods below kinda explain themselves
+  // The methods below kinda explain themselves
   public void toggleElevatorTilt() {
     elevatorPiston.toggle();
   }
@@ -161,18 +169,20 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition()); /*Posts the 
-    elevator position to SmartDashboard */
+    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition()); /*
+                                                                                   * Posts the
+                                                                                   * elevator position to SmartDashboard
+                                                                                   */
     SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());
 
-    //Posts if the limit switches are triggered or not
+    // Posts if the limit switches are triggered or not
     SmartDashboard.putBoolean("Top Switch", !topLimitSwitch.get());
     SmartDashboard.putBoolean("Bottom Switch", !bottomLimitSwitch.get());
 
-    //Posts the elevator motor temperature
+    // Posts the elevator motor temperature
     SmartDashboard.putNumber("Elevator Motor Temperature", elevatorMotor.getMotorTemperature());
 
-    //Posts the elevator motor current (voltage)
+    // Posts the elevator motor current (voltage)
     SmartDashboard.putNumber("Elevator Current", elevatorMotor.getOutputCurrent());
 
     if (!bottomLimitSwitch.get()) {

@@ -175,7 +175,7 @@ public final class Constants {
   }
 
   public static class IntakeConstants {
-    public static final int pneumaticHubID = 16;
+    public static final int pneumaticHubID = 0;
 
     public static final int elevatorMotorID = 8;
 

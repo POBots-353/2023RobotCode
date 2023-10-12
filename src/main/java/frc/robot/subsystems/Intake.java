@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,14 +20,14 @@ import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
   // Pneumatic stuff
-  private Compressor pcmCompressor = new Compressor(IntakeConstants.pneumaticHubID, PneumaticsModuleType.REVPH);
+  private Compressor pcmCompressor = new Compressor(IntakeConstants.pneumaticHubID, PneumaticsModuleType.CTREPCM);
 
-  private PneumaticHub pneumaticHub = new PneumaticHub(IntakeConstants.pneumaticHubID);
+  // private PneumaticHub pneumaticHub = new
+  // PneumaticHub(IntakeConstants.pneumaticHubID);
 
   // Intake objects
   private DoubleSolenoid intakeWristPiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID,
-      PneumaticsModuleType.REVPH,
-      IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
+      PneumaticsModuleType.CTREPCM, IntakeConstants.intakePistonForwardID, IntakeConstants.intakePistonReverseID);
 
   private CANSparkMax intakeMotor = new CANSparkMax(IntakeConstants.intakeMotorID, MotorType.kBrushless);
 
@@ -36,7 +35,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     pcmCompressor.enableDigital();
 
-    pneumaticHub.clearStickyFaults();
+    // pneumaticHub.clearStickyFaults();
     intakeMotor.clearFaults();
 
     intakeWristPiston.set(Value.kForward);
@@ -70,7 +69,8 @@ public class Intake extends SubsystemBase {
   }
 
   public double getPSI() {
-    return (double) Math.round(pneumaticHub.getPressure(0) * 100) / 100;
+    return -24.0;
+    // return (double) Math.round(pneumaticHub.getPressure(0) * 100) / 100;
   }
 
   public void intakeCube() {

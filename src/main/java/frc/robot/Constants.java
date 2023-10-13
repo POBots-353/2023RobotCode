@@ -149,8 +149,8 @@ public final class Constants {
     public static final double mmDegreesOffsetRatio = 3.53535353 / 20.8; // measured millimeters vs the degrees from the
                                                                          // center
 
-    public final static int pistonBrakeForwardID = 8;
-    public final static int pistonBrakeReverseID = 7;
+    public final static int pistonBrakeForwardID = 4; // 8
+    public final static int pistonBrakeReverseID = 2; // 7
   }
 
   public static final class AutoConstants {
@@ -179,19 +179,19 @@ public final class Constants {
 
     public static final int elevatorMotorID = 8;
 
-    public static final int elevatorPistonForwardID = 6;
-    public static final int elevatorPistonReverseID = 9;
+    public static final int elevatorPistonForwardID = 1; // 6
+    public static final int elevatorPistonReverseID = 5; // 9
 
     public static final int intakeMotorID = 7; // 7
 
     public static final int leftActuatorID = 0;
     public static final int rightActuatorID = 0;
 
-    public static final int intakePistonForwardID = 5;
-    public static final int intakePistonReverseID = 10;
+    public static final int intakePistonForwardID = 0; // 5
+    public static final int intakePistonReverseID = 6; // 10
 
-    public static final int manipulatorBreakForwardID = 4;
-    public static final int manipulatorBreakReverseID = 11;
+    public static final int manipulatorBreakForwardID = 3; // 4
+    public static final int manipulatorBreakReverseID = 7; // 11
 
     public static final double intakeSpeed = 0.80;
     public static final double outtakeSpeed = 1.00;

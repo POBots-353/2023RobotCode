@@ -7,6 +7,7 @@ package frc.robot.commands.autonomous.routines;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoBalance;
 import frc.robot.commands.drive.AutoDrive;
@@ -53,7 +54,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
 
         Commands.parallel(
             new AutoTurnToAngle(0, drive).withTimeout(1.75), // -10,
-            new SetElevatorPosition(IntakeConstants.elevatorConeLowSetPoint, elevator)),
+            new SetElevatorPosition(ElevatorConstants.elevatorConeLowSetPoint, elevator)),
 
         Commands.runOnce(() -> {
           // cancelDriveback = true;
@@ -76,7 +77,7 @@ public class PlaceConeMobilityGrabConeBalance extends SequentialCommandGroup {
             Commands.runOnce(() -> timeAbove10Degrees = 0)),
 
         Commands.parallel(
-            new SetElevatorPosition(IntakeConstants.elevatorConeMidSetPoint, elevator),
+            new SetElevatorPosition(ElevatorConstants.elevatorConeMidSetPoint, elevator),
             new AutoDrive(-3.5, drive)
                 .until(() -> {
                   if (Math.abs(drive.getGyroPitch()) > 10) {

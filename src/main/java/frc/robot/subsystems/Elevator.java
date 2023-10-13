@@ -67,8 +67,9 @@ public class Elevator extends SubsystemBase {
 
   /** Creates a new ElevatorSubsystem. */
   public Elevator() {
-
     elevatorMotor.restoreFactoryDefaults();
+
+    elevatorMotor.setInverted(true);
 
     // Sets the default position of the elevator position to piston out
     elevatorPiston.set(Value.kForward);
@@ -80,7 +81,7 @@ public class Elevator extends SubsystemBase {
     initializePID(elevatorPIDController);
 
     // Sets the elevator position to the startingConfiguration height
-    elevatorEncoder.setPosition(IntakeConstants.startingConfigurationHeight);
+    elevatorEncoder.setPosition(ElevatorConstants.startingConfigurationHeight);
   }
 
   // Initializes PID
@@ -113,8 +114,8 @@ public class Elevator extends SubsystemBase {
     double position = state.position;
 
     // if (invert) {
-    //   position *= -1;
-    //   // velocity *= -1;
+    // position *= -1;
+    // // velocity *= -1;
     // }
 
     double feedforwardVolts = feedforward.calculate(velocity);
@@ -126,7 +127,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void elevatorUp() {
-    elevatorMotor.set(-IntakeConstants.elevatorSpeed);
+    elevatorMotor.set(IntakeConstants.elevatorSpeed);
   }
 
   public void elevatorDown() {
@@ -135,7 +136,7 @@ public class Elevator extends SubsystemBase {
       return;
     }
 
-    elevatorMotor.set(IntakeConstants.elevatorSpeed);
+    elevatorMotor.set(-IntakeConstants.elevatorSpeed);
   }
 
   public void setElevatorSpeed(double speed) {

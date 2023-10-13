@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoDrive;
 import frc.robot.commands.drive.AutoTurnToAngle;
@@ -30,7 +31,7 @@ public class PlaceConeGrabCone extends SequentialCommandGroup {
 
         new WaitCommand(1.50),
 
-        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator),
+        new SetElevatorPosition(ElevatorConstants.elevatorConeTopSetPoint, elevator),
 
         // Robot will outtake the game piece it started with
         intake.autoOuttakeCone(),

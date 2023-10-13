@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.Buttons;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FieldPositionConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OperatorConstants;
@@ -57,341 +58,341 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final Drive drive = new Drive();
-  private final Intake intake = new Intake();
-  private final Elevator elevator = new Elevator();
-  private final LEDs leds = new LEDs();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  public static final CommandXboxController driverController = new CommandXboxController(
-      OperatorConstants.kDriverControllerPort);
-  public static final XboxController driverControllerHID = driverController.getHID();
-  public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
-
-  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-
-  private static SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
-
-  // Command to print the pneumatic PSI every 10 seconds
-  private Command printPSI = Commands.repeatingSequence(
-      Commands.waitSeconds(10.0),
-      Commands.runOnce(
-          () -> DriverStation.reportWarning("Pneumatic Pressure is " + intake.getPSI() + " PSI", false)));
-
-  public void initializeAutonomous() {
-    drive.zeroGyro();
-    intake.disableCompressor();
-    leds.initializeAllianceColor();
-
-    if (!printPSI.isScheduled()) {
-      printPSI.schedule();
-    }
-  }
-
-  public void initializeTeleop() {
-    leds.initializeAllianceColor();
-    intake.enableCompressor();
-    drive.turnBrakesOff();
-
-    if (!printPSI.isScheduled()) {
-      printPSI.schedule();
-    }
-  }
-
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    PathPlannerUtil.initializeCommands(drive, elevator, intake);
-
-    autoChooser.addOption("No Auto", Commands.runOnce(() -> {
-    }));
-
-    autoChooser.addOption("Drive Backwards", new MobilityAuto(drive));
-
-    autoChooser.addOption("Place Cone", new PlaceConeAuto(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Mobility",
-        new PlaceConeMobility(elevator, intake,
-            drive));
-
-    autoChooser.addOption("Drive Back, Balance", new BalanceAuto(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Balance",
-        new PlaceConeBalance(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Mobility, Place Cube Low",
-        new PlaceConePlaceCubeLow(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Mobility, Place Cube Mid",
-        new PlaceConePlaceCubeMid(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Mobility, Place Cube Mid, CABLE",
-        new PlaceConePlaceCubeMidCable(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Mobility, Balance",
-        new PlaceConeMobilityBalance(elevator, intake, leds, drive));
-
-    autoChooser.addOption("Place Cone, Mobility, Grab Cone, Balance",
-        new PlaceConeMobilityGrabConeBalance(elevator, intake, leds, drive));
-
-    // autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
-    // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive
-    // Backwards", driveSubsystem)));
-
-    // autoChooser.addOption("(Substation Side) Place Cone, Grab Cone",
-    // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Grab Cone",
-    // driveSubsystem)));
-
-    // autoChooser.addOption("(Substation Side) Place Cone, Grab Cone, Balance",
-    // placeConeAutoStart(
-    // new PathPlannerCommand("Substation Place Cone Grab Cone and Balance",
-    // driveSubsystem)));
-
-    // autoChooser.addOption("(Charge Station) Place Cone, Balance",
-    // placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone
-    // Balance", driveSubsystem))
-    // .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
-
-    // autoChooser.addOption("(Charge Station) Place Cone, Mobility, Balance",
-    // placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Mobility
-    // Balance", driveSubsystem))
-    // .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
-
-    // autoChooser.addOption("(Field Edge) Place Cone, Drive Backwards",
-    // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Drive
-    // Backwards", driveSubsystem)));
-
-    // autoChooser.addOption("(Field Edge) Place Cone, Grab Cone",
-    // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone",
-    // driveSubsystem)));
-
-    // autoChooser.addOption("(Field Edge) Place Cone, Grab Cone, Balance",
-    // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone
-    // and Balance",
-    // driveSubsystem)));
-
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", FieldPositionConstants.CHARGE_STATION);
-    startingFieldPosition.addOption("Substation Side", FieldPositionConstants.SUBSTATION_SIDE);
-    startingFieldPosition.addOption("Perimeter Side", FieldPositionConstants.FIELD_EDGE);
-
-    SmartDashboard.putData("Starting Field Position", startingFieldPosition);
-
-    // Configure the trigger bindings
-    configureBindings();
-
-    // driveSubsystem.setDefaultCommand(
-    // new ArcadeDriveCommand(driverController::getLeftY,
-    // driverController::getRightX, driveSubsystem));
-
-    drive.setDefaultCommand(
-        new TankDrive(driverController::getLeftY, driverController::getRightY, drive));
-
-    printPSI.schedule();
-  }
-
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    configureDriveButtons();
-
-    configureElevatorButtons();
-
-    configureIntakeButtons();
-  }
-
-  /**
-   * Configures all drive triggers and buttons
-   */
-  public void configureDriveButtons() {
-    Trigger turboDrive = driverController.rightTrigger();
-
-    Trigger slowDrive = driverController.leftTrigger();
-
-    Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
-
-    Trigger autoBalance = driverController.b();
-
-    Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
-
-    // Trigger alignToTape = driverController.rightBumper();
-
-    // Trigger alignToAprilTag = driverController.leftBumper();
-
-    Trigger turnToSubstation = driverController.rightBumper();
-    Trigger turnToNode = driverController.leftBumper();
-
-    Trigger setPipelineTape = driverController.start();
-    Trigger setPipelineAprilTag = driverController.back();
-
-    slowDrive.whileTrue(
-        Commands.run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
-            -driverController.getRightY() * DriveConstants.slowSpeed), drive));
-
-    turboDrive
-        .whileTrue(Commands
-            .run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.turboSpeed,
-                -driverController.getRightY() * DriveConstants.turboSpeed), drive));
-
-    // Uses IEEEremainder to get the angle between -180 and 180
-    turnToAngle
-        .whileTrue(new AutoTurnToAngle(() -> driverControllerHID.getPOV(), drive));
-
-    turnToSubstation.whileTrue(new TurnToAngle(0, drive));
-
-    turnToNode.whileTrue(new TurnToAngle(180, drive));
-
-    autoBalance.whileTrue(new AutoBalance(leds, drive));
-
-    toggleBrake.toggleOnTrue(Commands.runOnce(drive::toggleBrakes, drive));
-
-    // alignToTape.whileTrue(new DriveToTape(leds, drive));
-
-    // alignToAprilTag.whileTrue(new AlignToAprilTag(drive));
-
-    setPipelineTape
-        .toggleOnTrue(
-            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 0),
-                drive));
-
-    setPipelineAprilTag
-        .toggleOnTrue(
-            Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 1),
-                drive));
-  }
-
-  /**
-   * Configures all the buttons and triggers for the elevator
-   */
-  public void configureElevatorButtons() {
-    Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
-
-    Trigger elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
-
-    Trigger coneElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode.negate());
-    Trigger coneElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode.negate());
-    Trigger coneElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode.negate());
-
-    Trigger cubeElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode);
-    Trigger cubeElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode);
-    Trigger cubeElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode);
-
-    Trigger elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
-    Trigger elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
-
-    Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
-
-    startingConfiguration.whileTrue(Commands.sequence(
-        new SetElevatorPosition(
-            () -> (elevator.getPistonState() == Value.kForward) ? IntakeConstants.elevatorConeTopSetPoint
-                : IntakeConstants.startingConfigurationHeight,
-            elevator),
-        Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
-        // new SetElevatorPosition(IntakeConstants.startingConfigurationHeight,
-        // elevator),
-        Commands.runOnce(intake::toggleWristOut, intake)));
-
-    elevatorTilt.toggleOnTrue(
-        Commands.runOnce(elevator::toggleElevatorTilt, elevator));
-
-    coneElevatorHigh
-        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator));
-    coneElevatorMid
-        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeMidSetPoint, elevator));
-    coneElevatorLow
-        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeLowSetPoint, elevator));
-
-    cubeElevatorHigh
-        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorCubeTopSetPoint, elevator));
-    cubeElevatorMid
-        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorCubeMidSetPoint, elevator));
-    cubeElevatorLow
-        .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorCubeLowSetPoint, elevator));
-
-    elevatorUp.whileTrue(new ManualMoveElevator(-IntakeConstants.elevatorSpeed,
-        () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
-    elevatorDown.whileTrue(new ManualMoveElevator(IntakeConstants.elevatorSpeed,
-        () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
-
-    new JoystickButton(operatorStick, 15)
-        .onTrue(Commands.runOnce(elevator::zeroElevatorPosition, elevator));
-  }
-
-  /**
-   * Configures all the buttons for the intake
-   */
-  public void configureIntakeButtons() {
-
-    Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
-
-    Trigger intakeCone = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode.negate());
-    Trigger outtakeCone = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode.negate());
-
-    Trigger intakeCube = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode);
-    Trigger outtakeCube = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode);
-
-    Trigger intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
-
-    intakeCone.whileTrue(Commands.run(intake::intakeCone, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-
-    outtakeCone.whileTrue(Commands.run(intake::outTakeCone, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-
-    intakeCube.whileTrue(Commands.run(intake::intakeCube, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-
-    outtakeCube.whileTrue(Commands.run(intake::outTakeCube, intake))
-        .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-
-    intakePiston.toggleOnTrue(Commands.runOnce(intake::toggleIntakePiston, intake));
-  }
-
-  public static int getStartingFieldPosition() {
-    return startingFieldPosition.getSelected();
-  }
-
-  public void initializeOdometry(Command autoCommand) {
-    if (autoCommand instanceof FollowPathPlanner) {
-      return;
+    // The robot's subsystems and commands are defined here...
+    private final Drive drive = new Drive();
+    private final Intake intake = new Intake();
+    private final Elevator elevator = new Elevator();
+    private final LEDs leds = new LEDs();
+
+    // Replace with CommandPS4Controller or CommandJoystick if needed
+    public static final CommandXboxController driverController = new CommandXboxController(
+            OperatorConstants.kDriverControllerPort);
+    public static final XboxController driverControllerHID = driverController.getHID();
+    public final static Joystick operatorStick = new Joystick(OperatorConstants.operatorStickPort);
+
+    private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+
+    private static SendableChooser<Integer> startingFieldPosition = new SendableChooser<Integer>();
+
+    // Command to print the pneumatic PSI every 10 seconds
+    private Command printPSI = Commands.repeatingSequence(
+            Commands.waitSeconds(10.0),
+            Commands.runOnce(
+                    () -> DriverStation.reportWarning("Pneumatic Pressure is " + intake.getPSI() + " PSI", false)));
+
+    public void initializeAutonomous() {
+        drive.zeroGyro();
+        intake.disableCompressor();
+        leds.initializeAllianceColor();
+
+        if (!printPSI.isScheduled()) {
+            printPSI.schedule();
+        }
     }
 
-    drive.initializeFieldPosition(startingFieldPosition.getSelected());
-  }
+    public void initializeTeleop() {
+        leds.initializeAllianceColor();
+        intake.enableCompressor();
+        drive.turnBrakesOff();
 
-  public Command placeConeAutoStart(Command pathPlannerCommand) {
-    return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
-        new WaitCommand(1.50),
+        if (!printPSI.isScheduled()) {
+            printPSI.schedule();
+        }
+    }
 
-        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint,
-            elevator),
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        PathPlannerUtil.initializeCommands(drive, elevator, intake);
 
-        intake.autoOuttakeCone(),
-        new WaitCommand(0.50),
-        pathPlannerCommand);
-  }
+        autoChooser.addOption("No Auto", Commands.runOnce(() -> {
+        }));
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+        autoChooser.addOption("Drive Backwards", new MobilityAuto(drive));
+
+        autoChooser.addOption("Place Cone", new PlaceConeAuto(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Mobility",
+                new PlaceConeMobility(elevator, intake,
+                        drive));
+
+        autoChooser.addOption("Drive Back, Balance", new BalanceAuto(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Balance",
+                new PlaceConeBalance(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Mobility, Place Cube Low",
+                new PlaceConePlaceCubeLow(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Mobility, Place Cube Mid",
+                new PlaceConePlaceCubeMid(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Mobility, Place Cube Mid, CABLE",
+                new PlaceConePlaceCubeMidCable(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Mobility, Balance",
+                new PlaceConeMobilityBalance(elevator, intake, leds, drive));
+
+        autoChooser.addOption("Place Cone, Mobility, Grab Cone, Balance",
+                new PlaceConeMobilityGrabConeBalance(elevator, intake, leds, drive));
+
+        // autoChooser.addOption("(Substation Side) Place Cone, Drive Backwards",
+        // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Drive
+        // Backwards", driveSubsystem)));
+
+        // autoChooser.addOption("(Substation Side) Place Cone, Grab Cone",
+        // placeConeAutoStart(new PathPlannerCommand("Substation Place Cone Grab Cone",
+        // driveSubsystem)));
+
+        // autoChooser.addOption("(Substation Side) Place Cone, Grab Cone, Balance",
+        // placeConeAutoStart(
+        // new PathPlannerCommand("Substation Place Cone Grab Cone and Balance",
+        // driveSubsystem)));
+
+        // autoChooser.addOption("(Charge Station) Place Cone, Balance",
+        // placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone
+        // Balance", driveSubsystem))
+        // .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
+
+        // autoChooser.addOption("(Charge Station) Place Cone, Mobility, Balance",
+        // placeConeAutoStart(new PathPlannerCommand("Charge Station Place Cone Mobility
+        // Balance", driveSubsystem))
+        // .andThen(new AutoBalanceCommand(ledSubsystem, driveSubsystem)));
+
+        // autoChooser.addOption("(Field Edge) Place Cone, Drive Backwards",
+        // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Drive
+        // Backwards", driveSubsystem)));
+
+        // autoChooser.addOption("(Field Edge) Place Cone, Grab Cone",
+        // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone",
+        // driveSubsystem)));
+
+        // autoChooser.addOption("(Field Edge) Place Cone, Grab Cone, Balance",
+        // placeConeAutoStart(new PathPlannerCommand("Field Edge Place Cone Grab Cone
+        // and Balance",
+        // driveSubsystem)));
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        startingFieldPosition.setDefaultOption("Aligned w/ Charge Station", FieldPositionConstants.CHARGE_STATION);
+        startingFieldPosition.addOption("Substation Side", FieldPositionConstants.SUBSTATION_SIDE);
+        startingFieldPosition.addOption("Perimeter Side", FieldPositionConstants.FIELD_EDGE);
+
+        SmartDashboard.putData("Starting Field Position", startingFieldPosition);
+
+        // Configure the trigger bindings
+        configureBindings();
+
+        // driveSubsystem.setDefaultCommand(
+        // new ArcadeDriveCommand(driverController::getLeftY,
+        // driverController::getRightX, driveSubsystem));
+
+        drive.setDefaultCommand(
+                new TankDrive(driverController::getLeftY, driverController::getRightY, drive));
+
+        printPSI.schedule();
+    }
+
+    /**
+     * Use this method to define your trigger->command mappings. Triggers can be
+     * created via the
+     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+     * an arbitrary
+     * predicate, or via the named factories in {@link
+     * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+     * {@link
+     * CommandXboxController
+     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+     * PS4} controllers or
+     * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+     * joysticks}.
+     */
+    private void configureBindings() {
+        configureDriveButtons();
+
+        configureElevatorButtons();
+
+        configureIntakeButtons();
+    }
+
+    /**
+     * Configures all drive triggers and buttons
+     */
+    public void configureDriveButtons() {
+        Trigger turboDrive = driverController.rightTrigger();
+
+        Trigger slowDrive = driverController.leftTrigger();
+
+        Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
+
+        Trigger autoBalance = driverController.b();
+
+        Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
+
+        // Trigger alignToTape = driverController.rightBumper();
+
+        // Trigger alignToAprilTag = driverController.leftBumper();
+
+        Trigger turnToSubstation = driverController.rightBumper();
+        Trigger turnToNode = driverController.leftBumper();
+
+        Trigger setPipelineTape = driverController.start();
+        Trigger setPipelineAprilTag = driverController.back();
+
+        slowDrive.whileTrue(
+                Commands.run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
+                        -driverController.getRightY() * DriveConstants.slowSpeed), drive));
+
+        turboDrive
+                .whileTrue(Commands
+                        .run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.turboSpeed,
+                                -driverController.getRightY() * DriveConstants.turboSpeed), drive));
+
+        // Uses IEEEremainder to get the angle between -180 and 180
+        turnToAngle
+                .whileTrue(new AutoTurnToAngle(() -> driverControllerHID.getPOV(), drive));
+
+        turnToSubstation.whileTrue(new TurnToAngle(0, drive));
+
+        turnToNode.whileTrue(new TurnToAngle(180, drive));
+
+        autoBalance.whileTrue(new AutoBalance(leds, drive));
+
+        toggleBrake.toggleOnTrue(Commands.runOnce(drive::toggleBrakes, drive));
+
+        // alignToTape.whileTrue(new DriveToTape(leds, drive));
+
+        // alignToAprilTag.whileTrue(new AlignToAprilTag(drive));
+
+        setPipelineTape
+                .toggleOnTrue(
+                        Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 0),
+                                drive));
+
+        setPipelineAprilTag
+                .toggleOnTrue(
+                        Commands.runOnce(() -> LimelightHelpers.setPipelineIndex(DriveConstants.limelightName, 1),
+                                drive));
+    }
+
+    /**
+     * Configures all the buttons and triggers for the elevator
+     */
+    public void configureElevatorButtons() {
+        Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
+
+        Trigger elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
+
+        Trigger coneElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode.negate());
+        Trigger coneElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode.negate());
+        Trigger coneElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode.negate());
+
+        Trigger cubeElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode);
+        Trigger cubeElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode);
+        Trigger cubeElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode);
+
+        Trigger elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
+        Trigger elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
+
+        Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
+
+        startingConfiguration.whileTrue(Commands.sequence(
+                new SetElevatorPosition(
+                        () -> (elevator.getPistonState() == Value.kForward) ? ElevatorConstants.elevatorConeTopSetPoint
+                                : ElevatorConstants.startingConfigurationHeight,
+                        elevator),
+                Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
+                // new SetElevatorPosition(IntakeConstants.startingConfigurationHeight,
+                // elevator),
+                Commands.runOnce(intake::toggleWristOut, intake)));
+
+        elevatorTilt.toggleOnTrue(
+                Commands.runOnce(elevator::toggleElevatorTilt, elevator));
+
+        coneElevatorHigh
+                .whileTrue(new SetElevatorPosition(ElevatorConstants.elevatorConeTopSetPoint, elevator));
+        coneElevatorMid
+                .whileTrue(new SetElevatorPosition(ElevatorConstants.elevatorConeMidSetPoint, elevator));
+        coneElevatorLow
+                .whileTrue(new SetElevatorPosition(ElevatorConstants.elevatorConeLowSetPoint, elevator));
+
+        cubeElevatorHigh
+                .whileTrue(new SetElevatorPosition(ElevatorConstants.elevatorCubeTopSetPoint, elevator));
+        cubeElevatorMid
+                .whileTrue(new SetElevatorPosition(ElevatorConstants.elevatorCubeMidSetPoint, elevator));
+        cubeElevatorLow
+                .whileTrue(new SetElevatorPosition(ElevatorConstants.elevatorCubeLowSetPoint, elevator));
+
+        elevatorUp.whileTrue(new ManualMoveElevator(-IntakeConstants.elevatorSpeed,
+                () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
+        elevatorDown.whileTrue(new ManualMoveElevator(IntakeConstants.elevatorSpeed,
+                () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
+
+        new JoystickButton(operatorStick, 15)
+                .onTrue(Commands.runOnce(elevator::zeroElevatorPosition, elevator));
+    }
+
+    /**
+     * Configures all the buttons for the intake
+     */
+    public void configureIntakeButtons() {
+
+        Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
+
+        Trigger intakeCone = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode.negate());
+        Trigger outtakeCone = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode.negate());
+
+        Trigger intakeCube = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode);
+        Trigger outtakeCube = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode);
+
+        Trigger intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
+
+        intakeCone.whileTrue(Commands.run(intake::intakeCone, intake))
+                .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+
+        outtakeCone.whileTrue(Commands.run(intake::outTakeCone, intake))
+                .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+
+        intakeCube.whileTrue(Commands.run(intake::intakeCube, intake))
+                .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+
+        outtakeCube.whileTrue(Commands.run(intake::outTakeCube, intake))
+                .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
+
+        intakePiston.toggleOnTrue(Commands.runOnce(intake::toggleIntakePiston, intake));
+    }
+
+    public static int getStartingFieldPosition() {
+        return startingFieldPosition.getSelected();
+    }
+
+    public void initializeOdometry(Command autoCommand) {
+        if (autoCommand instanceof FollowPathPlanner) {
+            return;
+        }
+
+        drive.initializeFieldPosition(startingFieldPosition.getSelected());
+    }
+
+    public Command placeConeAutoStart(Command pathPlannerCommand) {
+        return Commands.sequence(Commands.runOnce(elevator::elevatorTiltOut, elevator),
+                new WaitCommand(1.50),
+
+                new SetElevatorPosition(ElevatorConstants.elevatorConeTopSetPoint,
+                        elevator),
+
+                intake.autoOuttakeCone(),
+                new WaitCommand(0.50),
+                pathPlannerCommand);
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 }

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoDrive;
 import frc.robot.commands.drive.AutoTurnToAngle;
@@ -37,7 +38,7 @@ public class PlaceConeMobility extends SequentialCommandGroup {
         // distance to cross mobility line
         new AutoDrive(-4.0, drive),
 
-        Commands.parallel(new SetElevatorPosition(IntakeConstants.elevatorConeLowSetPoint, elevator),
+        Commands.parallel(new SetElevatorPosition(ElevatorConstants.elevatorConeLowSetPoint, elevator),
             new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? 90 : -90,
                 drive)));
   }

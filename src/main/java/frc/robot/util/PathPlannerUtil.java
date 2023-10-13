@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.manipulator.SetElevatorPosition;
 import frc.robot.subsystems.Drive;
@@ -34,27 +35,32 @@ public class PathPlannerUtil {
 
   public static void initializeCommands(Drive driveSubsystem, Elevator elevatorSystem, Intake intakeSystem) {
     eventMap.put("intakeCone", Commands.run(intakeSystem::intakeCone, intakeSystem));
-    eventMap.put("outtakeCone", Commands.race(Commands.run(intakeSystem::outTakeCone, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("outtakeCone", Commands.race(Commands.run(intakeSystem::outTakeCone, intakeSystem),
+        new WaitCommand(IntakeConstants.autoIntakeTime)));
 
     eventMap.put("intakeCube", Commands.run(intakeSystem::intakeCube, intakeSystem));
-    eventMap.put("outtakeCube", Commands.race(Commands.run(intakeSystem::outTakeCube, intakeSystem), new WaitCommand(IntakeConstants.autoIntakeTime)));
+    eventMap.put("outtakeCube", Commands.race(Commands.run(intakeSystem::outTakeCube, intakeSystem),
+        new WaitCommand(IntakeConstants.autoIntakeTime)));
 
     eventMap.put("stopIntake", Commands.runOnce(intakeSystem::stopIntakeMotor, intakeSystem));
 
     eventMap.put("elevatorConeHigh",
-        new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevatorSystem));
+        new SetElevatorPosition(ElevatorConstants.elevatorConeTopSetPoint, elevatorSystem));
     eventMap.put("elevatorConeMid",
-        new SetElevatorPosition(IntakeConstants.elevatorConeMidSetPoint, elevatorSystem));
+        new SetElevatorPosition(ElevatorConstants.elevatorConeMidSetPoint, elevatorSystem));
     eventMap.put("elevatorConeLow",
-        new SetElevatorPosition(IntakeConstants.elevatorConeLowSetPoint, elevatorSystem));
+        new SetElevatorPosition(ElevatorConstants.elevatorConeLowSetPoint, elevatorSystem));
 
-    eventMap.put("elevatorCubeHigh", new SetElevatorPosition(IntakeConstants.elevatorCubeTopSetPoint, elevatorSystem));
-    eventMap.put("elevatorCubeMid", new SetElevatorPosition(IntakeConstants.elevatorCubeMidSetPoint, elevatorSystem));
-    eventMap.put("elevatorCubeLow", new SetElevatorPosition(IntakeConstants.elevatorCubeLowSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeHigh",
+        new SetElevatorPosition(ElevatorConstants.elevatorCubeTopSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeMid", new SetElevatorPosition(ElevatorConstants.elevatorCubeMidSetPoint, elevatorSystem));
+    eventMap.put("elevatorCubeLow", new SetElevatorPosition(ElevatorConstants.elevatorCubeLowSetPoint, elevatorSystem));
 
-    eventMap.put("elevatorTiltOut", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem), new WaitCommand(2.00)));
+    eventMap.put("elevatorTiltOut",
+        Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltOut, elevatorSystem), new WaitCommand(2.00)));
     // eventMap.put("elevatorTiltOut", new PrintCommand("Elevator Tilt Out"));
-    eventMap.put("elevatorTiltIn", Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem), new WaitCommand(2.00)));
+    eventMap.put("elevatorTiltIn",
+        Commands.sequence(Commands.runOnce(elevatorSystem::elevatorTiltIn, elevatorSystem), new WaitCommand(2.00)));
 
     // eventMap.put("marker1", new PrintCommand("Passed Marker 1"));
     // eventMap.put("marker2", new PrintCommand("Passed Marker 2"));

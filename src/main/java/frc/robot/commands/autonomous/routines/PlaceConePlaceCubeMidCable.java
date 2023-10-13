@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.drive.AutoDrive;
 import frc.robot.commands.drive.AutoTurnToAngle;
@@ -42,7 +43,7 @@ public class PlaceConePlaceCubeMidCable extends SequentialCommandGroup {
             new AutoTurnToAngle(() -> (DriverStation.getAlliance() == Alliance.Blue) ? -18.5 : 18.5,
                 drive)
                 .withTimeout(2.00),
-            new SetElevatorPosition(IntakeConstants.elevatorCubeLowSetPoint, elevator)),
+            new SetElevatorPosition(ElevatorConstants.elevatorCubeLowSetPoint, elevator)),
 
         Commands.runOnce(() -> {
           drive.setMaxOutput(0.40);
@@ -63,7 +64,7 @@ public class PlaceConePlaceCubeMidCable extends SequentialCommandGroup {
 
         Commands.parallel(
             new AutoDrive(5.25, drive),
-            new SetElevatorPosition(IntakeConstants.elevatorCubeTopSetPoint, elevator)),
+            new SetElevatorPosition(ElevatorConstants.elevatorCubeTopSetPoint, elevator)),
 
         // Commands.runOnce(intake::toggleWristIn, intake),
         // new AutoDrive(4.4, drive),

@@ -88,7 +88,7 @@ public class Drive extends SubsystemBase {
   private AHRS navx = new AHRS(SPI.Port.kMXP);
 
   // Creates brake pistion
-  private DoubleSolenoid brakePiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID, PneumaticsModuleType.REVPH,
+  private DoubleSolenoid brakePiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID, PneumaticsModuleType.CTREPCM,
       DriveConstants.pistonBrakeForwardID, DriveConstants.pistonBrakeReverseID);
 
   // Creates the initial variabes for PID, acceleration, speed, etc. for later use

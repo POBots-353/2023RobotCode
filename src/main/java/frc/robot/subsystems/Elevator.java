@@ -6,15 +6,20 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.IntakeConstants;
 
 public class Elevator extends SubsystemBase {
@@ -47,7 +52,7 @@ public class Elevator extends SubsystemBase {
   private int smartMotionSlot = 0;
   private int allowedErr;
   private int minVel;
-  private double kP = 5.9721E-05; // 5.15e-4 4.05e-4 1.05e-4
+  private double kP = 0.0001; // 5.15e-4 4.05e-4 1.05e-4
   private double kI = 0;
   private double kD = 0; // 0, 4.05e-4 1.05e-4
   private double kIz = 0;
@@ -56,6 +61,9 @@ public class Elevator extends SubsystemBase {
   private double kMinOutput = -1;
   private double maxVel = 2800; // 5000 2800
   private double maxAcc = 4000; // 2500, 4000
+
+  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(ElevatorConstants.elevatorKs,
+      ElevatorConstants.elevatorKg, ElevatorConstants.elevatorKv, ElevatorConstants.elevatorKa);
 
   /** Creates a new ElevatorSubsystem. */
   public Elevator() {
@@ -80,20 +88,7 @@ public class Elevator extends SubsystemBase {
     p.setP(kP); // Sets the Proportional Gain constat of the PIDF contorller
     p.setI(kI); // Sets the Integral Gain constant of the PIDF contoller
     p.setD(kD); // Sets the Derivative Gain constant of the PIDF controller
-    p.setIZone(kIz); // Sets the IZone range
-    p.setFF(kFF); // Sets the Feed-forward Gain constant of the PIDF controller
-    /*
-     * Feed-forward is a prediction technique that estimates the output from a PID
-     * controller without waiting
-     * for the PID algorithm to respond. They are useful for reducing the error
-     * fastor or keeps the error smaller
-     * rather than making the PID algorithm do it by itself
-     */
     p.setOutputRange(kMinOutput, kMaxOutput); /* Sets the minimum and maximum output of the PID controller */
-    p.setSmartMotionMaxVelocity(maxVel, smartMotionSlot); /* Sets the maximum velocity of the SmartMotion mode */
-    p.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot); /* Sets the minimum velocity of the Smartmotion mode */
-    p.setSmartMotionMaxAccel(maxAcc, smartMotionSlot); /* Sets the maximum acceleration of the SmartMotion mode */
-    p.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot); /* Sets the allowed error for the motor */
   }
 
   // The methods below kinda explain themselves
@@ -111,6 +106,23 @@ public class Elevator extends SubsystemBase {
 
   public void setElevatorPosition(double elevatorPos) {
     elevatorPIDController.setReference(elevatorPos, CANSparkMax.ControlType.kSmartMotion);
+  }
+
+  public void setElevatorProfile(TrapezoidProfile.State state, boolean invert) {
+    double velocity = state.velocity;
+    double position = state.position;
+
+    // if (invert) {
+    //   position *= -1;
+    //   // velocity *= -1;
+    // }
+
+    double feedforwardVolts = feedforward.calculate(velocity);
+
+    // System.out.println("Velocity " + velocity);
+    // System.out.println("Position " + position);
+
+    elevatorPIDController.setReference(position, ControlType.kPosition, 0, feedforwardVolts, ArbFFUnits.kVoltage);
   }
 
   public void elevatorUp() {
@@ -140,6 +152,10 @@ public class Elevator extends SubsystemBase {
 
   public double getElevatorPosition() {
     return elevatorEncoder.getPosition();
+  }
+
+  public double getElevatorVelocity() {
+    return elevatorEncoder.getVelocity() / 60;
   }
 
   public void zeroElevatorPosition() {

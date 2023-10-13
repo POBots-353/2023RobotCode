@@ -211,6 +211,16 @@ public final class Constants {
     public static final double elevatorSpeed = 0.50;
   }
 
+  public static final class ElevatorConstants {
+    public static final double elevatorKg = 0.5324;
+    public static final double elevatorKs = 0.23288;
+    public static final double elevatorKv = 0.13315;
+    public static final double elevatorKa = 0.0036323;
+
+    public static final double elevatorMaxVelocity = 40.0;
+    public static final double elevatorMaxAcceleration = 15.0;
+  }
+
   public static final class LEDConstants {
     public static final int redOutputChannel = 6;
     public static final int greenOutputChannel = 5;

@@ -6,9 +6,7 @@ package frc.robot.commands.manipulator;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Elevator;
@@ -18,14 +16,11 @@ public class SetElevatorPosition extends CommandBase {
   private double elevatorPosition;
   private DoubleSupplier positionSupplier;
 
-  // private final TrapezoidProfile.Constraints constraints = new
-  // TrapezoidProfile.Constraints(
-  // ElevatorConstants.elevatorMaxVelocity,
-  // ElevatorConstants.elevatorMaxAcceleration);
+  private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(
+      ElevatorConstants.elevatorMaxVelocity,
+      ElevatorConstants.elevatorMaxAcceleration);
 
-  // private Timer timeInPosition = new Timer();
-
-  /** Creates a new LowManipulator. */
+  /** Creates a new SetElevatorPosition. */
   public SetElevatorPosition(DoubleSupplier position, Elevator elevator) {
     positionSupplier = position;
     this.elevator = elevator;
@@ -43,9 +38,6 @@ public class SetElevatorPosition extends CommandBase {
     elevatorPosition = positionSupplier.getAsDouble();
 
     elevator.toggleOffManipulatorBreak();
-
-    // timeInPosition.stop();
-    // timeInPosition.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,30 +46,10 @@ public class SetElevatorPosition extends CommandBase {
     double currentPosition = elevator.getElevatorPosition();
     double currentVelocity = elevator.getElevatorVelocity();
 
-    boolean invert = currentPosition > elevatorPosition;
-
-    // if (invert) {
-    // currentPosition *= -1;
-    // currentVelocity *= -1;
-    // }
-
-    TrapezoidProfile.Constraints constraints;
-
-    // if (!invert) {
-    //   constraints = new TrapezoidProfile.Constraints(
-    //       -ElevatorConstants.elevatorMaxVelocity,
-    //       ElevatorConstants.elevatorMaxAcceleration);
-    // } else {
-      constraints = new TrapezoidProfile.Constraints(
-          ElevatorConstants.elevatorMaxVelocity, -ElevatorConstants.elevatorMaxAcceleration);
-    // }
-
     TrapezoidProfile profile = new TrapezoidProfile(constraints, new TrapezoidProfile.State(elevatorPosition, 0),
         new TrapezoidProfile.State(currentPosition, currentVelocity));
 
-    // if (!profile.isFinished(0.0)) {
-      elevator.setElevatorProfile(profile.calculate(0.020), invert);
-    // }
+    elevator.setElevatorProfile(profile.calculate(0.020));
   }
 
   // Called once the command ends or is interrupted.
@@ -90,7 +62,6 @@ public class SetElevatorPosition extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return false;
     return Math.abs(elevator.getElevatorPosition() - elevatorPosition) < 0.10;
   }
 }

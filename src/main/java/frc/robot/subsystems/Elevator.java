@@ -49,18 +49,12 @@ public class Elevator extends SubsystemBase {
   private DigitalInput bottomLimitSwitch = new DigitalInput(9);
 
   // Creates the initial variabes for PID, acceleration, speed, etc. for later use
-  private int smartMotionSlot = 0;
-  private int allowedErr;
-  private int minVel;
-  private double kP = 0.0001; // 5.15e-4 4.05e-4 1.05e-4
+  private double kP = 0.0001;
   private double kI = 0;
-  private double kD = 0; // 0, 4.05e-4 1.05e-4
-  private double kIz = 0;
-  private double kFF = 0.0004429; // 0.000206 0.000750
+  private double kD = 0;
+
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 2800; // 5000 2800
-  private double maxAcc = 4000; // 2500, 4000
 
   private final ElevatorFeedforward feedforward = new ElevatorFeedforward(ElevatorConstants.elevatorKs,
       ElevatorConstants.elevatorKg, ElevatorConstants.elevatorKv, ElevatorConstants.elevatorKa);
@@ -109,19 +103,11 @@ public class Elevator extends SubsystemBase {
     elevatorPIDController.setReference(elevatorPos, CANSparkMax.ControlType.kSmartMotion);
   }
 
-  public void setElevatorProfile(TrapezoidProfile.State state, boolean invert) {
+  public void setElevatorProfile(TrapezoidProfile.State state) {
     double velocity = state.velocity;
     double position = state.position;
 
-    // if (invert) {
-    // position *= -1;
-    // // velocity *= -1;
-    // }
-
     double feedforwardVolts = feedforward.calculate(velocity);
-
-    // System.out.println("Velocity " + velocity);
-    // System.out.println("Position " + position);
 
     elevatorPIDController.setReference(position, ControlType.kPosition, 0, feedforwardVolts, ArbFFUnits.kVoltage);
   }
@@ -186,10 +172,7 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition()); /*
-                                                                                   * Posts the
-                                                                                   * elevator position to SmartDashboard
-                                                                                   */
+    SmartDashboard.putNumber("Elevator Position", elevatorEncoder.getPosition());
     SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());
 
     // Posts if the limit switches are triggered or not

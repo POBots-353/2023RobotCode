@@ -9,6 +9,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
@@ -88,6 +89,7 @@ public class Robot extends TimedRobot {
     double periodicTime = (Timer.getFPGATimestamp() - startTime) * 1000;
 
     SmartDashboard.putNumber("Code Runtime MS", periodicTime);
+    SmartDashboard.putNumber("CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

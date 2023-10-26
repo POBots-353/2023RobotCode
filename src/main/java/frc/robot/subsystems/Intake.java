@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +25,8 @@ public class Intake extends SubsystemBase {
 
   // private PneumaticHub pneumaticHub = new
   // PneumaticHub(IntakeConstants.pneumaticHubID);
+
+  private PneumaticsControlModule pneumaticsPCM = new PneumaticsControlModule(0);
 
   // Intake objects
   private DoubleSolenoid intakeWristPiston = new DoubleSolenoid(IntakeConstants.pneumaticHubID,

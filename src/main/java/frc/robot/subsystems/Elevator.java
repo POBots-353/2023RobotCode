@@ -51,10 +51,10 @@ public class Elevator extends SubsystemBase {
   private double kI = 0;
   private double kD = 0; // 0, 4.05e-4 1.05e-4
   private double kIz = 0;
-  private double kFF = 0.0004429; // 0.000206 0.000750
+  private double kFF = 0.0004429; // 0.000206 0.000750 0.0004429
   private double kMaxOutput = 1;
   private double kMinOutput = -1;
-  private double maxVel = 2800; // 5000 2800
+  private double maxVel = 3600; // 5000 2800
   private double maxAcc = 4000; // 2500, 4000
 
   /** Creates a new ElevatorSubsystem. */

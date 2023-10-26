@@ -117,5 +117,7 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Pressure", getPSI());
 
     SmartDashboard.putBoolean("Compressor On", pcmCompressor.isEnabled());
+
+    SmartDashboard.putNumber("Compressor Current", pneumaticsPCM.getCompressorCurrent());
   }
 }

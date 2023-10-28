@@ -122,7 +122,7 @@ public class Drive extends SubsystemBase {
   private DifferentialDriveOdometry odometry = new DifferentialDriveOdometry(navx.getRotation2d(), 0, 0,
       AutoConstants.blueSubstationPose);
 
-  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.00, 1.00, Units.degreesToRadians(10));
+  private final Vector<N3> smallDistanceDeviation = VecBuilder.fill(1.50, 1.50, Units.degreesToRadians(20.0));
 
   private DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
       DriveConstants.driveKinematics, navx.getRotation2d(), frontLeftEncoder.getPosition(),
@@ -405,7 +405,8 @@ public class Drive extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
+    poseEstimator.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(),
+        pose);
   }
 
   public void initializeBlueFieldPosition(int position) {
@@ -426,11 +427,12 @@ public class Drive extends SubsystemBase {
         break;
     }
 
-    odometry.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
+    poseEstimator.resetPosition(navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(),
+        pose);
   }
 
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   public void zeroGyro() {
@@ -468,15 +470,15 @@ public class Drive extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(
+    poseEstimator.resetPosition(
         navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
   }
 
   public void resetOdometry(Pose2d pose, Trajectory trajectory) {
-    odometry.resetPosition(
+    poseEstimator.resetPosition(
         navx.getRotation2d(), frontLeftEncoder.getPosition(), frontRightEncoder.getPosition(), pose);
 
-    field.getRobotObject().setTrajectory(trajectory);
+    field.getObject("Trajectory").setTrajectory(trajectory);
   }
 
   public void tankDriveVolts(double leftVolts, double rightVolts) {
@@ -492,7 +494,7 @@ public class Drive extends SubsystemBase {
     double distance = targetPose.getTranslation().getNorm();
     double angle = MathUtil.inputModulus(Math.toDegrees(targetPose.getRotation().getY()), -90.0, 90.0);
 
-    if (distance < 0.30 || distance > 3.0) {
+    if (distance < 0.10 || distance > 3.0) {
       return false;
     }
 
@@ -501,10 +503,16 @@ public class Drive extends SubsystemBase {
     }
 
     if (lastVisionPose != null && lastDetectedID == aprilTagID) {
-      double previousRotation = lastVisionPose.getRotation().getY();
-      double currentRotation = targetPose.getRotation().getY();
+      double previousRotation = MathUtil.inputModulus(Math.toDegrees(lastVisionPose.getRotation().getY()), -90.0, 90.0);
+      double currentRotation = MathUtil.inputModulus(Math.toDegrees(targetPose.getRotation().getY()), -90.0, 90.0);
 
-      if (Math.abs(previousRotation - currentRotation) > 30) {
+      double previousDistance = lastVisionPose.getTranslation().getNorm();
+
+      if (Math.abs(previousRotation - currentRotation) > 60.0) {
+        return false;
+      }
+
+      if (Math.abs(previousDistance - distance) > 4.0) {
         return false;
       }
     }
@@ -551,15 +559,20 @@ public class Drive extends SubsystemBase {
     }
 
     double distance = closestTargetPose.getTranslation().getNorm();
-    double latency = results.timestamp_LIMELIGHT_publish
-        - (results.latency_capture + results.latency_pipeline + results.latency_jsonParse) / 1000.0;
+    double latency = results.timestamp_LIMELIGHT_publish + 11.0 / 1000.0;
+    // - (results.latency_capture + results.latency_pipeline) / 1000.0 +
+    // results.latency_jsonParse / 1000.0;
 
-    if (distance < 2.0 || detectedTargets.size() > 1) {
+    if (Math.abs(distance) < 1.5) {
       poseEstimator.addVisionMeasurement(robotPose, latency, smallDistanceDeviation);
+    } else if (detectedTargets.size() > 1) {
+      poseEstimator.addVisionMeasurement(robotPose, latency,
+          VecBuilder.fill(Math.pow(distance, 2.0) * 0.50, Math.pow(distance, 2.0) * 0.50,
+              Units.degreesToRadians(20.0)));
     } else {
       poseEstimator.addVisionMeasurement(robotPose, latency,
-          VecBuilder.fill(Math.pow(distance, 2.0) * 0.5, Math.pow(distance, 2.0) * 0.5,
-              Units.degreesToRadians(15.0)));
+          VecBuilder.fill(Math.pow(distance, 2.0) * 0.75, Math.pow(distance, 2.0) * 0.75,
+              Units.degreesToRadians(30.0)));
     }
 
     field.getObject("Detected Target").setPoses(detectedTargets);

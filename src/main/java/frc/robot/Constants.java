@@ -121,8 +121,8 @@ public final class Constants {
     public static final int frontRightMotorID = 1;
     public static final int backRightMotorID = 3;
 
-    public static final double turboSpeed = 0.825;
-    public static final double defaultSpeed = 0.675;// 0.65
+    public static final double turboSpeed = 0.25;
+    public static final double defaultSpeed = 0.25;
     public static final double slowSpeed = 0.25;
 
     public static final double tapeAlignmentPitchTolerance = 1.50;
@@ -193,8 +193,8 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 1; // 4
     public static final int manipulatorBreakReverseID = 7; // 11
 
-    public static final double intakeSpeed = 0.80;
-    public static final double outtakeSpeed = 1.00;
+    public static final double intakeSpeed = 0.4;
+    public static final double outtakeSpeed = 0.6;
 
     public static final double autoIntakeTime = 0.50;
 

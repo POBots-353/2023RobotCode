@@ -219,46 +219,8 @@ public class RobotContainer {
    * Configures all drive triggers and buttons
    */
   public void configureDriveButtons() {
-    Trigger turboDrive = driverController.rightTrigger();
-
-    Trigger slowDrive = driverController.leftTrigger();
-
-    Trigger turnToAngle = new Trigger(() -> driverControllerHID.getPOV() != -1);
-
-    Trigger autoBalance = driverController.b();
-
-    Trigger toggleBrake = new JoystickButton(operatorStick, Buttons.toggleBrakesButton);
-
-    // Trigger alignToTape = driverController.rightBumper();
-
-    // Trigger alignToAprilTag = driverController.leftBumper();
-
-    Trigger turnToSubstation = driverController.rightBumper();
-    Trigger turnToNode = driverController.leftBumper();
-
     Trigger setPipelineTape = driverController.start();
     Trigger setPipelineAprilTag = driverController.back();
-
-    slowDrive.whileTrue(
-        Commands.run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.slowSpeed,
-            -driverController.getRightY() * DriveConstants.slowSpeed), drive));
-
-    turboDrive
-        .whileTrue(Commands
-            .run(() -> drive.tankDrive(-driverController.getLeftY() * DriveConstants.turboSpeed,
-                -driverController.getRightY() * DriveConstants.turboSpeed), drive));
-
-    // Uses IEEEremainder to get the angle between -180 and 180
-    turnToAngle
-        .whileTrue(new AutoTurnToAngle(() -> driverControllerHID.getPOV(), drive));
-
-    turnToSubstation.whileTrue(new TurnToAngle(0, drive));
-
-    turnToNode.whileTrue(new TurnToAngle(180, drive));
-
-    autoBalance.whileTrue(new AutoBalance(leds, drive));
-
-    toggleBrake.toggleOnTrue(Commands.runOnce(drive::toggleBrakes, drive));
 
     // alignToTape.whileTrue(new DriveToTape(leds, drive));
 
@@ -281,8 +243,6 @@ public class RobotContainer {
   public void configureElevatorButtons() {
     Trigger cubeMode = new JoystickButton(operatorStick, Buttons.cubeModeButton);
 
-    Trigger elevatorTilt = new JoystickButton(operatorStick, Buttons.toggleElevatorPistonsButton);
-
     Trigger coneElevatorHigh = new JoystickButton(operatorStick, Buttons.elevatorHighButton).and(cubeMode.negate());
     Trigger coneElevatorMid = new JoystickButton(operatorStick, Buttons.elevatorMidButton).and(cubeMode.negate());
     Trigger coneElevatorLow = new JoystickButton(operatorStick, Buttons.elevatorLowButton).and(cubeMode.negate());
@@ -293,21 +253,6 @@ public class RobotContainer {
 
     Trigger elevatorUp = new JoystickButton(operatorStick, Buttons.elevatorManualUpButton);
     Trigger elevatorDown = new JoystickButton(operatorStick, Buttons.elevatorManualDownButton);
-
-    Trigger startingConfiguration = new JoystickButton(operatorStick, 14);
-
-    startingConfiguration.whileTrue(Commands.sequence(
-        new SetElevatorPosition(
-            () -> (elevator.getPistonState() == Value.kForward) ? IntakeConstants.elevatorConeTopSetPoint
-                : IntakeConstants.startingConfigurationHeight,
-            elevator),
-        Commands.runOnce(elevator::elevatorTiltIn, elevator), new WaitCommand(1.00),
-        // new SetElevatorPosition(IntakeConstants.startingConfigurationHeight,
-        // elevator),
-        Commands.runOnce(intake::toggleWristOut, intake)));
-
-    elevatorTilt.toggleOnTrue(
-        Commands.runOnce(elevator::toggleElevatorTilt, elevator));
 
     coneElevatorHigh
         .whileTrue(new SetElevatorPosition(IntakeConstants.elevatorConeTopSetPoint, elevator));

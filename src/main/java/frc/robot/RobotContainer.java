@@ -20,6 +20,7 @@ import frc.robot.commands.autonomous.routines.PlaceConePlaceCubeMid;
 import frc.robot.commands.autonomous.routines.PlaceConePlaceCubeMidCable;
 import frc.robot.commands.autonomous.routines.PlaceConeMobility;
 import frc.robot.commands.autonomous.routines.PlaceConeBalance;
+import frc.robot.commands.drive.ArcadeDrive;
 import frc.robot.commands.drive.AutoBalance;
 import frc.robot.commands.drive.AutoTurnToAngle;
 import frc.robot.commands.drive.DriveToTape;
@@ -183,12 +184,13 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    // driveSubsystem.setDefaultCommand(
-    // new ArcadeDriveCommand(driverController::getLeftY,
-    // driverController::getRightX, driveSubsystem));
-
     drive.setDefaultCommand(
-        new TankDrive(driverController::getLeftY, driverController::getRightY, drive));
+        new ArcadeDrive(driverController::getLeftY,
+            driverController::getRightX, drive));
+
+    // drive.setDefaultCommand(
+    // new TankDrive(driverController::getLeftY, driverController::getRightY,
+    // drive));
 
     printPSI.schedule();
   }

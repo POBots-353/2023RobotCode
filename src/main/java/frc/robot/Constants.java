@@ -121,9 +121,10 @@ public final class Constants {
     public static final int frontRightMotorID = 1;
     public static final int backRightMotorID = 3;
 
-    public static final double turboSpeed = 0.25;
-    public static final double defaultSpeed = 0.25;
-    public static final double slowSpeed = 0.25;
+    public static final double turboSpeed = 0.15;
+    public static final double defaultSpeed = 0.15;
+    public static final double defaultTurnSpeed = 0.10;
+    public static final double slowSpeed = 0.15;
 
     public static final double tapeAlignmentPitchTolerance = 1.50;
     public static final double tapeAlignmentAreaTolerance = 0.027;

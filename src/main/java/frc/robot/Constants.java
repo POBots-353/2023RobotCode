@@ -194,14 +194,14 @@ public final class Constants {
     public static final int manipulatorBreakForwardID = 1; // 4
     public static final int manipulatorBreakReverseID = 7; // 11
 
-    public static final double intakeSpeed = 0.4;
+    public static final double intakeSpeed = 0.5;
     public static final double outtakeSpeed = 0.6;
 
     public static final double autoIntakeTime = 0.50;
 
     public static final double elevatorConeTopSetPoint = -59.6;
     public static final double elevatorConeMidSetPoint = -40.4;
-    public static final double elevatorConeLowSetPoint = -2.45;
+    public static final double elevatorConeLowSetPoint = -3.5; // -2.45
 
     public static final double elevatorCubeTopSetPoint = -59.0;
     public static final double elevatorCubeMidSetPoint = -45.8;

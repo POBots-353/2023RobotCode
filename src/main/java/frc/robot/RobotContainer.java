@@ -275,8 +275,8 @@ public class RobotContainer {
     elevatorDown.whileTrue(new ManualMoveElevator(IntakeConstants.elevatorSpeed,
         () -> operatorStick.getRawButton(Buttons.elevatorLimitSwitchOverride), elevator));
 
-    new JoystickButton(operatorStick, 15)
-        .onTrue(Commands.runOnce(elevator::zeroElevatorPosition, elevator));
+    // new JoystickButton(operatorStick, 15)
+    //     .onTrue(Commands.runOnce(elevator::zeroElevatorPosition, elevator));
   }
 
   /**
@@ -292,8 +292,6 @@ public class RobotContainer {
     Trigger intakeCube = new JoystickButton(operatorStick, Buttons.intakeButton).and(cubeMode);
     Trigger outtakeCube = new JoystickButton(operatorStick, Buttons.outtakeButton).and(cubeMode);
 
-    Trigger intakePiston = new JoystickButton(operatorStick, Buttons.intakeOpenClose);
-
     intakeCone.whileTrue(Commands.run(intake::intakeCone, intake))
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
 
@@ -305,8 +303,6 @@ public class RobotContainer {
 
     outtakeCube.whileTrue(Commands.run(intake::outTakeCube, intake))
         .toggleOnFalse(Commands.runOnce(intake::stopIntakeMotor, intake));
-
-    intakePiston.toggleOnTrue(Commands.runOnce(intake::toggleIntakePiston, intake));
   }
 
   public static int getStartingFieldPosition() {
